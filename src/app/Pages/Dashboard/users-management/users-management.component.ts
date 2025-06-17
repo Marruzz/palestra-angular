@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
@@ -20,7 +20,7 @@ interface UserForm {
   templateUrl: './users-management.component.html',
   styleUrl: './users-management.component.css'
 })
-export class UsersManagementComponent {
+export class UsersManagementComponent implements OnChanges {
   @Input() users: PalestraUser[] = [];
   @Input() showUserModal: boolean = false;
   @Input() userForm: UserForm = {
@@ -41,6 +41,83 @@ export class UsersManagementComponent {
   // Aggiunte per la user card
   showUserCard: boolean = false;
   selectedUserForCard: PalestraUser | null = null;
+  // Paginazione
+  currentPage: number = 1;
+  usersPerPage: number = 5;
+
+  // Computed properties per la paginazione
+  get totalPages(): number {
+    return Math.ceil(this.users.length / this.usersPerPage);
+  }
+
+  get paginatedUsers(): PalestraUser[] {
+    const startIndex = (this.currentPage - 1) * this.usersPerPage;
+    const endIndex = startIndex + this.usersPerPage;
+    return this.users.slice(startIndex, endIndex);
+  }
+
+  get totalUsers(): number {
+    return this.users.length;
+  }
+
+  get startUserIndex(): number {
+    return (this.currentPage - 1) * this.usersPerPage + 1;
+  }
+
+  get endUserIndex(): number {
+    const endIndex = this.currentPage * this.usersPerPage;
+    return Math.min(endIndex, this.users.length);
+  }
+
+  // Metodi per la navigazione della paginazione
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    if (this.totalPages <= maxVisiblePages) {
+      // Se ci sono poche pagine, mostra tutte
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Logica per mostrare le pagine intorno a quella corrente
+      let startPage = Math.max(1, this.currentPage - 2);
+      let endPage = Math.min(this.totalPages, this.currentPage + 2);
+
+      // Aggiusta se siamo troppo vicini all'inizio o alla fine
+      if (endPage - startPage < maxVisiblePages - 1) {
+        if (startPage === 1) {
+          endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+        } else {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  }
 
   onOpenUserModal(user?: PalestraUser) {
     this.userModalOpen.emit(user);
@@ -81,5 +158,12 @@ export class UsersManagementComponent {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT');
+  }
+
+  ngOnChanges(): void {
+    // Reset della paginazione se la pagina corrente non è più valida
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = 1;
+    }
   }
 }
