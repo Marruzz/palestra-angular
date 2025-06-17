@@ -107,7 +107,7 @@ async function initializeTables() {
 
 
     const [existingCorsi] = await connection.execute("SELECT COUNT(*) as count FROM Corsi");
-    if (existingCorsi[0].count === 0) {
+    if (existingCorsi[0].count !== 12) {
       const corsiDefault = [
         ['Arti marziali', 'Corso base - durata 1 mese', 1],
         ['MMA', 'Mixed Martial Arts - durata 1 mese', 1],
@@ -122,7 +122,7 @@ async function initializeTables() {
         ['Sala Pesi', 'Allenamento Pesi - durata 12 mesi', 12],
         ['Cross-training', 'Funzionale - durata 12 mesi', 12]
       ];
-
+      await connection.execute("DELETE FROM Corsi");
       for (const corso of corsiDefault) {
         await connection.execute(
           "INSERT INTO Corsi (nome_corso, descrizione, durata_mesi_default) VALUES (?, ?, ?)",

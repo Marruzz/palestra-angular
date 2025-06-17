@@ -62,8 +62,8 @@ export interface DashboardStats {
   eta_media_utenti: number;
   tempo_medio_entrata: string;
   durata_media_corso: number;
-  corso_bottom: number | string;
-  corso_top: number | string;
+  corso_bottom: string;
+  corso_top: string;
   ultimi_accessi: {
     nome: string;
     cognome: string;

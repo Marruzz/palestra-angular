@@ -55,7 +55,6 @@ export interface CalculatedStats {
   corso_bottom: string;
   totale_abbonamenti: number;
   eta_media_utenti: number;
-
   tempo_medio_entrata: string;
   durata_media_corso: number;
   ultimi_accessi: {

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardStats } from '../../../shared/services/dashboard.service';
+import { CalculatedStats } from '../../../shared/services/stats.service';
 
 @Component({
   selector: 'app-stats-cards',
@@ -8,6 +8,6 @@ import { DashboardStats } from '../../../shared/services/dashboard.service';
   templateUrl: './stats-cards.component.html',
 })
 export class StatsCards {
-  @Input() stats: DashboardStats | null = null;
+  @Input() stats: CalculatedStats | null = null;
   @Input() isLoading: boolean = false;
 }
