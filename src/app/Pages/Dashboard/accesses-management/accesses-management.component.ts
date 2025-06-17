@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Ingresso, PalestraUser } from '../../../shared/services/dashboard.service';
 
 // Interfacce
 interface Access {
@@ -31,19 +32,16 @@ interface AccessForm {
   styleUrl: './accesses-management.component.css'
 })
 export class AccessesManagementComponent {
-  @Input() accesses: Access[] = [];
-  @Input() users: User[] = [];
+  @Input() accesses: Ingresso[] = [];
+  @Input() users: PalestraUser[] = [];
   @Input() showAccessModal: boolean = false;
-  @Input() accessForm: AccessForm = {
-    userId: 0,
-    type: 'entry'
+  @Input() accessForm: { id_utente: number } = {
+    id_utente: 0
   };
-
   @Output() accessModalOpen = new EventEmitter<void>();
   @Output() accessModalClose = new EventEmitter<void>();
   @Output() accessRegister = new EventEmitter<void>();
-  @Output() accessFormChange = new EventEmitter<AccessForm>();
-
+  @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
   onOpenAccessModal() {
     this.accessModalOpen.emit();
   }
@@ -55,9 +53,13 @@ export class AccessesManagementComponent {
   onRegisterAccess() {
     this.accessRegister.emit();
   }
-
   onAccessFormChange() {
     this.accessFormChange.emit(this.accessForm);
+  }
+
+  formatDateTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString('it-IT');
   }
 
   getTypeLabel(type: string): string {

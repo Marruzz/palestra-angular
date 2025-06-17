@@ -66,33 +66,31 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr *ngFor="let subscription of subscriptions" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              #{{ subscription.id }}
-            </td>
+              #{{ subscription.id }}            </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getTypeColor(subscription.type)">
-                {{ getTypeLabel(subscription.type) }}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {{ getDurationLabel(subscription.durata_mesi) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ subscription.startDate }}
+              {{ formatDate(subscription.data_inizio) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ subscription.endDate }}
+              {{ formatDate(subscription.data_fine) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              €{{ subscription.price.toFixed(2) }}
+              €{{ calculatePrice(subscription.durata_mesi) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                (subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
-                {{ subscription.isActive ? 'Attivo' : 'Scaduto' }}
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                Attivo
               </span>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    
+
     <!-- Empty State -->
     <div *ngIf="subscriptions.length === 0" class="text-center py-12">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

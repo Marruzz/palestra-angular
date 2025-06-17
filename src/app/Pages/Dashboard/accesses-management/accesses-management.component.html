@@ -26,28 +26,27 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr *ngFor="let access of accesses" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
+            <td class="px-6 py-4 whitespace-nowrap">              <div class="flex items-center">
                 <div class="flex-shrink-0 h-10 w-10">
                   <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                    {{ getUserInitials(access.userName) }}
+                    {{ getUserInitials(access.nome_utente) }}
                   </div>
                 </div>
                 <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">{{ access.userName }}</div>
-                  <div class="text-sm text-gray-500">ID: {{ access.userId }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ access.nome_utente }}</div>
+                  <div class="text-sm text-gray-500">ID: {{ access.id_utente }}</div>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ access.timestamp }}
+              {{ formatDateTime(access.data_ora) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getTypeColor(access.type)">
-                <svg [class]="'w-3 h-3 mr-1 ' + (access.type === 'entry' ? 'rotate-180' : '')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getTypeIcon(access.type)"></path>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14"></path>
                 </svg>
-                {{ getTypeLabel(access.type) }}
+                Ingresso
               </span>
             </td>
           </tr>
@@ -77,46 +76,19 @@
         </svg>
       </button>
     </div>
-    <form (ngSubmit)="onRegisterAccess()" class="space-y-4">
-      <div>
+    <form (ngSubmit)="onRegisterAccess()" class="space-y-4">      <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Utente</label>
         <select
-          [(ngModel)]="accessForm.userId"
-          name="userId"
+          [(ngModel)]="accessForm.id_utente"
+          name="id_utente"
           required
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="0">Seleziona un utente</option>
           <option *ngFor="let user of users" [value]="user.id">
-            {{ user.name }} ({{ user.email }})
+            {{ user.nome }} {{ user.cognome }} ({{ user.email }})
           </option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo di accesso</label>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              [(ngModel)]="accessForm.type"
-              name="type"
-              value="entry"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            >
-            <span class="ml-2 text-sm font-medium text-gray-900">Entrata</span>
-          </label>
-          <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              [(ngModel)]="accessForm.type"
-              name="type"
-              value="exit"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            >
-            <span class="ml-2 text-sm font-medium text-gray-900">Uscita</span>
-          </label>
-        </div>
-      </div>
+        </select>      </div>
       <div class="flex justify-end space-x-3 mt-6">
         <button
           type="button"
