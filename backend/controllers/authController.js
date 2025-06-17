@@ -53,10 +53,10 @@ class AuthController {
       });
 
     } catch (error) {
-      console.error('Errore durante il login:', error);
+      console.error('UAUAUAUAUAAU ERRORE DI LOGIN', error);
       res.status(500).json({
         success: false,
-        message: 'Errore interno del server'
+        message: 'POLIZIA MUNICIPALE, ERRORE INTERNO DEL SERVER'
       });
     }
   }
@@ -107,7 +107,7 @@ class AuthController {
       });
 
     } catch (error) {
-      console.error('Errore durante la registrazione:', error);
+      console.error('DOTTORE ABBIAMO UN PROBLEMA', error);
       res.status(500).json({
         success: false,
         message: 'Errore interno del server'

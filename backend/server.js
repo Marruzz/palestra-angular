@@ -47,13 +47,8 @@ async function startServer() {
     }
     await initializeTables();
     app.listen(PORT, () => {
-      console.log(`🚀 Server in ascolto sulla porta ${PORT}`);
-      console.log(`📊 API Health Check: http://localhost:${PORT}/api/health`);
-      console.log(`🔐 API Login: http://localhost:${PORT}/api/auth/login`);
-      console.log('');
-      console.log('💡 Credenziali di default:');
-      console.log('   Email: admin@palestra.com');
-      console.log('   Password: password');
+      console.log('SIGNORE MIO PROGRAMMATORE, \n se vuole loggarsi all\' interno del suo Immenso sito, \n Le consiglio di farlo con \n admin@palestra.com \n password');
+
     });
 
   } catch (error) {

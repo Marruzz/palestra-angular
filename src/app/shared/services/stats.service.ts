@@ -155,34 +155,34 @@ export class StatsService {
         const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
         const accessi_anno = accessi.filter(a => {
           return a.data_accesso >= oneYearAgoString;
-        }).length;
-
-        // 8. Accessi sempre (totale)
-        const accessi_sempre = accessi.length;
+        }).length;        // 8. Accessi sempre (totale)
+        const accessi_sempre = validAccessi.length;
 
         // 9. Corsi attivi (corsi con almeno un abbonamento attivo)
         const corsiConAbbonamenti = new Set(
-          abbonamenti
+          validAbbonamenti
             .filter(a => Boolean(a.attivo))
             .map(a => a.id_corso)
         );
         const corsi_attivi = corsiConAbbonamenti.size;
 
         // 10. Totale abbonamenti
-        const totale_abbonamenti = abbonamenti.length;
+        const totale_abbonamenti = validAbbonamenti.length;// 11. Età media utenti
+        const eta_media_utenti = this.calculateAverageAge(validUsers);
 
-        // 11. Età media utenti
-        const eta_media_utenti = this.calculateAverageAge(users);        // 12 & 13. Corso più e meno frequentato
-        const corsoStats = this.calculateCourseStats(abbonamenti, corsi);
+        // 12 & 13. Corso più e meno frequentato
+        const corsoStats = this.calculateCourseStats(validAbbonamenti, validCorsi);
         const corso_top = corsoStats.mostPopular;
         const corso_bottom = corsoStats.leastPopular;
 
         // 14. Tempo medio di entrata
-        const tempo_medio_entrata = this.calculateAverageEntryTime(accessi);
+        const tempo_medio_entrata = this.calculateAverageEntryTime(validAccessi);
 
         // 15. Durata media corso
-        const durata_media_corso = this.calculateAverageCourseLength(abbonamenti);        // Ultimi accessi
-        const ultimi_accessi = this.getRecentAccesses(accessi, users);
+        const durata_media_corso = this.calculateAverageCourseLength(validAbbonamenti);
+
+        // Ultimi accessi
+        const ultimi_accessi = this.getRecentAccesses(validAccessi, validUsers);
 
         const calculatedStats = {
           totale_utenti,
@@ -255,14 +255,21 @@ export class StatsService {
       return { mostPopular: 'N/A', leastPopular: 'N/A' };
     }
 
-    // Conta gli abbonamenti per corso
-    const courseCount = new Map<number, number>();
-    corsi.forEach(corso => courseCount.set(corso.id, 0));
+    // Conta il numero di persone iscritte (abbonamenti attivi) per ogni corso
+    const courseSubscriptionCount = new Map<number, number>();
 
-    abbonamenti.forEach(abbonamento => {
-      const currentCount = courseCount.get(abbonamento.id_corso) || 0;
-      courseCount.set(abbonamento.id_corso, currentCount + 1);
+    // Inizializza tutti i corsi con 0 iscrizioni
+    corsi.forEach(corso => courseSubscriptionCount.set(corso.id, 0));
+
+    // Conta solo gli abbonamenti attivi
+    const abbonamentiAttivi = abbonamenti.filter(a => Boolean(a.attivo));
+
+    abbonamentiAttivi.forEach(abbonamento => {
+      const currentCount = courseSubscriptionCount.get(abbonamento.id_corso) || 0;
+      courseSubscriptionCount.set(abbonamento.id_corso, currentCount + 1);
     });
+
+    console.log('Iscrizioni per corso:', Object.fromEntries(courseSubscriptionCount));
 
     // Trova il corso più e meno popolare
     let maxCount = -1;
@@ -270,7 +277,7 @@ export class StatsService {
     let mostPopularId = -1;
     let leastPopularId = -1;
 
-    courseCount.forEach((count, courseId) => {
+    courseSubscriptionCount.forEach((count, courseId) => {
       if (count > maxCount) {
         maxCount = count;
         mostPopularId = courseId;
@@ -284,10 +291,14 @@ export class StatsService {
     const mostPopularCourse = corsi.find(c => c.id === mostPopularId);
     const leastPopularCourse = corsi.find(c => c.id === leastPopularId);
 
-    return {
-      mostPopular: mostPopularCourse?.nome_corso || 'N/A',
-      leastPopular: leastPopularCourse?.nome_corso || 'N/A'
+    const result = {
+      mostPopular: mostPopularCourse ? `${mostPopularCourse.nome_corso} (${maxCount} iscritti)` : 'N/A',
+      leastPopular: leastPopularCourse ? `${leastPopularCourse.nome_corso} (${minCount} iscritti)` : 'N/A'
     };
+
+    console.log('Corsi più e meno frequentati:', result);
+
+    return result;
   }
 
   /**

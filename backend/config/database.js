@@ -19,11 +19,11 @@ const pool = mysql.createPool(dbConfig);
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log("✅ Connessione al database MySQL riuscita!");
+    console.log("Essiamo qua");
     connection.release();
     return true;
   } catch (error) {
-    console.error("❌ Errore di connessione al database:", error.message);
+    console.error("Capitano abbandonare la nave, ", error.message);
     return false;
   }
 }
@@ -46,7 +46,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createUtentiTable);
-    console.log("✅ Tabella Utenti creata o già esistente");
 
 
     const createCorsiTable = `
@@ -59,7 +58,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createCorsiTable);
-    console.log("✅ Tabella Corsi creata o già esistente");
 
 
     const createAbbonamentiTable = `
@@ -76,7 +74,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createAbbonamentiTable);
-    console.log("✅ Tabella Abbonamenti creata o già esistente");
 
 
     const createIngressiTable = `
@@ -89,7 +86,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createIngressiTable);
-    console.log("✅ Tabella Ingressi creata o già esistente");
 
 
     const createUsersTable = `
@@ -103,7 +99,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createUsersTable);
-    console.log("✅ Tabella users (admin) creata o già esistente");
 
 
     const [existingCorsi] = await connection.execute("SELECT COUNT(*) as count FROM Corsi");
@@ -129,7 +124,6 @@ async function initializeTables() {
           corso
         );
       }
-      console.log("✅ Corsi di default inseriti");
     }
 
 
@@ -147,7 +141,7 @@ async function initializeTables() {
       );
 
       console.log(
-        "✅ Utente admin di default creato: admin@palestra.com / password"
+        "Capo, per stavolta logga con \n admin@palestra.com \n password"
       );
     }
 
@@ -155,7 +149,7 @@ async function initializeTables() {
     connection.release();
   } catch (error) {
     console.error(
-      "❌ Errore durante l'inizializzazione delle tabelle:",
+      "WAIT! TABLES DON'T LOVE YOU LIKE YOU LOVE THEM!",
       error.message
     );
   }
