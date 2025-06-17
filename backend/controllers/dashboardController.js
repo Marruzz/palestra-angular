@@ -574,21 +574,16 @@ class DashboardController {
       }
 
       // Formatta la data per MySQL (YYYY-MM-DD HH:mm:ss)
-      const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');
-
-      // Inserimento dell'accesso nel database con timestamp JavaScript
+      const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');      // Inserimento dell'accesso nel database con timestamp JavaScript
       const [result] = await pool.execute(
-        'INSERT INTO Ingressi (id_utente, data_ora, tipo) VALUES (?, ?, ?)',
-        [id_utente, mysqlTimestamp, 'ingresso']
-      );
-
-      // Recupera l'accesso appena creato con i dati dell'utente
+        'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
+        [id_utente, mysqlTimestamp]
+      );      // Recupera l'accesso appena creato con i dati dell'utente
       const [newAccess] = await pool.execute(`
         SELECT
           i.id,
           i.id_utente,
           i.data_ora,
-          i.tipo,
           u.nome,
           u.cognome,
           u.email
@@ -614,7 +609,7 @@ class DashboardController {
   static async updateAccess(req, res) {
     try {
       const { id } = req.params;
-      const { id_utente, data_ora, tipo } = req.body;
+      const { id_utente, data_ora } = req.body;
 
       // Validazione input
       if (!id_utente || !data_ora) {
@@ -664,8 +659,8 @@ class DashboardController {
 
       // Aggiornamento dell'accesso con timestamp JavaScript
       await pool.execute(
-        'UPDATE Ingressi SET id_utente = ?, data_ora = ?, tipo = ? WHERE id = ?',
-        [id_utente, mysqlTimestamp, tipo || 'ingresso', id]
+        'UPDATE Ingressi SET id_utente = ?, data_ora = ? WHERE id = ?',
+        [id_utente, mysqlTimestamp, id]
       );
 
       // Recupera l'accesso aggiornato
@@ -674,7 +669,6 @@ class DashboardController {
           i.id,
           i.id_utente,
           i.data_ora,
-          i.tipo,
           u.nome,
           u.cognome,
           u.email
