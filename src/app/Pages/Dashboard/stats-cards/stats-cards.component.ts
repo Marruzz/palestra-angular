@@ -6,7 +6,6 @@ import { DashboardStats } from '../../../shared/services/dashboard.service';
   selector: 'app-stats-cards',
   imports: [CommonModule],
   templateUrl: './stats-cards.component.html',
-  styleUrl: './stats-cards.component.css'
 })
 export class StatsCards {
   @Input() stats: DashboardStats | null = null;

@@ -1,8 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* Global styles for better responsiveness and readability */
-
-/* Ensure tables never overflow and are always readable */
 .table-responsive {
   min-height: 0;
   overflow-x: auto;

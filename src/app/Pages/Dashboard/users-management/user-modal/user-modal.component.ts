@@ -1,13 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnInit } from "@angular/core";
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PalestraUser, Corso, Abbonamento, DashboardService } from '../../../../shared/services/dashboard.service';
+import {
+  PalestraUser,
+  Corso,
+  Abbonamento,
+  DashboardService,
+} from '../../../../shared/services/dashboard.service';
 
 @Component({
   selector: 'app-user-modal',
   imports: [CommonModule, FormsModule],
   templateUrl: './user-modal.component.html',
-  styleUrl: './user-modal.component.css'
+  styleUrl: './user-modal.component.css',
 })
 export class UserModalComponent implements OnInit {
   @Input() user: PalestraUser | null = null;
@@ -21,15 +26,16 @@ export class UserModalComponent implements OnInit {
     cognome: '',
     email: '',
     data_nascita: '',
-    codice_fiscale: ''
+    codice_fiscale: '',
   };
   selectedUser: PalestraUser | null = null;
-  availableCorsi: Corso[] = [];  userAbbonamenti: Abbonamento[] = [];
+  availableCorsi: Corso[] = [];
+  userAbbonamenti: Abbonamento[] = [];
   newAbbonamento = {
     id_corso: 0,
     data_inizio: '',
     durata_mesi: 1,
-    data_fine: ''
+    data_fine: '',
   };
   showAddAbbonamento = false;
 
@@ -50,7 +56,7 @@ export class UserModalComponent implements OnInit {
         cognome: this.user.cognome,
         email: this.user.email || '',
         data_nascita: this.formatDateForBackend(this.user.data_nascita),
-        codice_fiscale: this.user.codice_fiscale
+        codice_fiscale: this.user.codice_fiscale,
       };
       this.userAbbonamenti = [...this.user.abbonamenti];
     }
@@ -66,7 +72,7 @@ export class UserModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('Errore nel caricamento corsi:', error);
-      }
+      },
     });
   }
 
@@ -77,13 +83,15 @@ export class UserModalComponent implements OnInit {
   }
 
   getCorsoName(idCorso: number): string {
-    const corso = this.availableCorsi.find(c => c.id === idCorso);
+    const corso = this.availableCorsi.find((c) => c.id === idCorso);
     return corso ? corso.nome_corso : 'Corso non trovato';
   }
 
   onCorsoChange() {
     if (this.newAbbonamento.id_corso > 0) {
-      const selectedCorso = this.availableCorsi.find(c => c.id == this.newAbbonamento.id_corso);
+      const selectedCorso = this.availableCorsi.find(
+        (c) => c.id == this.newAbbonamento.id_corso
+      );
       if (selectedCorso && selectedCorso.durata_mesi_default) {
         this.newAbbonamento.durata_mesi = selectedCorso.durata_mesi_default;
         this.calculateDataFine();
@@ -99,7 +107,10 @@ export class UserModalComponent implements OnInit {
   }
 
   calculateDataFine() {
-    if (this.newAbbonamento.data_inizio && this.newAbbonamento.durata_mesi > 0) {
+    if (
+      this.newAbbonamento.data_inizio &&
+      this.newAbbonamento.durata_mesi > 0
+    ) {
       const dataInizio = new Date(this.newAbbonamento.data_inizio);
       const dataFine = new Date(dataInizio);
       dataFine.setMonth(dataFine.getMonth() + this.newAbbonamento.durata_mesi);
@@ -109,7 +120,11 @@ export class UserModalComponent implements OnInit {
     }
   }
   addAbbonamento() {
-    if (this.newAbbonamento.id_corso && this.newAbbonamento.data_inizio && this.newAbbonamento.data_fine) {
+    if (
+      this.newAbbonamento.id_corso &&
+      this.newAbbonamento.data_inizio &&
+      this.newAbbonamento.data_fine
+    ) {
       const nuovoAbbonamento: Abbonamento = {
         id: 0, // Sarà assegnato dal backend
         id_utente: this.userForm.id,
@@ -117,7 +132,7 @@ export class UserModalComponent implements OnInit {
         data_inizio: this.newAbbonamento.data_inizio,
         durata_mesi: this.newAbbonamento.durata_mesi,
         data_fine: this.newAbbonamento.data_fine,
-        nome_corso: this.getCorsoName(this.newAbbonamento.id_corso)
+        nome_corso: this.getCorsoName(this.newAbbonamento.id_corso),
       };
 
       this.userAbbonamenti.push(nuovoAbbonamento);
@@ -134,21 +149,23 @@ export class UserModalComponent implements OnInit {
       id_corso: 0,
       data_inizio: '',
       durata_mesi: 1,
-      data_fine: ''
+      data_fine: '',
     };
   }
 
   onCloseUserModal() {
     this.close.emit();
-  }  onSaveUser() {
+  }
+  onSaveUser() {
     const userData = {
       ...this.userForm,
       data_nascita: this.formatDateForBackend(this.userForm.data_nascita),
-      abbonamenti: this.userAbbonamenti.map(abbonamento => ({
+      abbonamenti: this.userAbbonamenti.map((abbonamento) => ({
         ...abbonamento,
         data_inizio: this.formatDateForBackend(abbonamento.data_inizio),
-        data_fine: this.formatDateForBackend(abbonamento.data_fine)
-      }))
-    };    this.save.emit(userData);
+        data_fine: this.formatDateForBackend(abbonamento.data_fine),
+      })),
+    };
+    this.save.emit(userData);
   }
 }

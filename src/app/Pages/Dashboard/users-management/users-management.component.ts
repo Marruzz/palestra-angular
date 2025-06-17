@@ -1,9 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
-import { UserModalComponent } from "./user-modal/user-modal.component";
-import { UserCardComponent } from "./user-card/user-card.component";
+import {
+  PalestraUser,
+  Corso,
+} from '../../../shared/services/dashboard.service';
+import { UserModalComponent } from './user-modal/user-modal.component';
+import { UserCardComponent } from './user-card/user-card.component';
 
 interface UserForm {
   id: number;
@@ -18,7 +27,7 @@ interface UserForm {
   selector: 'app-users-management',
   imports: [CommonModule, FormsModule, UserModalComponent, UserCardComponent],
   templateUrl: './users-management.component.html',
-  styleUrl: './users-management.component.css'
+  styleUrl: './users-management.component.css',
 })
 export class UsersManagementComponent implements OnChanges {
   @Input() users: PalestraUser[] = [];
@@ -29,7 +38,7 @@ export class UsersManagementComponent implements OnChanges {
     cognome: '',
     email: '',
     data_nascita: '',
-    codice_fiscale: ''
+    codice_fiscale: '',
   };
   @Input() selectedUser: PalestraUser | null = null;
   @Input() corsi: Corso[] = [];

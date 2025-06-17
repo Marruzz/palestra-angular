@@ -8,7 +8,7 @@ import { AuthService, LoginRequest } from '../../shared/services/auth.service';
   selector: 'app-login',
   imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   @Output() loginSuccess = new EventEmitter<void>();
@@ -18,10 +18,7 @@ export class LoginComponent {
   isLoading: boolean = false;
   errorMessage: string = '';
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  constructor(private router: Router, private authService: AuthService) {}
   onSubmit() {
     if (!this.email || !this.password) {
       this.errorMessage = 'Inserisci email e password';
@@ -39,7 +36,7 @@ export class LoginComponent {
       const mockUser = {
         id: 1,
         email: 'admin@palestra.com',
-        nome: 'Amministratore'
+        nome: 'Amministratore',
       };
 
       // Salva i dati utente nel localStorage per la demo
@@ -54,7 +51,7 @@ export class LoginComponent {
 
     const credentials: LoginRequest = {
       email: this.email,
-      password: this.password
+      password: this.password,
     };
 
     this.authService.login(credentials).subscribe({
@@ -83,11 +80,14 @@ export class LoginComponent {
           this.errorMessage = 'Credenziali non valide';
         } else if (error.status === 0) {
           // Backend non disponibile - usa credenziali demo
-          if (this.email === 'admin@palestra.com' && this.password === 'password') {
+          if (
+            this.email === 'admin@palestra.com' &&
+            this.password === 'password'
+          ) {
             const mockUser = {
               id: 1,
               email: 'admin@palestra.com',
-              nome: 'Amministratore'
+              nome: 'Amministratore',
             };
 
             localStorage.setItem('current_user', JSON.stringify(mockUser));
@@ -98,11 +98,12 @@ export class LoginComponent {
             console.log('Backend non disponibile - login demo effettuato');
             return;
           }
-          this.errorMessage = 'Server non disponibile. Usa le credenziali demo: admin@palestra.com / password';
+          this.errorMessage =
+            'Server non disponibile. Usa le credenziali demo: admin@palestra.com / password';
         } else {
           this.errorMessage = 'Si è verificato un errore. Riprova più tardi.';
         }
-      }
+      },
     });
   }
 }

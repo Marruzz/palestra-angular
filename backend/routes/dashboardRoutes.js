@@ -20,6 +20,7 @@ router.get('/subscriptions', DashboardController.getSubscriptions);
 router.post('/subscriptions', DashboardController.createSubscription);
 router.put('/subscriptions/:id', DashboardController.updateSubscription);
 router.delete('/subscriptions/:id', DashboardController.deleteSubscription);
+router.get('/subscriptions/integrity-check', DashboardController.checkSubscriptionIntegrity);
 
 // Rotte per gli accessi/ingressi
 router.get('/accesses', DashboardController.getAccesses);

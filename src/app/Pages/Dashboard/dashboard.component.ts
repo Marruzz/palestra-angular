@@ -2,21 +2,21 @@ import { Component, OnInit, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HeaderComponent } from "../../shared/header/header.component";
-import { LoadingSpinner } from "../../shared/loading-spinner/loading-spinner.component";
-import { StatsCards } from "./stats-cards/stats-cards.component";
-import { PanoramicaUtentiSelection } from "./panoramica-utenti-selection/panoramica-utenti-selection.component";
-import { NavigationTabs } from "./navigation-tabs/navigation-tabs.component";
-import { UsersManagementComponent } from "./users-management/users-management.component";
-import { SubscriptionsManagementComponent } from "./subscriptions-management/subscriptions-management.component";
-import { AccessesManagementComponent } from "./accesses-management/accesses-management.component";
+import { HeaderComponent } from '../../shared/header/header.component';
+import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
+import { StatsCards } from './stats-cards/stats-cards.component';
+import { PanoramicaUtentiSelection } from './panoramica-utenti-selection/panoramica-utenti-selection.component';
+import { NavigationTabs } from './navigation-tabs/navigation-tabs.component';
+import { UsersManagementComponent } from './users-management/users-management.component';
+import { SubscriptionsManagementComponent } from './subscriptions-management/subscriptions-management.component';
+import { AccessesManagementComponent } from './accesses-management/accesses-management.component';
 import {
   DashboardService,
   PalestraUser,
   Abbonamento,
   Ingresso,
   Corso,
-  DashboardStats
+  DashboardStats,
 } from '../../shared/services/dashboard.service';
 
 @Component({
@@ -31,10 +31,9 @@ import {
     NavigationTabs,
     UsersManagementComponent,
     SubscriptionsManagementComponent,
-    AccessesManagementComponent
+    AccessesManagementComponent,
   ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
   @Output() logout = new EventEmitter<void>();
@@ -52,11 +51,12 @@ export class DashboardComponent implements OnInit {
     subscriptions: false,
     accesses: false,
     stats: false,
-    corsi: false
+    corsi: false,
   };
 
   // Stato dell'applicazione
-  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' = 'users';
+  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' =
+    'users';
   isLoading = false;
   showUserModal = false;
   showAccessModal = false;
@@ -73,7 +73,7 @@ export class DashboardComponent implements OnInit {
     cognome: '',
     email: '',
     data_nascita: '',
-    codice_fiscale: ''
+    codice_fiscale: '',
   };
 
   // Form data per abbonamenti
@@ -82,13 +82,13 @@ export class DashboardComponent implements OnInit {
     id_utente: 0,
     id_corso: 0,
     data_inizio: '',
-    durata_mesi: 1
+    durata_mesi: 1,
   };
 
   // Form data per accessi
   accessForm = {
     id_utente: 0,
-    data_ora: new Date().toISOString().slice(0, 16) // Formato datetime-local
+    data_ora: new Date().toISOString().slice(0, 16), // Formato datetime-local
   };
 
   // Form data per corsi
@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit {
     id: 0,
     nome_corso: '',
     descrizione: '',
-    durata_mesi_default: 1
+    durata_mesi_default: 1,
   };
   constructor(private dashboardService: DashboardService) {}
 
@@ -136,7 +136,8 @@ export class DashboardComponent implements OnInit {
       this.loadedSections.subscriptions = true;
     } catch (error) {
       console.error('Errore nel caricamento abbonamenti:', error);
-      this.errorMessage = 'Errore nel caricamento abbonamenti. Riprova più tardi.';
+      this.errorMessage =
+        'Errore nel caricamento abbonamenti. Riprova più tardi.';
     } finally {
       this.isLoading = false;
     }
@@ -168,7 +169,8 @@ export class DashboardComponent implements OnInit {
       this.loadedSections.stats = true;
     } catch (error) {
       console.error('Errore nel caricamento statistiche:', error);
-      this.errorMessage = 'Errore nel caricamento statistiche. Riprova più tardi.';
+      this.errorMessage =
+        'Errore nel caricamento statistiche. Riprova più tardi.';
     } finally {
       this.isLoading = false;
     }
@@ -197,12 +199,14 @@ export class DashboardComponent implements OnInit {
             this.users = response.data;
             resolve();
           } else {
-            reject(new Error(response.message || 'Errore nel caricamento utenti'));
+            reject(
+              new Error(response.message || 'Errore nel caricamento utenti')
+            );
           }
         },
         error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   }
@@ -215,12 +219,16 @@ export class DashboardComponent implements OnInit {
             this.abbonamenti = response.data;
             resolve();
           } else {
-            reject(new Error(response.message || 'Errore nel caricamento abbonamenti'));
+            reject(
+              new Error(
+                response.message || 'Errore nel caricamento abbonamenti'
+              )
+            );
           }
         },
         error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   }
@@ -233,12 +241,14 @@ export class DashboardComponent implements OnInit {
             this.ingressi = response.data;
             resolve();
           } else {
-            reject(new Error(response.message || 'Errore nel caricamento accessi'));
+            reject(
+              new Error(response.message || 'Errore nel caricamento accessi')
+            );
           }
         },
         error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   }
@@ -251,12 +261,16 @@ export class DashboardComponent implements OnInit {
             this.stats = response.data;
             resolve();
           } else {
-            reject(new Error(response.message || 'Errore nel caricamento statistiche'));
+            reject(
+              new Error(
+                response.message || 'Errore nel caricamento statistiche'
+              )
+            );
           }
         },
         error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   }
@@ -269,17 +283,21 @@ export class DashboardComponent implements OnInit {
             this.corsi = response.data;
             resolve();
           } else {
-            reject(new Error(response.message || 'Errore nel caricamento corsi'));
+            reject(
+              new Error(response.message || 'Errore nel caricamento corsi')
+            );
           }
         },
         error: (error) => {
           reject(error);
-        }
+        },
       });
     });
   }
   // Gestione delle viste
-  async setView(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
+  async setView(
+    view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'
+  ) {
     this.currentView = view;
 
     // Carica i dati specifici per la vista selezionata
@@ -292,14 +310,14 @@ export class DashboardComponent implements OnInit {
         await Promise.all([
           this.loadSubscriptionsIfNeeded(),
           this.loadUsersIfNeeded(),
-          this.loadCorsiIfNeeded()
+          this.loadCorsiIfNeeded(),
         ]);
         break;
       case 'accesses':
         // Carica utenti se necessario per i dropdown
         await Promise.all([
           this.loadAccessesIfNeeded(),
-          this.loadUsersIfNeeded()
+          this.loadUsersIfNeeded(),
         ]);
         break;
       case 'stats':
@@ -323,7 +341,7 @@ export class DashboardComponent implements OnInit {
         cognome: user.cognome,
         email: user.email || '',
         data_nascita: user.data_nascita,
-        codice_fiscale: user.codice_fiscale
+        codice_fiscale: user.codice_fiscale,
       };
     } else {
       this.resetUserForm();
@@ -344,9 +362,10 @@ export class DashboardComponent implements OnInit {
       cognome: '',
       email: '',
       data_nascita: '',
-      codice_fiscale: ''
+      codice_fiscale: '',
     };
-  }  async saveUser(userFormData?: any) {
+  }
+  async saveUser(userFormData?: any) {
     try {
       this.isLoading = true;
       this.errorMessage = '';
@@ -359,24 +378,32 @@ export class DashboardComponent implements OnInit {
       if (this.selectedUser) {
         // Aggiorna utente esistente
         await new Promise<void>((resolve, reject) => {
-          this.dashboardService.updateUser(this.selectedUser!.id, this.userForm).subscribe({
-            next: (response) => {
-              if (response.success) {
-                // Se ci sono abbonamenti da aggiornare
-                if (userFormData && userFormData.abbonamenti) {
-                  this.updateUserAbbonamenti(this.selectedUser!.id, userFormData.abbonamenti).then(() => {
+          this.dashboardService
+            .updateUser(this.selectedUser!.id, this.userForm)
+            .subscribe({
+              next: (response) => {
+                if (response.success) {
+                  // Se ci sono abbonamenti da aggiornare
+                  if (userFormData && userFormData.abbonamenti) {
+                    this.updateUserAbbonamenti(
+                      this.selectedUser!.id,
+                      userFormData.abbonamenti
+                    )
+                      .then(() => {
+                        resolve();
+                      })
+                      .catch(reject);
+                  } else {
                     resolve();
-                  }).catch(reject);
+                  }
                 } else {
-                  resolve();
+                  reject(new Error(response.message));
                 }
-              } else {
-                reject(new Error(response.message));
-              }
-            },
-            error: reject
-          });
-        });      } else {
+              },
+              error: reject,
+            });
+        });
+      } else {
         // Crea nuovo utente
         let newUserId: number;
         await new Promise<void>((resolve, reject) => {
@@ -385,10 +412,19 @@ export class DashboardComponent implements OnInit {
               if (response.success && response.data) {
                 newUserId = response.data.id;
                 // Se ci sono abbonamenti da creare per il nuovo utente
-                if (userFormData && userFormData.abbonamenti && userFormData.abbonamenti.length > 0) {
-                  this.updateUserAbbonamenti(newUserId, userFormData.abbonamenti).then(() => {
-                    resolve();
-                  }).catch(reject);
+                if (
+                  userFormData &&
+                  userFormData.abbonamenti &&
+                  userFormData.abbonamenti.length > 0
+                ) {
+                  this.updateUserAbbonamenti(
+                    newUserId,
+                    userFormData.abbonamenti
+                  )
+                    .then(() => {
+                      resolve();
+                    })
+                    .catch(reject);
                 } else {
                   resolve();
                 }
@@ -396,7 +432,7 @@ export class DashboardComponent implements OnInit {
                 reject(new Error(response.message));
               }
             },
-            error: reject
+            error: reject,
           });
         });
       }
@@ -405,16 +441,19 @@ export class DashboardComponent implements OnInit {
       this.loadedSections.users = false;
       await this.loadUsersIfNeeded();
       this.closeUserModal();
-
     } catch (error: any) {
-      this.errorMessage = error.message || 'Errore nell\'operazione utente';
+      this.errorMessage = error.message || "Errore nell'operazione utente";
     } finally {
       this.isLoading = false;
     }
   }
 
   async deleteUser(user: PalestraUser) {
-    if (confirm(`Sei sicuro di voler eliminare l'utente ${user.nome} ${user.cognome}?`)) {
+    if (
+      confirm(
+        `Sei sicuro di voler eliminare l'utente ${user.nome} ${user.cognome}?`
+      )
+    ) {
       try {
         this.isLoading = true;
         this.errorMessage = '';
@@ -428,16 +467,15 @@ export class DashboardComponent implements OnInit {
                 reject(new Error(response.message));
               }
             },
-            error: reject
+            error: reject,
           });
         });
 
         // Ricarica i dati utenti
         this.loadedSections.users = false;
         await this.loadUsersIfNeeded();
-
       } catch (error: any) {
-        this.errorMessage = error.message || 'Errore nell\'eliminazione utente';
+        this.errorMessage = error.message || "Errore nell'eliminazione utente";
       } finally {
         this.isLoading = false;
       }
@@ -446,10 +484,7 @@ export class DashboardComponent implements OnInit {
   // Gestione abbonamenti
   async openSubscriptionModal(abbonamento?: Abbonamento) {
     // Assicurati che utenti e corsi siano caricati per i dropdown
-    await Promise.all([
-      this.loadUsersIfNeeded(),
-      this.loadCorsiIfNeeded()
-    ]);
+    await Promise.all([this.loadUsersIfNeeded(), this.loadCorsiIfNeeded()]);
 
     this.selectedAbbonamento = abbonamento || null;
     if (abbonamento) {
@@ -458,7 +493,7 @@ export class DashboardComponent implements OnInit {
         id_utente: abbonamento.id_utente,
         id_corso: abbonamento.id_corso,
         data_inizio: abbonamento.data_inizio,
-        durata_mesi: abbonamento.durata_mesi
+        durata_mesi: abbonamento.durata_mesi,
       };
     } else {
       this.resetSubscriptionForm();
@@ -478,7 +513,7 @@ export class DashboardComponent implements OnInit {
       id_utente: 0,
       id_corso: 0,
       data_inizio: '',
-      durata_mesi: 1
+      durata_mesi: 1,
     };
   }
   async saveSubscription() {
@@ -489,30 +524,37 @@ export class DashboardComponent implements OnInit {
       if (this.selectedAbbonamento) {
         // Aggiorna abbonamento esistente
         await new Promise<void>((resolve, reject) => {
-          this.dashboardService.updateSubscription(this.selectedAbbonamento!.id, this.subscriptionForm).subscribe({
-            next: (response) => {
-              if (response.success) {
-                resolve();
-              } else {
-                reject(new Error(response.message));
-              }
-            },
-            error: reject
-          });
+          this.dashboardService
+            .updateSubscription(
+              this.selectedAbbonamento!.id,
+              this.subscriptionForm
+            )
+            .subscribe({
+              next: (response) => {
+                if (response.success) {
+                  resolve();
+                } else {
+                  reject(new Error(response.message));
+                }
+              },
+              error: reject,
+            });
         });
       } else {
         // Crea nuovo abbonamento
         await new Promise<void>((resolve, reject) => {
-          this.dashboardService.createSubscription(this.subscriptionForm).subscribe({
-            next: (response) => {
-              if (response.success) {
-                resolve();
-              } else {
-                reject(new Error(response.message));
-              }
-            },
-            error: reject
-          });
+          this.dashboardService
+            .createSubscription(this.subscriptionForm)
+            .subscribe({
+              next: (response) => {
+                if (response.success) {
+                  resolve();
+                } else {
+                  reject(new Error(response.message));
+                }
+              },
+              error: reject,
+            });
         });
       }
 
@@ -520,9 +562,8 @@ export class DashboardComponent implements OnInit {
       this.loadedSections.subscriptions = false;
       await this.loadSubscriptionsIfNeeded();
       this.closeSubscriptionModal();
-
     } catch (error: any) {
-      this.errorMessage = error.message || 'Errore nell\'operazione abbonamento';
+      this.errorMessage = error.message || "Errore nell'operazione abbonamento";
     } finally {
       this.isLoading = false;
     }
@@ -543,16 +584,16 @@ export class DashboardComponent implements OnInit {
                 reject(new Error(response.message));
               }
             },
-            error: reject
+            error: reject,
           });
         });
 
         // Ricarica i dati abbonamenti
         this.loadedSections.subscriptions = false;
         await this.loadSubscriptionsIfNeeded();
-
       } catch (error: any) {
-        this.errorMessage = error.message || 'Errore nell\'eliminazione abbonamento';
+        this.errorMessage =
+          error.message || "Errore nell'eliminazione abbonamento";
       } finally {
         this.isLoading = false;
       }
@@ -578,9 +619,10 @@ export class DashboardComponent implements OnInit {
 
     this.accessForm = {
       id_utente: 0,
-      data_ora: formattedNow
+      data_ora: formattedNow,
     };
-  }async saveAccess() {
+  }
+  async saveAccess() {
     try {
       this.isLoading = true;
       this.errorMessage = '';
@@ -595,14 +637,13 @@ export class DashboardComponent implements OnInit {
               reject(new Error(response.message));
             }
           },
-          error: reject
+          error: reject,
         });
       });
 
       // Ricarica accessi e statistiche usando il nuovo metodo
       await this.refreshAccessesAndStats();
       this.closeAccessModal();
-
     } catch (error: any) {
       console.error('Errore nella registrazione accesso:', error);
       this.errorMessage = error.message || 'Errore nella registrazione accesso';
@@ -618,7 +659,7 @@ export class DashboardComponent implements OnInit {
         id: corso.id,
         nome_corso: corso.nome_corso,
         descrizione: corso.descrizione || '',
-        durata_mesi_default: corso.durata_mesi_default || 1
+        durata_mesi_default: corso.durata_mesi_default || 1,
       };
     } else {
       this.resetCorsoForm();
@@ -636,9 +677,10 @@ export class DashboardComponent implements OnInit {
       id: 0,
       nome_corso: '',
       descrizione: '',
-      durata_mesi_default: 1
+      durata_mesi_default: 1,
     };
-  }  async saveCorso() {
+  }
+  async saveCorso() {
     // Validazione client-side
     if (!this.corsoForm.nome_corso || this.corsoForm.nome_corso.trim() === '') {
       this.errorMessage = 'Il nome del corso è obbligatorio';
@@ -658,7 +700,7 @@ export class DashboardComponent implements OnInit {
               reject(new Error(response.message || 'Errore sconosciuto'));
             }
           },
-          error: reject
+          error: reject,
         });
       });
 
@@ -666,9 +708,9 @@ export class DashboardComponent implements OnInit {
       this.loadedSections.corsi = false;
       await this.loadCorsiIfNeeded();
       this.closeCorsoModal();
-
     } catch (error: any) {
-      this.errorMessage = error.message || 'Errore nella comunicazione con il server';
+      this.errorMessage =
+        error.message || 'Errore nella comunicazione con il server';
     } finally {
       this.isLoading = false;
     }
@@ -685,7 +727,7 @@ export class DashboardComponent implements OnInit {
 
   async refreshAllData(): Promise<void> {
     // Reset di tutti i flag di caricamento
-    Object.keys(this.loadedSections).forEach(key => {
+    Object.keys(this.loadedSections).forEach((key) => {
       this.loadedSections[key as keyof typeof this.loadedSections] = false;
     });
 
@@ -698,17 +740,15 @@ export class DashboardComponent implements OnInit {
     this.loadedSections.accesses = false;
     this.loadedSections.stats = false;
 
-    await Promise.all([
-      this.loadAccessesIfNeeded(),
-      this.loadStatsIfNeeded()
-    ]);
+    await Promise.all([this.loadAccessesIfNeeded(), this.loadStatsIfNeeded()]);
   }
 
   // Utility methods
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT');
-  }  formatDateTime(dateString: string): string {
+  }
+  formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
       // Verifica se la data è valida
@@ -724,7 +764,7 @@ export class DashboardComponent implements OnInit {
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
       });
     } catch (error) {
       console.error('Errore nel formato data:', error);
@@ -733,11 +773,11 @@ export class DashboardComponent implements OnInit {
   }
 
   getUserById(id: number): PalestraUser | undefined {
-    return this.users.find(user => user.id === id);
+    return this.users.find((user) => user.id === id);
   }
 
   getCorsoById(id: number): Corso | undefined {
-    return this.corsi.find(corso => corso.id === id);
+    return this.corsi.find((corso) => corso.id === id);
   }
 
   // Logout (se necessario)
@@ -746,7 +786,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  async updateUserAbbonamenti(userId: number, abbonamenti: any[]): Promise<void> {
+  async updateUserAbbonamenti(
+    userId: number,
+    abbonamenti: any[]
+  ): Promise<void> {
     // Prima elimina tutti gli abbonamenti esistenti dell'utente
     // (questo è un approccio semplificato - in produzione potresti voler fare un merge più sofisticato)
 
@@ -755,41 +798,45 @@ export class DashboardComponent implements OnInit {
       if (abbonamento.id === 0) {
         // Nuovo abbonamento
         await new Promise<void>((resolve, reject) => {
-          this.dashboardService.createSubscription({
-            id_utente: userId,
-            id_corso: abbonamento.id_corso,
-            data_inizio: abbonamento.data_inizio,
-            durata_mesi: abbonamento.durata_mesi,
-            data_fine: abbonamento.data_fine
-          }).subscribe({
-            next: (response) => {
-              if (response.success) {
-                resolve();
-              } else {
-                reject(new Error(response.message));
-              }
-            },
-            error: reject
-          });
+          this.dashboardService
+            .createSubscription({
+              id_utente: userId,
+              id_corso: abbonamento.id_corso,
+              data_inizio: abbonamento.data_inizio,
+              durata_mesi: abbonamento.durata_mesi,
+              data_fine: abbonamento.data_fine,
+            })
+            .subscribe({
+              next: (response) => {
+                if (response.success) {
+                  resolve();
+                } else {
+                  reject(new Error(response.message));
+                }
+              },
+              error: reject,
+            });
         });
       } else {
         // Aggiorna abbonamento esistente
         await new Promise<void>((resolve, reject) => {
-          this.dashboardService.updateSubscription(abbonamento.id, {
-            id_corso: abbonamento.id_corso,
-            data_inizio: abbonamento.data_inizio,
-            durata_mesi: abbonamento.durata_mesi,
-            data_fine: abbonamento.data_fine
-          }).subscribe({
-            next: (response) => {
-              if (response.success) {
-                resolve();
-              } else {
-                reject(new Error(response.message));
-              }
-            },
-            error: reject
-          });
+          this.dashboardService
+            .updateSubscription(abbonamento.id, {
+              id_corso: abbonamento.id_corso,
+              data_inizio: abbonamento.data_inizio,
+              durata_mesi: abbonamento.durata_mesi,
+              data_fine: abbonamento.data_fine,
+            })
+            .subscribe({
+              next: (response) => {
+                if (response.success) {
+                  resolve();
+                } else {
+                  reject(new Error(response.message));
+                }
+              },
+              error: reject,
+            });
         });
       }
     }

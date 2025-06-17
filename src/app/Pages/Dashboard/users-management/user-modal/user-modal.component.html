@@ -45,6 +45,7 @@
             <input
               type="text"
               [(ngModel)]="userForm.nome"
+              autocomplete="off"
               name="nome"
               required
               [readonly]="selectedUser !== null"
@@ -64,6 +65,7 @@
               type="text"
               [(ngModel)]="userForm.cognome"
               name="cognome"
+              autocomplete="off"
               required
               [readonly]="selectedUser !== null"
               [class]="
@@ -82,6 +84,7 @@
               type="email"
               [(ngModel)]="userForm.email"
               name="email"
+              autocomplete="off"
               [readonly]="selectedUser !== null"
               [class]="
                 selectedUser
@@ -100,6 +103,7 @@
               [(ngModel)]="userForm.data_nascita"
               name="data_nascita"
               required
+              autocomplete="off"
               [readonly]="selectedUser !== null"
               [class]="
                 selectedUser
@@ -116,6 +120,7 @@
               type="text"
               [(ngModel)]="userForm.codice_fiscale"
               name="codice_fiscale"
+              autocomplete="off"
               required
               [readonly]="selectedUser !== null"
               maxlength="16"
@@ -174,6 +179,7 @@
               >
               <input
                 type="date"
+                autocomplete="off"
                 [(ngModel)]="newAbbonamento.data_inizio"
                 (ngModelChange)="onDataInizioChange()"
                 name="nuova_data_inizio"

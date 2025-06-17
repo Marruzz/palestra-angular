@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: '/login',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'login',
@@ -18,6 +18,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/login'
-  }
+    redirectTo: '/login',
+  },
 ];

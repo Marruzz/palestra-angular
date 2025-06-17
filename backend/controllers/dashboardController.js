@@ -269,8 +269,7 @@ class DashboardController {
   }
   // Ottieni tutti gli abbonamenti
   static async getSubscriptions(req, res) {
-    try {
-      const [subscriptions] = await pool.execute(`
+    try {      const [subscriptions] = await pool.execute(`
         SELECT
           a.*,
           u.nome,
@@ -281,7 +280,7 @@ class DashboardController {
           c.descrizione as corso_descrizione
         FROM Abbonamenti a
         JOIN Utenti u ON a.id_utente = u.id
-        JOIN Corsi c ON a.id_corso = c.id
+        LEFT JOIN Corsi c ON a.id_corso = c.id
         ORDER BY a.data_inizio DESC
       `);
 
@@ -883,6 +882,53 @@ class DashboardController {
 
     } catch (error) {
       console.error('Errore nella creazione corso:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Errore interno del server'
+      });
+    }
+  }
+
+  // Check for data integrity issues with subscriptions
+  static async checkSubscriptionIntegrity(req, res) {
+    try {
+      // Check for subscriptions with missing courses
+      const [orphanedSubscriptions] = await pool.execute(`
+        SELECT
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          a.data_inizio,
+          u.nome,
+          u.cognome
+        FROM Abbonamenti a
+        JOIN Utenti u ON a.id_utente = u.id
+        LEFT JOIN Corsi c ON a.id_corso = c.id
+        WHERE c.id IS NULL
+      `);
+
+      // Check for subscriptions with missing users
+      const [subscriptionsWithoutUsers] = await pool.execute(`
+        SELECT
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          a.data_inizio
+        FROM Abbonamenti a
+        LEFT JOIN Utenti u ON a.id_utente = u.id
+        WHERE u.id IS NULL
+      `);
+
+      res.json({
+        success: true,
+        data: {
+          orphaned_subscriptions: orphanedSubscriptions,
+          subscriptions_without_users: subscriptionsWithoutUsers
+        }
+      });
+
+    } catch (error) {
+      console.error('Errore nel controllo integrità abbonamenti:', error);
       res.status(500).json({
         success: false,
         message: 'Errore interno del server'

@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PalestraUser, DashboardStats } from '../../../shared/services/dashboard.service';
+import {
+  PalestraUser,
+  DashboardStats,
+} from '../../../shared/services/dashboard.service';
 
 @Component({
   selector: 'app-panoramica-utenti-selection',
   imports: [CommonModule],
   templateUrl: './panoramica-utenti-selection.component.html',
-  styleUrl: './panoramica-utenti-selection.component.css'
 })
 export class PanoramicaUtentiSelection {
   @Input() users: PalestraUser[] = [];
@@ -28,6 +30,9 @@ export class PanoramicaUtentiSelection {
   }
 
   getUserInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('');
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('');
   }
 }
