@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
+import { UserModalComponent } from "./user-modal/user-modal.component";
 
 interface UserForm {
   id: number;
@@ -14,7 +15,7 @@ interface UserForm {
 
 @Component({
   selector: 'app-users-management',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserModalComponent],
   templateUrl: './users-management.component.html',
   styleUrl: './users-management.component.css'
 })
@@ -31,10 +32,9 @@ export class UsersManagementComponent {
   };
   @Input() selectedUser: PalestraUser | null = null;
   @Input() corsi: Corso[] = [];
-
   @Output() userModalOpen = new EventEmitter<PalestraUser | undefined>();
   @Output() userModalClose = new EventEmitter<void>();
-  @Output() userSave = new EventEmitter<void>();
+  @Output() userSave = new EventEmitter<any>();
   @Output() userDelete = new EventEmitter<PalestraUser>();
 
   onOpenUserModal(user?: PalestraUser) {
@@ -45,8 +45,8 @@ export class UsersManagementComponent {
     this.userModalClose.emit();
   }
 
-  onSaveUser() {
-    this.userSave.emit();
+  onSaveUser(userFormData: any) {
+    this.userSave.emit(userFormData);
   }
 
   onDeleteUser(user: PalestraUser) {
