@@ -2,6 +2,8 @@ import { Component, OnInit, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HeaderComponent } from "../../shared/header/header.component";
+import { LoadingSpinner } from "../../shared/loading-spinner/loading-spinner.component";
 
 interface User {
   id: number;
@@ -33,7 +35,7 @@ interface Access {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HeaderComponent, LoadingSpinner],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -154,6 +156,12 @@ export class DashboardComponent implements OnInit {
   showSubscriptions() { this.currentView = 'subscriptions'; }
   showAccesses() { this.currentView = 'accesses'; }
   showStats() { this.currentView = 'stats'; }
+
+  // Getter per le viste per risolvere problemi di tipo
+  get isUsersView() { return this.currentView === 'users'; }
+  get isSubscriptionsView() { return this.currentView === 'subscriptions'; }
+  get isAccessesView() { return this.currentView === 'accesses'; }
+  get isStatsView() { return this.currentView === 'stats'; }
 
   // Gestione utenti
   openUserModal(user?: User) {

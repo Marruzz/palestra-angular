@@ -1,0 +1,51 @@
+<div class="bg-white/80 backdrop-blur-lg shadow-lg w-screen min-w-full">
+  <div class="px-4 py-6 w-full min-w-full">
+    <div class="flex items-center justify-between w-full min-w-full">
+    <div class="flex items-center space-x-6">
+      <div
+        class="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg"
+      >
+        <svg
+          class="w-7 h-7 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+          ></path>
+        </svg>
+      </div>
+      <h1
+        class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent text-left"
+      >
+        Palestra Dashboard
+      </h1>
+    </div>
+    <div class="flex items-center space-x-6 hidden lg:flex">
+      <span class="text-sm text-gray-600 font-medium">Benvenuto, Admin</span>
+      <button
+        (click)="onLogout()"
+        class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+      >
+        <svg
+          class="w-4 h-4 inline mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          ></path>
+        </svg>
+        Logout
+      </button>
+    </div>    </div>
+  </div>
+</div>

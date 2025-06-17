@@ -28,10 +28,10 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Simula autenticazione
+    
     setTimeout(() => {
       if (this.email === 'admin@palestra.com' && this.password === 'password') {
-        window.confirm("Sei sicuro di voler accedere con la mail " + this.email + " e la password " + this.password) ? this.router.navigate(['/dashboard']) : window.alert("Fa niente, sarà per la prossima volta");
+        this.router.navigate(['/dashboard']);
         this.loginSuccess.emit();
         console.log(this.email, this.password);
       } else {
