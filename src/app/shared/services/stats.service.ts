@@ -66,7 +66,7 @@ export interface CalculatedStats {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatsService {
   private apiUrl = 'http://localhost:3000/api';
@@ -80,20 +80,21 @@ export class StatsService {
     corsi: RawCorso[];
   }> {
     return forkJoin({
-      users: this.http.get<RawUser[]>(`${this.apiUrl}/dashboard/Utenti`).pipe(
-        catchError(() => of([]))
-      ),
-      accessi: this.http.get<RawAccesso[]>(`${this.apiUrl}/dashboard/Ingressi`).pipe(
-        catchError(() => of([]))
-      ),
-      abbonamenti: this.http.get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/Abbonamenti`).pipe(
-        catchError(() => of([]))
-      ),
-      corsi: this.http.get<RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`).pipe(
-        catchError(() => of([]))
-      ),
+      users: this.http
+        .get<RawUser[]>(`${this.apiUrl}/dashboard/Utenti`)
+        .pipe(catchError(() => of([]))),
+      accessi: this.http
+        .get<RawAccesso[]>(`${this.apiUrl}/dashboard/Ingressi`)
+        .pipe(catchError(() => of([]))),
+      abbonamenti: this.http
+        .get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/Abbonamenti`)
+        .pipe(catchError(() => of([]))),
+      corsi: this.http
+        .get<RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`)
+        .pipe(catchError(() => of([]))),
     });
-  }  calculateStats(): Observable<CalculatedStats> {
+  }
+  calculateStats(): Observable<CalculatedStats> {
     return this.getRawData().pipe(
       map(({ users, accessi, abbonamenti, corsi }) => {
         // Validazione dei dati di input
@@ -102,84 +103,90 @@ export class StatsService {
         const validAbbonamenti = Array.isArray(abbonamenti) ? abbonamenti : [];
         const validCorsi = Array.isArray(corsi) ? corsi : [];
 
-        console.log('Raw data validation:', {
-          users: { isArray: Array.isArray(users), length: validUsers.length },
-          accessi: { isArray: Array.isArray(accessi), length: validAccessi.length },
-          abbonamenti: { isArray: Array.isArray(abbonamenti), length: validAbbonamenti.length },
-          corsi: { isArray: Array.isArray(corsi), length: validCorsi.length }
-        });
-
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
         const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-        const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
-
-        console.log('Raw data counts:', {
-          users: users.length,
-          accessi: accessi.length,
-          abbonamenti: abbonamenti.length,
-          corsi: corsi.length
-        });
+        const oneMonthAgo = new Date(
+          today.getFullYear(),
+          today.getMonth() - 1,
+          today.getDate()
+        );
+        const oneYearAgo = new Date(
+          today.getFullYear() - 1,
+          today.getMonth(),
+          today.getDate()
+        );
 
         // 1. Totale utenti
         const totale_utenti = users.length;
 
         // 2. Utenti entrati oggi
         const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        const accessiOggi = accessi.filter(a => {
+        const accessiOggi = accessi.filter((a) => {
           return a.data_accesso === todayString;
         });
 
-        const utentiUniciOggi = new Set(accessiOggi.map(a => a.id_utente));
+        const utentiUniciOggi = new Set(accessiOggi.map((a) => a.id_utente));
         const utenti_entrati_oggi = utentiUniciOggi.size;
         // 3. Abbonamenti attivi - utilizza il campo 'attivo' dal database
-        const abbonamenti_attivi = abbonamenti.filter(a => Boolean(a.attivo)).length;
+        const abbonamenti_attivi = abbonamenti.filter((a) =>
+          Boolean(a.attivo)
+        ).length;
 
         // 4. Accessi oggi
         const accessi_oggi = accessiOggi.length;
 
         // 5. Accessi settimana
         const oneWeekAgoString = oneWeekAgo.toISOString().split('T')[0];
-        const accessi_settimana = accessi.filter(a => {
+        const accessi_settimana = accessi.filter((a) => {
           return a.data_accesso >= oneWeekAgoString;
         }).length;
 
         // 6. Accessi mese
         const oneMonthAgoString = oneMonthAgo.toISOString().split('T')[0];
-        const accessi_mese = accessi.filter(a => {
+        const accessi_mese = accessi.filter((a) => {
           return a.data_accesso >= oneMonthAgoString;
         }).length;
 
         // 7. Accessi anno
         const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
-        const accessi_anno = accessi.filter(a => {
+        const accessi_anno = accessi.filter((a) => {
           return a.data_accesso >= oneYearAgoString;
-        }).length;        // 8. Accessi sempre (totale)
+        }).length; // 8. Accessi sempre (totale)
         const accessi_sempre = validAccessi.length;
 
         // 9. Corsi attivi (corsi con almeno un abbonamento attivo)
         const corsiConAbbonamenti = new Set(
           validAbbonamenti
-            .filter(a => Boolean(a.attivo))
-            .map(a => a.id_corso)
+            .filter((a) => Boolean(a.attivo))
+            .map((a) => a.id_corso)
         );
         const corsi_attivi = corsiConAbbonamenti.size;
 
         // 10. Totale abbonamenti
-        const totale_abbonamenti = validAbbonamenti.length;// 11. Età media utenti
+        const totale_abbonamenti = validAbbonamenti.length; // 11. Età media utenti
         const eta_media_utenti = this.calculateAverageAge(validUsers);
 
         // 12 & 13. Corso più e meno frequentato
-        const corsoStats = this.calculateCourseStats(validAbbonamenti, validCorsi);
+        const corsoStats = this.calculateCourseStats(
+          validAbbonamenti,
+          validCorsi
+        );
+        console.log('Corso stats:', corsoStats, validCorsi, validAbbonamenti);
         const corso_top = corsoStats.mostPopular;
         const corso_bottom = corsoStats.leastPopular;
 
         // 14. Tempo medio di entrata
-        const tempo_medio_entrata = this.calculateAverageEntryTime(validAccessi);
+        const tempo_medio_entrata =
+          this.calculateAverageEntryTime(validAccessi);
 
         // 15. Durata media corso
-        const durata_media_corso = this.calculateAverageCourseLength(validAbbonamenti);
+        const durata_media_corso =
+          this.calculateAverageCourseLength(validAbbonamenti);
 
         // Ultimi accessi
         const ultimi_accessi = this.getRecentAccesses(validAccessi, validUsers);
@@ -200,14 +207,14 @@ export class StatsService {
           corso_bottom,
           tempo_medio_entrata,
           durata_media_corso,
-          ultimi_accessi
+          ultimi_accessi,
         };
 
         console.log('Calculated stats:', calculatedStats);
 
         return calculatedStats;
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Errore nel calcolo delle statistiche:', error);
         return of(this.getDefaultStats());
       })
@@ -227,9 +234,11 @@ export class StatsService {
       const monthDiff = now.getMonth() - birthDate.getMonth();
 
       // Aggiusta l'età se il compleanno non è ancora passato quest'anno
-      const adjustedAge = monthDiff < 0 || (monthDiff === 0 && now.getDate() < birthDate.getDate())
-        ? age - 1
-        : age;
+      const adjustedAge =
+        monthDiff < 0 ||
+        (monthDiff === 0 && now.getDate() < birthDate.getDate())
+          ? age - 1
+          : age;
 
       return sum + Math.max(0, adjustedAge);
     }, 0);
@@ -237,40 +246,32 @@ export class StatsService {
     return Math.round(totalAge / users.length);
   }
 
-  /**
-   * Calcola le statistiche dei corsi
-   */  private calculateCourseStats(abbonamenti: RawAbbonamento[], corsi: RawCorso[]): {
+  private calculateCourseStats(
+    abbonamenti: RawAbbonamento[],
+    corsi: RawCorso[]
+  ): {
     mostPopular: string;
     leastPopular: string;
   } {
     // Verifica che corsi sia un array e non sia vuoto
     if (!Array.isArray(corsi) || corsi.length === 0) {
-      console.warn('Corsi non è un array valido o è vuoto:', corsi);
-      return { mostPopular: 'N/A', leastPopular: 'N/A' };
-    }
-
-    // Verifica che abbonamenti sia un array
-    if (!Array.isArray(abbonamenti)) {
-      console.warn('Abbonamenti non è un array valido:', abbonamenti);
-      return { mostPopular: 'N/A', leastPopular: 'N/A' };
+      console.log('Corsi non è un array valido o è vuoto:', corsi);
     }
 
     // Conta il numero di persone iscritte (abbonamenti attivi) per ogni corso
     const courseSubscriptionCount = new Map<number, number>();
 
     // Inizializza tutti i corsi con 0 iscrizioni
-    corsi.forEach(corso => courseSubscriptionCount.set(corso.id, 0));
+    corsi.forEach((corso) => courseSubscriptionCount.set(corso.id, 0));
 
     // Conta solo gli abbonamenti attivi
-    const abbonamentiAttivi = abbonamenti.filter(a => Boolean(a.attivo));
+    const abbonamentiAttivi = abbonamenti.filter((a) => Boolean(a.attivo));
 
-    abbonamentiAttivi.forEach(abbonamento => {
-      const currentCount = courseSubscriptionCount.get(abbonamento.id_corso) || 0;
+    abbonamentiAttivi.forEach((abbonamento) => {
+      const currentCount =
+        courseSubscriptionCount.get(abbonamento.id_corso) || 0;
       courseSubscriptionCount.set(abbonamento.id_corso, currentCount + 1);
     });
-
-    console.log('Iscrizioni per corso:', Object.fromEntries(courseSubscriptionCount));
-
     // Trova il corso più e meno popolare
     let maxCount = -1;
     let minCount = Infinity;
@@ -288,15 +289,17 @@ export class StatsService {
       }
     });
 
-    const mostPopularCourse = corsi.find(c => c.id === mostPopularId);
-    const leastPopularCourse = corsi.find(c => c.id === leastPopularId);
+    const mostPopularCourse = corsi.find((c) => c.id === mostPopularId);
+    const leastPopularCourse = corsi.find((c) => c.id === leastPopularId);
 
     const result = {
-      mostPopular: mostPopularCourse ? `${mostPopularCourse.nome_corso} (${maxCount} iscritti)` : 'N/A',
-      leastPopular: leastPopularCourse ? `${leastPopularCourse.nome_corso} (${minCount} iscritti)` : 'N/A'
+      mostPopular: mostPopularCourse
+        ? `${mostPopularCourse.nome_corso} (${maxCount} iscritti)`
+        : 'N/A',
+      leastPopular: leastPopularCourse
+        ? `${leastPopularCourse.nome_corso} (${minCount} iscritti)`
+        : 'N/A',
     };
-
-    console.log('Corsi più e meno frequentati:', result);
 
     return result;
   }
@@ -307,7 +310,7 @@ export class StatsService {
   private calculateAverageEntryTime(accessi: RawAccesso[]): string {
     if (accessi.length === 0) return 'N/A';
 
-    const accessiConOrario = accessi.filter(a => a.orario_entrata);
+    const accessiConOrario = accessi.filter((a) => a.orario_entrata);
     if (accessiConOrario.length === 0) return 'N/A';
 
     const totalMinutes = accessiConOrario.reduce((sum, accesso) => {
@@ -319,7 +322,9 @@ export class StatsService {
     const hours = Math.floor(averageMinutes / 60);
     const mins = averageMinutes % 60;
 
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${mins
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   /**
@@ -339,7 +344,10 @@ export class StatsService {
   /**
    * Ottiene gli ultimi accessi
    */
-  private getRecentAccesses(accessi: RawAccesso[], users: RawUser[]): {
+  private getRecentAccesses(
+    accessi: RawAccesso[],
+    users: RawUser[]
+  ): {
     nome: string;
     cognome: string;
     ultimo_accesso: string;
@@ -350,7 +358,7 @@ export class StatsService {
 
     // Raggruppa gli accessi per utente
     const userAccesses = new Map<number, RawAccesso[]>();
-    accessi.forEach(accesso => {
+    accessi.forEach((accesso) => {
       const userId = accesso.id_utente;
       if (!userAccesses.has(userId)) {
         userAccesses.set(userId, []);
@@ -360,37 +368,49 @@ export class StatsService {
 
     const recentAccesses = Array.from(userAccesses.entries())
       .map(([userId, userAccessList]) => {
-        const user = users.find(u => u.id === userId);
+        const user = users.find((u) => u.id === userId);
         if (!user) return null;
 
         // Trova l'ultimo accesso
-        const sortedAccesses = userAccessList.sort((a, b) =>
-          new Date(b.data_accesso + ' ' + (b.orario_entrata || '00:00')).getTime() -
-          new Date(a.data_accesso + ' ' + (a.orario_entrata || '00:00')).getTime()
+        const sortedAccesses = userAccessList.sort(
+          (a, b) =>
+            new Date(
+              b.data_accesso + ' ' + (b.orario_entrata || '00:00')
+            ).getTime() -
+            new Date(
+              a.data_accesso + ' ' + (a.orario_entrata || '00:00')
+            ).getTime()
         );
 
         const ultimoAccesso = sortedAccesses[0];
 
         // Conta gli accessi di oggi
-        const accessiOggi = userAccessList.filter(a =>
-          a.data_accesso === todayStr
+        const accessiOggi = userAccessList.filter(
+          (a) => a.data_accesso === todayStr
         ).length;
 
         return {
           nome: user.nome,
           cognome: user.cognome,
-          ultimo_accesso: ultimoAccesso.data_accesso + ' ' + (ultimoAccesso.orario_entrata || ''),
-          totale_accessi_oggi: accessiOggi
+          ultimo_accesso:
+            ultimoAccesso.data_accesso +
+            ' ' +
+            (ultimoAccesso.orario_entrata || ''),
+          totale_accessi_oggi: accessiOggi,
         };
       })
       .filter(Boolean)
-      .sort((a, b) => new Date(b!.ultimo_accesso).getTime() - new Date(a!.ultimo_accesso).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b!.ultimo_accesso).getTime() -
+          new Date(a!.ultimo_accesso).getTime()
+      )
       .slice(0, 10) as {
-        nome: string;
-        cognome: string;
-        ultimo_accesso: string;
-        totale_accessi_oggi: number;
-      }[];
+      nome: string;
+      cognome: string;
+      ultimo_accesso: string;
+      totale_accessi_oggi: number;
+    }[];
 
     return recentAccesses;
   }
@@ -412,7 +432,7 @@ export class StatsService {
       corso_bottom: 'N/A',
       tempo_medio_entrata: 'N/A',
       durata_media_corso: 0,
-      ultimi_accessi: []
+      ultimi_accessi: [],
     };
   }
 }

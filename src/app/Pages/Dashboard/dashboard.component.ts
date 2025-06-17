@@ -202,7 +202,6 @@ export class DashboardComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.users = response.data;
-            console.log('Utenti caricati:', this.users);
             resolve();
           } else {
             reject(
@@ -258,11 +257,9 @@ export class DashboardComponent implements OnInit {
       });
     });
   }  private async loadStats(): Promise<void> {
-    console.log('Loading stats...');
     return new Promise((resolve, reject) => {
       this.statsService.calculateStats().subscribe({
         next: (stats) => {
-          console.log('Stats loaded successfully:', stats);
           this.stats = stats;
           resolve();
         },
@@ -630,7 +627,6 @@ export class DashboardComponent implements OnInit {
         this.dashboardService.createAccess(this.accessForm).subscribe({
           next: (response) => {
             if (response.success) {
-              console.log('Accesso registrato con successo:', response.data);
               resolve();
             } else {
               reject(new Error(response.message));
