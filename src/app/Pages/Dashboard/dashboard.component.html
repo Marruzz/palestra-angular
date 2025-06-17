@@ -1,153 +1,215 @@
 <app-header />
 <app-loading-spinner [isLoading]="isLoading" />
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mt-1 flex flex-col items-center w-full">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
   <!-- Main Content -->
-  <div *ngIf="!isLoading" class="px-6 lg:px-8 space-y-8 w-full flex flex-col items-center">
+  <div *ngIf="!isLoading" class="container mx-auto px-4 py-8 max-w-7xl">
+    
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="flex-1">
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">Dashboard Gestionale</h1>
+          <p class="text-lg text-gray-600">Benvenuto nel pannello di controllo della palestra</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button 
+            class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" 
+            (click)="openUserModal()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Nuovo Utente
+          </button>
+          <button 
+            class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200" 
+            (click)="setView('stats')">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Statistiche
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Stats Cards -->
-    <app-stats-cards
-      [stats]="stats"
-      [isLoading]="isLoading">
-    </app-stats-cards>
-
-    <!-- Panoramica Utenti Section -->
-    <app-panoramica-utenti-selection
-      [users]="users"
-      [stats]="stats"
-      (userEdit)="openUserModal($event)"
-      (userDelete)="deleteUser($event)">
-    </app-panoramica-utenti-selection>
+    <div class="mb-8">
+      <app-stats-cards
+        [stats]="stats"
+        [isLoading]="isLoading">
+      </app-stats-cards>
+    </div>
 
     <!-- Navigation Tabs -->
-    <app-navigation-tabs
-      [currentView]="currentView"
-      (viewChange)="setView($event)">
-    </app-navigation-tabs>
-
-    <!-- Content based on current view -->
-    <div class="w-full max-w-6xl">
-
+    <div class="mb-8">
+      <app-navigation-tabs
+        [currentView]="currentView"
+        (viewChange)="setView($event)">
+      </app-navigation-tabs>
+    </div>    <!-- Content based on current view -->
+    <div class="space-y-8">
+      
       <!-- Users Management -->
-      <app-users-management
-        *ngIf="currentView === 'users'"
-        [users]="users"
-        [showUserModal]="showUserModal"
-        [userForm]="userForm"
-        [selectedUser]="selectedUser"
-        [corsi]="corsi"
-        (userModalOpen)="openUserModal($event)"
-        (userModalClose)="closeUserModal()"
-        (userSave)="saveUser()"
-        (userDelete)="deleteUser($event)">
-      </app-users-management>      <!-- Subscriptions Management -->
-      <app-subscriptions-management
-        *ngIf="currentView === 'subscriptions'"
-        [subscriptions]="abbonamenti"
-        [users]="users"
-        [corsi]="corsi"
-        [showSubscriptionModal]="showSubscriptionModal"
-        [subscriptionForm]="subscriptionForm"
-        [selectedAbbonamento]="selectedAbbonamento"
-        (subscriptionModalOpen)="openSubscriptionModal($event)"
-        (subscriptionModalClose)="closeSubscriptionModal()"
-        (subscriptionSave)="saveSubscription()"
-        (subscriptionDelete)="deleteSubscription($event)">
-      </app-subscriptions-management>      <!-- Accesses Management -->
-      <app-accesses-management
-        *ngIf="currentView === 'accesses'"
-        [accesses]="ingressi"
-        [users]="users"
-        [showAccessModal]="showAccessModal"
-        [accessForm]="accessForm"
-        (accessModalOpen)="openAccessModal()"
-        (accessModalClose)="closeAccessModal()"
-        (accessRegister)="saveAccess()">
-      </app-accesses-management>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100" *ngIf="currentView === 'users'">
+        <app-users-management
+          [users]="users"
+          [showUserModal]="showUserModal"
+          [userForm]="userForm"
+          [selectedUser]="selectedUser"
+          [corsi]="corsi"
+          (userModalOpen)="openUserModal($event)"
+          (userModalClose)="closeUserModal()"
+          (userSave)="saveUser()"
+          (userDelete)="deleteUser($event)">
+        </app-users-management>
+      </div>
 
-      <!-- Corsi Management -->
-      <div *ngIf="currentView === 'corsi'" class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">Gestione Corsi</h2>
-          <button (click)="openCorsoModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+      <!-- Subscriptions Management -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100" *ngIf="currentView === 'subscriptions'">
+        <app-subscriptions-management
+          [subscriptions]="abbonamenti"
+          [users]="users"
+          [corsi]="corsi"
+          [showSubscriptionModal]="showSubscriptionModal"
+          [subscriptionForm]="subscriptionForm"
+          [selectedAbbonamento]="selectedAbbonamento"
+          (subscriptionModalOpen)="openSubscriptionModal($event)"
+          (subscriptionModalClose)="closeSubscriptionModal()"
+          (subscriptionSave)="saveSubscription()"
+          (subscriptionDelete)="deleteSubscription($event)">
+        </app-subscriptions-management>
+      </div>
+
+      <!-- Accesses Management -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100" *ngIf="currentView === 'accesses'">
+        <app-accesses-management
+          [accesses]="ingressi"
+          [users]="users"
+          [showAccessModal]="showAccessModal"
+          [accessForm]="accessForm"
+          (accessModalOpen)="openAccessModal()"
+          (accessModalClose)="closeAccessModal()"
+          (accessRegister)="saveAccess()">
+        </app-accesses-management>
+      </div>      <!-- Corsi Management -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8" *ngIf="currentView === 'corsi'">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+          <div class="flex-1">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Gestione Corsi</h2>
+            <p class="text-lg text-gray-600">Gestisci i corsi della tua palestra</p>
+          </div>
+          <button 
+            (click)="openCorsoModal()" 
+            class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
             Nuovo Corso
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div *ngFor="let corso of corsi" class="bg-white rounded-lg p-4 shadow border">
-            <h3 class="font-semibold text-lg mb-2">{{ corso.nome_corso }}</h3>
-            <p class="text-gray-600 mb-2" *ngIf="corso.descrizione">{{ corso.descrizione }}</p>
-            <p class="text-sm text-gray-500 mb-3">Durata: {{ corso.durata_mesi_default }} mesi</p>
-            <div class="flex space-x-2">
-              <button (click)="openCorsoModal(corso)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">
-                Modifica
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let corso of corsi" class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <button 
+                (click)="openCorsoModal(corso)" 
+                class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
               </button>
             </div>
+            <div class="space-y-3">
+              <h3 class="text-xl font-semibold text-gray-900">{{ corso.nome_corso }}</h3>
+              <p class="text-gray-600 text-sm" *ngIf="corso.descrizione">{{ corso.descrizione }}</p>
+              <div class="flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ corso.durata_mesi_default }} mesi
+              </div>
+            </div>
           </div>
-        </div>        <!-- Modal per Corso -->
-        <div *ngIf="showCorsoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg p-6 max-w-md w-full m-4">
-            <h3 class="text-lg font-semibold mb-4">{{ corsoForm.id ? 'Modifica' : 'Nuovo' }} Corso</h3>
+        </div>
+
+        <!-- Modal per Corso -->
+        <div *ngIf="showCorsoModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 class="text-2xl font-bold text-gray-900">{{ corsoForm.id ? 'Modifica' : 'Nuovo' }} Corso</h3>
+              <button 
+                (click)="closeCorsoModal()" 
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
 
             <!-- Error Message -->
-            <div *ngIf="errorMessage" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg mb-4">
+            <div *ngIf="errorMessage" class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
               <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                 </svg>
-                {{ errorMessage }}
+                <span class="text-red-700 font-medium">{{ errorMessage }}</span>
               </div>
             </div>
 
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nome Corso *</label>
+            <div class="p-6 space-y-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Nome Corso *</label>
                 <input
                   [(ngModel)]="corsoForm.nome_corso"
                   type="text"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   placeholder="Inserisci il nome del corso"
                 >
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Descrizione</label>
                 <textarea
                   [(ngModel)]="corsoForm.descrizione"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
                   rows="3"
                   placeholder="Descrizione opzionale del corso"
                 ></textarea>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Durata Mesi Default</label>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Durata Mesi Default</label>
                 <input
                   [(ngModel)]="corsoForm.durata_mesi_default"
                   type="number"
                   min="1"
                   max="24"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 >
               </div>
             </div>
 
-            <div class="flex justify-end space-x-3 mt-6">
+            <div class="flex justify-end gap-4 p-6 border-t border-gray-200">
               <button
                 (click)="closeCorsoModal()"
-                class="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg transition-colors"
+                class="px-6 py-3 text-gray-700 font-medium rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
                 [disabled]="isLoading"
               >
                 Annulla
               </button>
               <button
                 (click)="saveCorso()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 [disabled]="isLoading || !corsoForm.nome_corso || !corsoForm.nome_corso.trim()"
               >
-                <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg *ngIf="isLoading" class="animate-spin w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -156,44 +218,129 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Stats View -->
-      <div *ngIf="currentView === 'stats'" class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Statistiche Dettagliate</h2>
+      </div>      <!-- Stats View -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8" *ngIf="currentView === 'stats'">
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Statistiche Dettagliate</h2>
+          <p class="text-lg text-gray-600">Panoramica completa delle attività della palestra</p>
+        </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Utenti Totali</h3>
-            <p class="text-3xl font-bold">{{ stats?.totale_utenti || 0 }}</p>
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Utenti Totali</h3>
+              <p class="text-3xl font-bold text-blue-600">{{ stats?.totale_utenti || 0 }}</p>
+              <p class="text-sm text-gray-600">Membri registrati</p>
+            </div>
           </div>
-          <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Abbonamenti Attivi</h3>
-            <p class="text-3xl font-bold">{{ stats?.abbonamenti_attivi || 0 }}</p>
+          
+          <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Abbonamenti Attivi</h3>
+              <p class="text-3xl font-bold text-green-600">{{ stats?.abbonamenti_attivi || 0 }}</p>
+              <p class="text-sm text-gray-600">Abbonamenti validi</p>
+            </div>
           </div>
-          <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Accessi Oggi</h3>
-            <p class="text-3xl font-bold">{{ stats?.accessi_oggi || 0 }}</p>
+          
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Accessi Oggi</h3>
+              <p class="text-3xl font-bold text-purple-600">{{ stats?.accessi_oggi || 0 }}</p>
+              <p class="text-sm text-gray-600">Visite di oggi</p>
+            </div>
           </div>
-          <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Accessi Settimana</h3>
-            <p class="text-3xl font-bold">{{ stats?.accessi_settimana || 0 }}</p>
+          
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Accessi Settimana</h3>
+              <p class="text-3xl font-bold text-orange-600">{{ stats?.accessi_settimana || 0 }}</p>
+              <p class="text-sm text-gray-600">Visite settimanali</p>
+            </div>
           </div>
-          <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Corsi Attivi</h3>
-            <p class="text-3xl font-bold">{{ corsi.length }}</p>
+          
+          <div class="bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Corsi Attivi</h3>
+              <p class="text-3xl font-bold text-teal-600">{{ corsi.length }}</p>
+              <p class="text-sm text-gray-600">Corsi disponibili</p>
+            </div>
           </div>
-          <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Totale Abbonamenti</h3>
-            <p class="text-3xl font-bold">{{ abbonamenti.length }}</p>
+          
+          <div class="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-pink-500 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-gray-900">Totale Abbonamenti</h3>
+              <p class="text-3xl font-bold text-pink-600">{{ abbonamenti.length }}</p>
+              <p class="text-sm text-gray-600">Abbonamenti registrati</p>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Overview Section -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100" *ngIf="!currentView">
+        <app-panoramica-utenti-selection
+          [users]="users"
+          [stats]="stats"
+          (userEdit)="openUserModal($event)"
+          (userDelete)="deleteUser($event)">
+        </app-panoramica-utenti-selection>
       </div>
 
     </div>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-    {{ errorMessage }}
+  <div *ngIf="errorMessage" class="fixed bottom-4 right-4 z-50">
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-lg max-w-sm">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="text-red-700 font-medium">{{ errorMessage }}</span>
+      </div>
+    </div>
   </div>
 </div>
