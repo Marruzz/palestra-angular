@@ -1,7 +1,7 @@
 const { pool } = require('../config/database');
 
 class DashboardController {
-  // Ottieni tutti gli utenti della palestra
+
   static async getUsers(req, res) {
     try {      const [users] = await pool.execute(`
         SELECT
@@ -24,7 +24,7 @@ class DashboardController {
         ORDER BY u.id DESC
       `);
 
-      // Raggruppa i risultati per utente
+
       const usersMap = new Map();
 
       users.forEach(row => {
@@ -68,7 +68,7 @@ class DashboardController {
       });
     }
   }
-  // Crea un nuovo utente della palestra
+
   static async createUser(req, res) {
     try {
       const { nome, cognome, email, data_nascita, codice_fiscale } = req.body;
@@ -80,7 +80,7 @@ class DashboardController {
         });
       }
 
-      // Verifica se l'email esiste già (se fornita)
+
       if (email) {
         const [existingUsers] = await pool.execute(
           'SELECT id FROM Utenti WHERE email = ?',
@@ -95,7 +95,7 @@ class DashboardController {
         }
       }
 
-      // Verifica se il codice fiscale esiste già
+
       const [existingCF] = await pool.execute(
         'SELECT id FROM Utenti WHERE codice_fiscale = ?',
         [codice_fiscale]
@@ -113,7 +113,7 @@ class DashboardController {
         [nome, cognome, email || null, data_nascita, codice_fiscale]
       );
 
-      // Recupera l'utente appena creato
+
       const [newUser] = await pool.execute(
         'SELECT * FROM Utenti WHERE id = ?',
         [result.insertId]
@@ -133,13 +133,13 @@ class DashboardController {
       });
     }
   }
-  // Aggiorna un utente
+
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
       const { nome, cognome, email, data_nascita, codice_fiscale } = req.body;
 
-      // Verifica se l'utente esiste
+
       const [existingUsers] = await pool.execute(
         'SELECT id FROM Utenti WHERE id = ?',
         [id]
@@ -152,7 +152,7 @@ class DashboardController {
         });
       }
 
-      // Verifica se l'email è già utilizzata da un altro utente
+
       if (email) {
         const [emailExists] = await pool.execute(
           'SELECT id FROM Utenti WHERE email = ? AND id != ?',
@@ -167,7 +167,7 @@ class DashboardController {
         }
       }
 
-      // Verifica se il codice fiscale è già utilizzato da un altro utente
+
       if (codice_fiscale) {
         const [cfExists] = await pool.execute(
           'SELECT id FROM Utenti WHERE codice_fiscale = ? AND id != ?',
@@ -215,7 +215,7 @@ class DashboardController {
         );
       }
 
-      // Recupera l'utente aggiornato
+
       const [updatedUser] = await pool.execute(
         'SELECT * FROM Utenti WHERE id = ?',
         [id]
@@ -236,7 +236,7 @@ class DashboardController {
     }
   }
 
-  // Elimina un utente
+
   static async deleteUser(req, res) {
     try {
       const { id } = req.params;
@@ -266,7 +266,7 @@ class DashboardController {
       });
     }
   }
-  // Ottieni tutti gli abbonamenti
+
   static async getSubscriptions(req, res) {
     try {      const [subscriptions] = await pool.execute(`
         SELECT
@@ -301,7 +301,7 @@ class DashboardController {
       });
     }
   }
-  // Crea un nuovo abbonamento
+
   static async createSubscription(req, res) {
     try {
       const { id_utente, id_corso, data_inizio, durata_mesi } = req.body;
@@ -313,7 +313,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che l'utente esista
+
       const [userExists] = await pool.execute(
         'SELECT id FROM Utenti WHERE id = ?',
         [id_utente]
@@ -326,7 +326,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che il corso esista
+
       const [courseExists] = await pool.execute(
         'SELECT id FROM Corsi WHERE id = ?',
         [id_corso]
@@ -342,7 +342,7 @@ class DashboardController {
       const [result] = await pool.execute(
         'INSERT INTO Abbonamenti (id_utente, id_corso, data_inizio, durata_mesi) VALUES (?, ?, ?, ?)',
         [id_utente, id_corso, data_inizio, durata_mesi]
-      );      // Recupera l'abbonamento appena creato con i dettagli
+      );
       const [newSubscription] = await pool.execute(`
         SELECT
           a.id,
@@ -376,13 +376,13 @@ class DashboardController {
       });
     }
   }
-  // Aggiorna un abbonamento
+
   static async updateSubscription(req, res) {
     try {
       const { id } = req.params;
       const { id_utente, id_corso, data_inizio, durata_mesi } = req.body;
 
-      // Verifica se l'abbonamento esiste
+
       const [existingSubs] = await pool.execute(
         'SELECT id FROM Abbonamenti WHERE id = ?',
         [id]
@@ -399,7 +399,7 @@ class DashboardController {
       const updateValues = [];
 
       if (id_utente !== undefined) {
-        // Verifica che l'utente esista
+
         const [userExists] = await pool.execute(
           'SELECT id FROM Utenti WHERE id = ?',
           [id_utente]
@@ -417,7 +417,7 @@ class DashboardController {
       }
 
       if (id_corso !== undefined) {
-        // Verifica che il corso esista
+
         const [courseExists] = await pool.execute(
           'SELECT id FROM Corsi WHERE id = ?',
           [id_corso]
@@ -451,7 +451,7 @@ class DashboardController {
           `UPDATE Abbonamenti SET ${updateFields.join(', ')} WHERE id = ?`,
           updateValues
         );
-      }      // Recupera l'abbonamento aggiornato
+      }
       const [updatedSubscription] = await pool.execute(`
         SELECT
           a.id,
@@ -486,7 +486,7 @@ class DashboardController {
     }
   }
 
-  // Elimina un abbonamento
+
   static async deleteSubscription(req, res) {
     try {
       const { id } = req.params;
@@ -515,7 +515,7 @@ class DashboardController {
         message: 'Errore interno del server'
       });
     }
-  }  // Ottieni tutti gli accessi
+  }
   static async getAccesses(req, res) {
     try {
       const [accesses] = await pool.execute(`
@@ -533,7 +533,7 @@ class DashboardController {
         LIMIT 200
       `);
 
-      // Formatta le date per assicurarsi che siano corrette
+
       const formattedAccesses = accesses.map(access => ({
         ...access,
         data_ora: access.data_ora instanceof Date
@@ -553,12 +553,12 @@ class DashboardController {
         message: 'Errore interno del server'
       });
     }
-  }// Registra un nuovo accesso
+  }
   static async createAccess(req, res) {
     try {
       const { id_utente, data_ora } = req.body;
 
-      // Validazione input
+
       if (!id_utente) {
         return res.status(400).json({
           success: false,
@@ -566,7 +566,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che l'utente esista
+
       const [userExists] = await pool.execute(
         'SELECT id FROM Utenti WHERE id = ?',
         [id_utente]
@@ -579,11 +579,11 @@ class DashboardController {
         });
       }
 
-      // Gestione del timestamp - usa l'orario fornito o quello attuale
+
       let timestampAccesso;
       if (data_ora) {
         timestampAccesso = new Date(data_ora);
-        // Validazione della data
+
         if (isNaN(timestampAccesso.getTime())) {
           return res.status(400).json({
             success: false,
@@ -594,7 +594,7 @@ class DashboardController {
         timestampAccesso = new Date();
       }
 
-      // Formatta per MySQL (YYYY-MM-DD HH:MM:SS)
+
       const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');
 
       console.log('Registrando accesso:', {
@@ -604,13 +604,13 @@ class DashboardController {
         mysql_format: mysqlTimestamp
       });
 
-      // Inserisci l'accesso nel database
+
       const [result] = await pool.execute(
         'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
         [id_utente, mysqlTimestamp]
       );
 
-      // Recupera l'accesso appena creato con i dati dell'utente
+
       const [newAccess] = await pool.execute(`
         SELECT
           i.id,
@@ -625,7 +625,7 @@ class DashboardController {
         WHERE i.id = ?
       `, [result.insertId]);
 
-      // Formatta la data di risposta
+
       const accessData = {
         ...newAccess[0],
         data_ora: newAccess[0].data_ora instanceof Date
@@ -646,13 +646,13 @@ class DashboardController {
         message: 'Errore interno del server'
       });
     }
-  }  // Funzione per aggiornare un accesso esistente
+  }
   static async updateAccess(req, res) {
     try {
       const { id } = req.params;
       const { id_utente, data_ora } = req.body;
 
-      // Validazione input
+
       if (!id_utente || !data_ora) {
         return res.status(400).json({
           success: false,
@@ -660,7 +660,7 @@ class DashboardController {
         });
       }
 
-      // Validazione della data
+
       const timestampAccesso = new Date(data_ora);
       if (isNaN(timestampAccesso.getTime())) {
         return res.status(400).json({
@@ -669,7 +669,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che l'accesso esista
+
       const [accessExists] = await pool.execute(
         'SELECT id FROM Ingressi WHERE id = ?',
         [id]
@@ -682,7 +682,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che l'utente esista
+
       const [userExists] = await pool.execute(
         'SELECT id FROM Utenti WHERE id = ?',
         [id_utente]
@@ -695,16 +695,16 @@ class DashboardController {
         });
       }
 
-      // Formatta per MySQL
+
       const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');
 
-      // Aggiornamento dell'accesso
+
       await pool.execute(
         'UPDATE Ingressi SET id_utente = ?, data_ora = ? WHERE id = ?',
         [id_utente, mysqlTimestamp, id]
       );
 
-      // Recupera l'accesso aggiornato
+
       const [updatedAccess] = await pool.execute(`
         SELECT
           i.id,
@@ -719,7 +719,7 @@ class DashboardController {
         WHERE i.id = ?
       `, [id]);
 
-      // Formatta la data di risposta
+
       const accessData = {
         ...updatedAccess[0],
         data_ora: updatedAccess[0].data_ora instanceof Date
@@ -741,64 +741,64 @@ class DashboardController {
       });
     }  }
 
-  // Ottieni statistiche dashboard
+
   static async getStats(req, res) {
     try {
-      // Totale utenti
+
       const [totalUsers] = await pool.execute('SELECT COUNT(*) as count FROM Utenti');
 
-      // Utenti entrati oggi (utenti unici)
+
       const [uniqueUsersToday] = await pool.execute(`
         SELECT COUNT(DISTINCT id_utente) as count FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = CURDATE()
       `);
 
-      // Abbonamenti attivi (non scaduti)
+
       const [activeSubscriptions] = await pool.execute(
         'SELECT COUNT(*) as count FROM Abbonamenti WHERE data_fine >= CURDATE()'
       );
 
-      // Accessi oggi
+
       const [todayAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = CURDATE()
       `);
 
-      // Accessi questa settimana
+
       const [weekAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
       `);
 
-      // Accessi questo mese
+
       const [monthAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
         AND MONTH(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = MONTH(CURDATE())
       `);
 
-      // Accessi questo anno
+
       const [accessesThisYear] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
       `);
 
-      // Accessi di sempre
+
       const [totalAccesses] = await pool.execute('SELECT COUNT(*) as count FROM Ingressi');
 
-      // Corsi attivi
+
       const [activeCourses] = await pool.execute('SELECT COUNT(*) as count FROM Corsi');
 
-      // Totale abbonamenti (tutti, anche scaduti)
+
       const [totalSubscriptions] = await pool.execute('SELECT COUNT(*) as count FROM Abbonamenti');
 
-      // Età media utenti
+
       const [avgAge] = await pool.execute(`
         SELECT AVG(YEAR(CURDATE()) - YEAR(data_nascita)) as avg_age FROM Utenti
         WHERE data_nascita IS NOT NULL
       `);
 
-      // Corso più frequentato
+
       const [mostPopularCourse] = await pool.execute(`
         SELECT c.nome_corso, COUNT(a.id) as freq
         FROM Abbonamenti a
@@ -809,7 +809,7 @@ class DashboardController {
         LIMIT 1
       `);
 
-      // Corso meno frequentato
+
       const [leastPopularCourse] = await pool.execute(`
         SELECT c.nome_corso, COUNT(a.id) as freq
         FROM Corsi c
@@ -819,19 +819,19 @@ class DashboardController {
         LIMIT 1
       `);
 
-      // Tempo medio entrata
+
       const [avgEntryTime] = await pool.execute(`
         SELECT TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TIME(CONVERT_TZ(data_ora, '+00:00', '+01:00'))))), '%H:%i') as avg_time
         FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
       `);
 
-      // Durata media corso
+
       const [avgCourseDuration] = await pool.execute(`
         SELECT AVG(durata_mesi) as avg_duration FROM Abbonamenti
       `);
 
-      // Ultimi accessi (top 5 utenti con accessi recenti)
+
       const [recentAccesses] = await pool.execute(`
         SELECT
           u.nome,
@@ -884,9 +884,9 @@ class DashboardController {
     }
   }
 
-  // Nuovi endpoint per il calcolo delle statistiche
 
-  // Ottieni tutti gli utenti semplificati
+
+
   static async getUsersSimple(req, res) {
     try {
       const [users] = await pool.execute(`
@@ -902,21 +902,20 @@ class DashboardController {
     }
   }
 
-  // Ottieni tutti gli accessi
   static async getAccessi(req, res) {
     try {
       const [accessi] = await pool.execute(`
         SELECT
-          a.id,
-          a.id_utente,
-          DATE_FORMAT(a.data_accesso, '%Y-%m-%d') as data_accesso,
-          TIME_FORMAT(a.orario_entrata, '%H:%i') as orario_entrata,
-          TIME_FORMAT(a.orario_uscita, '%H:%i') as orario_uscita,
+          i.id,
+          i.id_utente,
+          DATE_FORMAT(i.data_ora, '%Y-%m-%d') as data_accesso,
+          TIME_FORMAT(i.data_ora, '%H:%i') as orario_entrata,
+          NULL as orario_uscita,
           u.nome as nome_utente,
           u.cognome as cognome_utente
-        FROM Accessi a
-        LEFT JOIN Utenti u ON a.id_utente = u.id
-        ORDER BY a.data_accesso DESC, a.orario_entrata DESC
+        FROM Ingressi i
+        LEFT JOIN Utenti u ON i.id_utente = u.id
+        ORDER BY i.data_ora DESC
       `);
 
       res.json(accessi);
@@ -926,7 +925,7 @@ class DashboardController {
     }
   }
 
-  // Ottieni tutti gli abbonamenti semplificati
+
   static async getAbbonamentiSimple(req, res) {
     try {
       const [abbonamenti] = await pool.execute(`
@@ -954,7 +953,7 @@ class DashboardController {
     }
   }
 
-  // Ottieni tutti i corsi semplificati
+
   static async getCorsiSimple(req, res) {
     try {
       const [corsi] = await pool.execute(`
@@ -970,10 +969,10 @@ class DashboardController {
     }
   }
 
-  // Check for data integrity issues with subscriptions
+
   static async checkSubscriptionIntegrity(req, res) {
     try {
-      // Check for subscriptions with missing courses
+
       const [orphanedSubscriptions] = await pool.execute(`
         SELECT
           a.id,
@@ -988,7 +987,7 @@ class DashboardController {
         WHERE c.id IS NULL
       `);
 
-      // Check for subscriptions with missing users
+
       const [subscriptionsWithoutUsers] = await pool.execute(`
         SELECT
           a.id,
@@ -1010,6 +1009,87 @@ class DashboardController {
 
     } catch (error) {
       console.error('Errore nel controllo integrità abbonamenti:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Errore interno del server'
+      });
+    }
+  }
+
+  // Metodi per gestire i corsi
+  static async getCorsi(req, res) {
+    try {
+      const [corsi] = await pool.execute(`
+        SELECT
+          c.id,
+          c.nome_corso,
+          c.descrizione,
+          c.durata_mesi_default,
+          COUNT(a.id) as abbonamenti_attivi
+        FROM Corsi c
+        LEFT JOIN Abbonamenti a ON c.id = a.id_corso
+        AND DATE_ADD(a.data_inizio, INTERVAL a.durata_mesi MONTH) >= CURDATE()
+        GROUP BY c.id, c.nome_corso, c.descrizione, c.durata_mesi_default
+        ORDER BY c.nome_corso
+      `);
+
+      res.json({
+        success: true,
+        data: corsi
+      });
+
+    } catch (error) {
+      console.error('Errore nel recupero corsi:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Errore interno del server'
+      });
+    }
+  }
+
+  static async createCorso(req, res) {
+    try {
+      const { nome_corso, descrizione, durata_mesi_default } = req.body;
+
+      // Validazione input
+      if (!nome_corso || nome_corso.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          message: 'Il nome del corso è obbligatorio'
+        });
+      }
+
+      // Verifica che il corso non esista già
+      const [existingCorso] = await pool.execute(
+        'SELECT id FROM Corsi WHERE nome_corso = ?',
+        [nome_corso.trim()]
+      );
+
+      if (existingCorso.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Un corso con questo nome esiste già'
+        });
+      }
+
+      const [result] = await pool.execute(
+        'INSERT INTO Corsi (nome_corso, descrizione, durata_mesi_default) VALUES (?, ?, ?)',
+        [nome_corso.trim(), descrizione || '', durata_mesi_default || 1]
+      );
+
+      const [newCorso] = await pool.execute(
+        'SELECT * FROM Corsi WHERE id = ?',
+        [result.insertId]
+      );
+
+      res.status(201).json({
+        success: true,
+        data: newCorso[0],
+        message: 'Corso creato con successo'
+      });
+
+    } catch (error) {
+      console.error('Errore nella creazione corso:', error);
       res.status(500).json({
         success: false,
         message: 'Errore interno del server'

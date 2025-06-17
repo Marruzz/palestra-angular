@@ -3,12 +3,12 @@ const { pool } = require('../config/database');
 
 class AuthController {
 
-  // Login dell'utente (senza JWT)
+
   static async login(req, res) {
     try {
       const { email, password } = req.body;
 
-      // Validazione input
+
       if (!email || !password) {
         return res.status(400).json({
           success: false,
@@ -16,7 +16,7 @@ class AuthController {
         });
       }
 
-      // Cerca l'utente nel database
+
       const [users] = await pool.execute(
         'SELECT id, email, password, nome FROM users WHERE email = ?',
         [email]
@@ -31,7 +31,7 @@ class AuthController {
 
       const user = users[0];
 
-      // Verifica la password
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
@@ -41,7 +41,7 @@ class AuthController {
         });
       }
 
-      // Risposta di successo (senza token JWT)
+
       res.json({
         success: true,
         message: 'Login effettuato con successo',
@@ -61,12 +61,12 @@ class AuthController {
     }
   }
 
-  // Registrazione di un nuovo utente (opzionale)
+
   static async register(req, res) {
     try {
       const { email, password, nome } = req.body;
 
-      // Validazione input
+
       if (!email || !password) {
         return res.status(400).json({
           success: false,
@@ -74,7 +74,7 @@ class AuthController {
         });
       }
 
-      // Verifica se l'utente esiste già
+
       const [existingUsers] = await pool.execute(
         'SELECT id FROM users WHERE email = ?',
         [email]
@@ -87,10 +87,10 @@ class AuthController {
         });
       }
 
-      // Hash della password
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Inserisci il nuovo utente
+
       const [result] = await pool.execute(
         'INSERT INTO users (email, password, nome) VALUES (?, ?, ?)',
         [email, hashedPassword, nome || null]
@@ -115,9 +115,9 @@ class AuthController {
     }
   }
 
-  // Middleware vuoto - non fa più controlli di autenticazione
+
   static async verifyToken(req, res, next) {
-    // Passa sempre al prossimo middleware senza verifiche
+
     next();
   }
 }

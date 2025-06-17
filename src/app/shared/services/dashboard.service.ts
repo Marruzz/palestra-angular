@@ -60,8 +60,6 @@ export interface DashboardStats {
   corsi_attivi: number;
   totale_abbonamenti: number;
   eta_media_utenti: number;
-  corso_piu_frequentato: string;
-  corso_meno_frequentato: string;
   tempo_medio_entrata: string;
   durata_media_corso: number;
   corso_bottom: number | string;
@@ -345,8 +343,6 @@ export class DashboardService {
       corsi_attivi: 0,
       totale_abbonamenti: 0,
       eta_media_utenti: 0,
-      corso_piu_frequentato: 'N/A',
-      corso_meno_frequentato: 'N/A',
       tempo_medio_entrata: 'N/A',
       durata_media_corso: 0,
       corso_bottom: 'N/A',

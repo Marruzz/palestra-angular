@@ -12,8 +12,8 @@ const MAX_INGRESSI_PER_UTENTE = 60;
     database: 'palestra-angular'
   });
 
-  // 2. Genera utenti
-  let utentiIds = []; // Changed to let instead of const
+
+  let utentiIds = [];
   for (let i = 0; i < NUM_UTENTI; i++) {
     const nome = faker.person.firstName();
     const cognome = faker.person.lastName();
@@ -31,12 +31,12 @@ const MAX_INGRESSI_PER_UTENTE = 60;
     console.log(`Utente ${i + 1}/${NUM_UTENTI} creato: ${nome} ${cognome}`);
   }
 
-  // Remove this line or use it properly
-  // utentiIds = [704]; // If you want to use a specific ID
 
-  // 3. Abbonamenti
+
+
+
   const [corsiDb] = await conn.query(`SELECT id FROM Corsi`);
-  
+
   for (const uid of utentiIds) {
     const n = faker.number.int({ min: 1, max: 2 });
     const corsiScelti = faker.helpers.shuffle(corsiDb).slice(0, n);
@@ -52,10 +52,10 @@ const MAX_INGRESSI_PER_UTENTE = 60;
     }
   }
 
-  // 4. Ingressi
+
   for (const uid of utentiIds) {
     const ingressi = faker.number.int({ min: 0, max: MAX_INGRESSI_PER_UTENTE });
-    for (let i = 0; i < ingressi; i++) { // Use the 'ingressi' variable instead of hardcoded 5
+    for (let i = 0; i < ingressi; i++) {
       const quando = faker.date.recent({ days: 180 });
       await conn.execute(
         `INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)`,

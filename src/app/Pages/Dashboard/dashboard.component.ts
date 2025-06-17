@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
 import { StatsCards } from './stats-cards/stats-cards.component';
-import { StatsCardsSummary } from './stats-cards-summary/stats-cards-summary.component';
+import { StatsCardsSummaryComponent } from './stats-cards-summary/stats-cards-summary.component';
 import { PanoramicaUtentiSelection } from './panoramica-utenti-selection/panoramica-utenti-selection.component';
 import { NavigationTabs } from './navigation-tabs/navigation-tabs.component';
 import { UsersManagementComponent } from './users-management/users-management.component';
@@ -19,6 +19,7 @@ import {
   Corso,
   DashboardStats,
 } from '../../shared/services/dashboard.service';
+import { StatsService, CalculatedStats } from '../../shared/services/stats.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +29,7 @@ import {
     HeaderComponent,
     LoadingSpinner,
     StatsCards,
-    StatsCardsSummary,
+    StatsCardsSummaryComponent,
     PanoramicaUtentiSelection,
     NavigationTabs,
     UsersManagementComponent,
@@ -45,7 +46,7 @@ export class DashboardComponent implements OnInit {
   abbonamenti: Abbonamento[] = [];
   ingressi: Ingresso[] = [];
   corsi: Corso[] = [];
-  stats: DashboardStats | null = null;
+  stats: CalculatedStats | null = null;
 
   // Stato del caricamento per ogni sezione
   private loadedSections = {
@@ -100,7 +101,10 @@ export class DashboardComponent implements OnInit {
     descrizione: '',
     durata_mesi_default: 1,
   };
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private statsService: StatsService
+  ) {}
 
   ngOnInit() {
     // Carica solo le statistiche all'avvio per il riepilogo iniziale
@@ -254,21 +258,12 @@ export class DashboardComponent implements OnInit {
       });
     });
   }
-
   private async loadStats(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.dashboardService.getDashboardStats().subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.stats = response.data;
-            resolve();
-          } else {
-            reject(
-              new Error(
-                response.message || 'Errore nel caricamento statistiche'
-              )
-            );
-          }
+      this.statsService.calculateStats().subscribe({
+        next: (stats) => {
+          this.stats = stats;
+          resolve();
         },
         error: (error) => {
           reject(error);

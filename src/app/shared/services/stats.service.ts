@@ -51,10 +51,11 @@ export interface CalculatedStats {
   accessi_anno: number;
   accessi_sempre: number;
   corsi_attivi: number;
+  corso_top: string;
+  corso_bottom: string;
   totale_abbonamenti: number;
   eta_media_utenti: number;
-  corso_piu_frequentato: string;
-  corso_meno_frequentato: string;
+
   tempo_medio_entrata: string;
   durata_media_corso: number;
   ultimi_accessi: {
@@ -82,24 +83,20 @@ export class StatsService {
     corsi: RawCorso[];
   }> {
     return forkJoin({
-      users: this.http.get<RawUser[]>(`${this.apiUrl}/dashboard/users-simple`).pipe(
+      users: this.http.get<RawUser[]>(`${this.apiUrl}/dashboard/Utenti`).pipe(
         catchError(() => of([]))
       ),
-      accessi: this.http.get<RawAccesso[]>(`${this.apiUrl}/dashboard/accessi`).pipe(
+      accessi: this.http.get<RawAccesso[]>(`${this.apiUrl}/dashboard/Ingressi`).pipe(
         catchError(() => of([]))
       ),
-      abbonamenti: this.http.get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/abbonamenti-simple`).pipe(
+      abbonamenti: this.http.get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/Abbonamenti`).pipe(
         catchError(() => of([]))
       ),
-      corsi: this.http.get<RawCorso[]>(`${this.apiUrl}/dashboard/corsi-simple`).pipe(
+      corsi: this.http.get<RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`).pipe(
         catchError(() => of([]))
       )
     });
   }
-
-  /**
-   * Calcola tutte le statistiche
-   */
   calculateStats(): Observable<CalculatedStats> {
     return this.getRawData().pipe(
       map(({ users, accessi, abbonamenti, corsi }) => {
@@ -144,7 +141,9 @@ export class StatsService {
         }).length;
 
         // 8. Accessi sempre (totale)
-        const accessi_sempre = accessi.length;        // 9. Corsi attivi (corsi con almeno un abbonamento attivo)
+        const accessi_sempre = accessi.length;
+
+        // 9. Corsi attivi (corsi con almeno un abbonamento attivo)
         const corsiConAbbonamenti = new Set(
           abbonamenti
             .filter(a => Boolean(a.attivo))
@@ -156,12 +155,10 @@ export class StatsService {
         const totale_abbonamenti = abbonamenti.length;
 
         // 11. Età media utenti
-        const eta_media_utenti = this.calculateAverageAge(users);
-
-        // 12 & 13. Corso più e meno frequentato
+        const eta_media_utenti = this.calculateAverageAge(users);        // 12 & 13. Corso più e meno frequentato
         const corsoStats = this.calculateCourseStats(abbonamenti, corsi);
-        const corso_piu_frequentato = corsoStats.mostPopular;
-        const corso_meno_frequentato = corsoStats.leastPopular;
+        const corso_top = corsoStats.mostPopular;
+        const corso_bottom = corsoStats.leastPopular;
 
         // 14. Tempo medio di entrata
         const tempo_medio_entrata = this.calculateAverageEntryTime(accessi);
@@ -184,8 +181,8 @@ export class StatsService {
           corsi_attivi,
           totale_abbonamenti,
           eta_media_utenti,
-          corso_piu_frequentato,
-          corso_meno_frequentato,
+          corso_top,
+          corso_bottom,
           tempo_medio_entrata,
           durata_media_corso,
           ultimi_accessi
@@ -361,9 +358,6 @@ export class StatsService {
     return recentAccesses;
   }
 
-  /**
-   * Restituisce statistiche di default in caso di errore
-   */
   private getDefaultStats(): CalculatedStats {
     return {
       totale_utenti: 0,
@@ -377,8 +371,8 @@ export class StatsService {
       corsi_attivi: 0,
       totale_abbonamenti: 0,
       eta_media_utenti: 0,
-      corso_piu_frequentato: 'N/A',
-      corso_meno_frequentato: 'N/A',
+      corso_top: 'N/A',
+      corso_bottom: 'N/A',
       tempo_medio_entrata: 'N/A',
       durata_media_corso: 0,
       ultimi_accessi: []

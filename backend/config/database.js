@@ -12,10 +12,10 @@ const dbConfig = {
   queueLimit: 0,
 };
 
-// Crea il pool di connessioni
+
 const pool = mysql.createPool(dbConfig);
 
-// Funzione per testare la connessione
+
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
@@ -28,12 +28,12 @@ async function testConnection() {
   }
 }
 
-// Funzione per inizializzare le tabelle se non esistono
+
 async function initializeTables() {
   try {
     const connection = await pool.getConnection();
 
-    // Crea la tabella Utenti (clienti della palestra)
+
     const createUtentiTable = `
       CREATE TABLE IF NOT EXISTS Utenti (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +48,7 @@ async function initializeTables() {
     await connection.execute(createUtentiTable);
     console.log("✅ Tabella Utenti creata o già esistente");
 
-    // Crea la tabella Corsi
+
     const createCorsiTable = `
       CREATE TABLE IF NOT EXISTS Corsi (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,7 +61,7 @@ async function initializeTables() {
     await connection.execute(createCorsiTable);
     console.log("✅ Tabella Corsi creata o già esistente");
 
-    // Crea la tabella Abbonamenti
+
     const createAbbonamentiTable = `
       CREATE TABLE IF NOT EXISTS Abbonamenti (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,7 +78,7 @@ async function initializeTables() {
     await connection.execute(createAbbonamentiTable);
     console.log("✅ Tabella Abbonamenti creata o già esistente");
 
-    // Crea la tabella Ingressi
+
     const createIngressiTable = `
       CREATE TABLE IF NOT EXISTS Ingressi (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -91,7 +91,7 @@ async function initializeTables() {
     await connection.execute(createIngressiTable);
     console.log("✅ Tabella Ingressi creata o già esistente");
 
-    // Crea tabella separata per utenti admin (per l'autenticazione)
+
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -105,7 +105,7 @@ async function initializeTables() {
     await connection.execute(createUsersTable);
     console.log("✅ Tabella users (admin) creata o già esistente");
 
-    // Inserisci corsi di default se non esistono
+
     const [existingCorsi] = await connection.execute("SELECT COUNT(*) as count FROM Corsi");
     if (existingCorsi[0].count === 0) {
       const corsiDefault = [
@@ -132,7 +132,7 @@ async function initializeTables() {
       console.log("✅ Corsi di default inseriti");
     }
 
-    // Verifica se esiste un utente admin di default, altrimenti lo crea
+
     const [existingUsers] = await connection.execute(
       "SELECT COUNT(*) as count FROM users"
     );
