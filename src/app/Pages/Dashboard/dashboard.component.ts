@@ -13,39 +13,11 @@ import { AccessesManagementComponent } from "./accesses-management/accesses-mana
 import {
   DashboardService,
   PalestraUser,
-  Subscription as PalestraSubscription,
-  Access as PalestraAccess,
+  Abbonamento,
+  Ingresso,
+  Corso,
   DashboardStats
 } from '../../shared/services/dashboard.service';
-import { AuthService } from '../../shared/services/auth.service';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  subscription?: Subscription;
-  registrationDate: string;
-  lastAccess?: string;
-  isActive: boolean;
-}
-
-interface Subscription {
-  id: number;
-  type: 'monthly' | 'quarterly' | 'yearly';
-  startDate: string;
-  endDate: string;
-  price: number;
-  isActive: boolean;
-}
-
-interface Access {
-  id: number;
-  userId: number;
-  userName: string;
-  timestamp: string;
-  type: 'entry' | 'exit';
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -68,44 +40,57 @@ export class DashboardComponent implements OnInit {
   @Output() logout = new EventEmitter<void>();
   private router = inject(Router);
 
-  // Dati per le tabelle
-  users: User[] = [];
-  subscriptions: Subscription[] = [];
-  accesses: Access[] = [];
+  // Dati dal database
+  users: PalestraUser[] = [];
+  abbonamenti: Abbonamento[] = [];
+  ingressi: Ingresso[] = [];
+  corsi: Corso[] = [];
+  stats: DashboardStats | null = null;
 
   // Stato dell'applicazione
-  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' = 'users';
+  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' = 'users';
   isLoading = false;
   showUserModal = false;
   showAccessModal = false;
-  selectedUser: User | null = null;
+  showSubscriptionModal = false;
+  showCorsoModal = false;
+  selectedUser: PalestraUser | null = null;
+  selectedAbbonamento: Abbonamento | null = null;
   errorMessage = '';
 
-  // Form data
+  // Form data per utenti
   userForm = {
     id: 0,
-    name: '',
+    nome: '',
+    cognome: '',
     email: '',
-    phone: '',
-    isActive: true
+    data_nascita: '',
+    codice_fiscale: ''
   };
 
+  // Form data per abbonamenti
+  subscriptionForm = {
+    id: 0,
+    id_utente: 0,
+    id_corso: 0,
+    data_inizio: '',
+    durata_mesi: 1
+  };
+
+  // Form data per accessi
   accessForm = {
-    userId: 0,
-    type: 'entry' as 'entry' | 'exit'
+    id_utente: 0
   };
 
-  // Contatori dashboard
-  totalUsers = 0;
-  activeUsers = 0;
-  totalSubscriptions = 0;
-  todayAccesses = 0;
-  monthlyRevenue = 0;
+  // Form data per corsi
+  corsoForm = {
+    id: 0,
+    nome_corso: '',
+    descrizione: '',
+    durata_mesi_default: 1
+  };
 
-  constructor(
-    private dashboardService: DashboardService,
-    private authService: AuthService
-  ) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit() {
     this.loadDashboardData();
@@ -120,7 +105,8 @@ export class DashboardComponent implements OnInit {
       this.loadUsers(),
       this.loadSubscriptions(),
       this.loadAccesses(),
-      this.loadStats()
+      this.loadStats(),
+      this.loadCorsi()
     ]).then(() => {
       this.isLoading = false;
     }).catch(error => {
@@ -135,24 +121,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
           if (response.success) {
-            // Converte i dati dal formato database al formato del template
-            this.users = response.data.map(user => ({
-              id: user.id,
-              name: `${user.nome} ${user.cognome}`,
-              email: user.email,
-              phone: user.telefono || '',
-              registrationDate: this.formatDate(user.data_iscrizione),
-              lastAccess: user.ultimo_accesso ? this.formatDate(user.ultimo_accesso) : undefined,
-              isActive: user.attivo,
-              subscription: user.abbonamento ? {
-                id: user.abbonamento.id,
-                type: this.mapSubscriptionType(user.abbonamento.tipo),
-                startDate: this.formatDate(user.abbonamento.data_inizio),
-                endDate: this.formatDate(user.abbonamento.data_fine),
-                price: user.abbonamento.prezzo,
-                isActive: user.abbonamento.attivo
-              } : undefined
-            }));
+            this.users = response.data;
             resolve();
           } else {
             reject(new Error(response.message || 'Errore nel caricamento utenti'));
@@ -170,14 +139,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getSubscriptions().subscribe({
         next: (response) => {
           if (response.success) {
-            this.subscriptions = response.data.map(sub => ({
-              id: sub.id,
-              type: this.mapSubscriptionType(sub.tipo),
-              startDate: this.formatDate(sub.data_inizio),
-              endDate: this.formatDate(sub.data_fine),
-              price: sub.prezzo,
-              isActive: sub.attivo
-            }));
+            this.abbonamenti = response.data;
             resolve();
           } else {
             reject(new Error(response.message || 'Errore nel caricamento abbonamenti'));
@@ -195,13 +157,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getAccesses().subscribe({
         next: (response) => {
           if (response.success) {
-            this.accesses = response.data.map(access => ({
-              id: access.id,
-              userId: access.user_id,
-              userName: access.nome_utente,
-              timestamp: this.formatDateTime(access.timestamp),
-              type: access.tipo === 'entrata' ? 'entry' : 'exit'
-            }));
+            this.ingressi = response.data;
             resolve();
           } else {
             reject(new Error(response.message || 'Errore nel caricamento accessi'));
@@ -219,11 +175,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getDashboardStats().subscribe({
         next: (response) => {
           if (response.success) {
-            this.totalUsers = response.data.totale_utenti;
-            this.activeUsers = response.data.utenti_attivi;
-            this.totalSubscriptions = response.data.abbonamenti_attivi;
-            this.todayAccesses = response.data.accessi_oggi;
-            this.monthlyRevenue = response.data.ricavi_mensili;
+            this.stats = response.data;
             resolve();
           } else {
             reject(new Error(response.message || 'Errore nel caricamento statistiche'));
@@ -236,227 +188,299 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Metodi di utilità per la conversione dei dati
-  private mapSubscriptionType(tipo: string): 'monthly' | 'quarterly' | 'yearly' {
-    switch (tipo) {
-      case 'mensile': return 'monthly';
-      case 'trimestrale': return 'quarterly';
-      case 'annuale': return 'yearly';
-      default: return 'monthly';
-    }
+  private loadCorsi(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.dashboardService.getCorsi().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.corsi = response.data;
+            resolve();
+          } else {
+            reject(new Error(response.message || 'Errore nel caricamento corsi'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
   }
 
-  private formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('it-IT');
-  }
-
-  private formatDateTime(dateString: string): string {
-    return new Date(dateString).toLocaleString('it-IT');
-  }
-
-  // Metodi per gestire le viste
-  onViewChange(view: 'users' | 'subscriptions' | 'accesses' | 'stats') {
+  // Gestione delle viste
+  setView(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
     this.currentView = view;
   }
 
   // Gestione utenti
-  openUserModal(user?: User) {
+  openUserModal(user?: PalestraUser) {
+    this.selectedUser = user || null;
     if (user) {
-      this.userForm = { ...user };
-      this.selectedUser = user;
+      this.userForm = {
+        id: user.id,
+        nome: user.nome,
+        cognome: user.cognome,
+        email: user.email || '',
+        data_nascita: user.data_nascita,
+        codice_fiscale: user.codice_fiscale
+      };
     } else {
       this.resetUserForm();
-      this.selectedUser = null;
     }
     this.showUserModal = true;
   }
 
   closeUserModal() {
     this.showUserModal = false;
-    this.resetUserForm();
     this.selectedUser = null;
-  }
-
-  saveUser() {
-    if (!this.userForm.name || !this.userForm.email) {
-      alert('Nome e email sono obbligatori');
-      return;
-    }
-
-    // Estrai nome e cognome dal campo name
-    const nameParts = this.userForm.name.trim().split(' ');
-    const nome = nameParts[0] || '';
-    const cognome = nameParts.slice(1).join(' ') || '';
-
-    const userData = {
-      nome,
-      cognome,
-      email: this.userForm.email,
-      telefono: this.userForm.phone,
-      attivo: this.userForm.isActive
-    };
-
-    this.isLoading = true;
-
-    if (this.selectedUser) {
-      // Update existing user
-      this.dashboardService.updateUser(this.selectedUser.id, userData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response.success) {
-            this.loadDashboardData(); // Ricarica tutti i dati
-            this.closeUserModal();
-          } else {
-            alert(response.message);
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          console.error('Errore nell\'aggiornamento utente:', error);
-          alert('Errore nell\'aggiornamento dell\'utente');
-        }
-      });
-    } else {
-      // Add new user
-      this.dashboardService.createUser(userData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response.success) {
-            this.loadDashboardData(); // Ricarica tutti i dati
-            this.closeUserModal();
-          } else {
-            alert(response.message);
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          console.error('Errore nella creazione utente:', error);
-          alert('Errore nella creazione dell\'utente');
-        }
-      });
-    }
-  }
-
-  deleteUser(userId: number) {
-    if (confirm('Sei sicuro di voler eliminare questo utente?')) {
-      this.isLoading = true;
-
-      this.dashboardService.deleteUser(userId).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response.success) {
-            this.loadDashboardData(); // Ricarica tutti i dati
-          } else {
-            alert(response.message);
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          console.error('Errore nell\'eliminazione utente:', error);
-          alert('Errore nell\'eliminazione dell\'utente');
-        }
-      });
-    }
-  }
-
-  assignSubscription(userId: number, subscriptionType: 'monthly' | 'quarterly' | 'yearly') {
-    const prices = { monthly: 50.00, quarterly: 140.00, yearly: 500.00 };
-    const durations = { monthly: 1, quarterly: 3, yearly: 12 };
-    const typeMapping = { monthly: 'mensile', quarterly: 'trimestrale', yearly: 'annuale' } as const;
-
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + durations[subscriptionType]);
-
-    const subscriptionData = {
-      user_id: userId,
-      tipo: typeMapping[subscriptionType],
-      data_inizio: startDate.toISOString().split('T')[0],
-      data_fine: endDate.toISOString().split('T')[0],
-      prezzo: prices[subscriptionType],
-      attivo: true
-    };
-
-    this.isLoading = true;
-
-    this.dashboardService.createSubscription(subscriptionData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.loadDashboardData(); // Ricarica tutti i dati
-        } else {
-          alert(response.message);
-        }
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Errore nella creazione abbonamento:', error);
-        alert('Errore nella creazione dell\'abbonamento');
-      }
-    });
-  }
-
-  // Gestione accessi
-  openAccessModal() {
-    this.accessForm = { userId: 0, type: 'entry' };
-    this.showAccessModal = true;
-  }
-
-  closeAccessModal() {
-    this.showAccessModal = false;
-  }
-  registerAccess() {
-    if (!this.accessForm.userId) {
-      alert('Seleziona un utente');
-      return;
-    }
-
-    const accessData = {
-      user_id: this.accessForm.userId,
-      tipo: this.accessForm.type === 'entry' ? 'entrata' as const : 'uscita' as const
-    };
-
-    this.isLoading = true;
-
-    this.dashboardService.createAccess(accessData).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.loadDashboardData(); // Ricarica tutti i dati
-          this.closeAccessModal();
-        } else {
-          alert(response.message);
-        }
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Errore nella registrazione accesso:', error);
-        alert('Errore nella registrazione dell\'accesso');
-      }
-    });
-  }
-
-  // Helper methods for template
-  getUserInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('');
-  }
-
-  getActiveSubscriptionsByType(type: 'monthly' | 'quarterly' | 'yearly'): number {
-    return this.subscriptions.filter(s => s.type === type && s.isActive).length;
+    this.resetUserForm();
   }
 
   private resetUserForm() {
     this.userForm = {
       id: 0,
-      name: '',
+      nome: '',
+      cognome: '',
       email: '',
-      phone: '',
-      isActive: true
+      data_nascita: '',
+      codice_fiscale: ''
     };
   }
 
+  saveUser() {
+    if (this.selectedUser) {
+      // Aggiorna utente esistente
+      this.dashboardService.updateUser(this.selectedUser.id, this.userForm).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadUsers();
+            this.closeUserModal();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nell\'aggiornamento utente';
+        }
+      });
+    } else {
+      // Crea nuovo utente
+      this.dashboardService.createUser(this.userForm).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadUsers();
+            this.closeUserModal();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nella creazione utente';
+        }
+      });
+    }
+  }
+
+  deleteUser(user: PalestraUser) {
+    if (confirm(`Sei sicuro di voler eliminare l'utente ${user.nome} ${user.cognome}?`)) {
+      this.dashboardService.deleteUser(user.id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadUsers();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nell\'eliminazione utente';
+        }
+      });
+    }
+  }
+
+  // Gestione abbonamenti
+  openSubscriptionModal(abbonamento?: Abbonamento) {
+    this.selectedAbbonamento = abbonamento || null;
+    if (abbonamento) {
+      this.subscriptionForm = {
+        id: abbonamento.id,
+        id_utente: abbonamento.id_utente,
+        id_corso: abbonamento.id_corso,
+        data_inizio: abbonamento.data_inizio,
+        durata_mesi: abbonamento.durata_mesi
+      };
+    } else {
+      this.resetSubscriptionForm();
+    }
+    this.showSubscriptionModal = true;
+  }
+
+  closeSubscriptionModal() {
+    this.showSubscriptionModal = false;
+    this.selectedAbbonamento = null;
+    this.resetSubscriptionForm();
+  }
+
+  private resetSubscriptionForm() {
+    this.subscriptionForm = {
+      id: 0,
+      id_utente: 0,
+      id_corso: 0,
+      data_inizio: '',
+      durata_mesi: 1
+    };
+  }
+
+  saveSubscription() {
+    if (this.selectedAbbonamento) {
+      // Aggiorna abbonamento esistente
+      this.dashboardService.updateSubscription(this.selectedAbbonamento.id, this.subscriptionForm).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadSubscriptions();
+            this.closeSubscriptionModal();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nell\'aggiornamento abbonamento';
+        }
+      });
+    } else {
+      // Crea nuovo abbonamento
+      this.dashboardService.createSubscription(this.subscriptionForm).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadSubscriptions();
+            this.closeSubscriptionModal();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nella creazione abbonamento';
+        }
+      });
+    }
+  }
+
+  deleteSubscription(abbonamento: Abbonamento) {
+    if (confirm(`Sei sicuro di voler eliminare questo abbonamento?`)) {
+      this.dashboardService.deleteSubscription(abbonamento.id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadSubscriptions();
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Errore nell\'eliminazione abbonamento';
+        }
+      });
+    }
+  }
+
+  // Gestione accessi
+  openAccessModal() {
+    this.resetAccessForm();
+    this.showAccessModal = true;
+  }
+
+  closeAccessModal() {
+    this.showAccessModal = false;
+    this.resetAccessForm();
+  }
+
+  private resetAccessForm() {
+    this.accessForm = {
+      id_utente: 0
+    };
+  }
+
+  saveAccess() {
+    this.dashboardService.createAccess(this.accessForm).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadAccesses();
+          this.loadStats(); // Aggiorna le statistiche
+          this.closeAccessModal();
+        } else {
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.errorMessage = 'Errore nella registrazione accesso';
+      }
+    });
+  }
+
+  // Gestione corsi
+  openCorsoModal(corso?: Corso) {
+    if (corso) {
+      this.corsoForm = {
+        id: corso.id,
+        nome_corso: corso.nome_corso,
+        descrizione: corso.descrizione || '',
+        durata_mesi_default: corso.durata_mesi_default || 1
+      };
+    } else {
+      this.resetCorsoForm();
+    }
+    this.showCorsoModal = true;
+  }
+
+  closeCorsoModal() {
+    this.showCorsoModal = false;
+    this.resetCorsoForm();
+  }
+
+  private resetCorsoForm() {
+    this.corsoForm = {
+      id: 0,
+      nome_corso: '',
+      descrizione: '',
+      durata_mesi_default: 1
+    };
+  }
+
+  saveCorso() {
+    this.dashboardService.createCorso(this.corsoForm).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadCorsi();
+          this.closeCorsoModal();
+        } else {
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.errorMessage = 'Errore nella creazione corso';
+      }
+    });
+  }
+
+  // Utility methods
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT');
+  }
+
+  formatDateTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString('it-IT');
+  }
+
+  getUserById(id: number): PalestraUser | undefined {
+    return this.users.find(user => user.id === id);
+  }
+
+  getCorsoById(id: number): Corso | undefined {
+    return this.corsi.find(corso => corso.id === id);
+  }
+
+  // Logout (se necessario)
   onLogout() {
-    this.authService.logout();
     this.logout.emit();
     this.router.navigate(['/login']);
   }

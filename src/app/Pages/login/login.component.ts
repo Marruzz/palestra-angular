@@ -34,18 +34,18 @@ export class LoginComponent {
     // Credenziali di fallback per demo quando il backend non è disponibile
     if (this.email === 'admin@palestra.com' && this.password === 'password') {
       this.isLoading = false;
-      
+
       // Simula un utente admin per la demo
       const mockUser = {
         id: 1,
         email: 'admin@palestra.com',
         nome: 'Amministratore'
       };
-      
+
       // Salva i dati utente nel localStorage per la demo
       localStorage.setItem('current_user', JSON.stringify(mockUser));
       localStorage.setItem('auth_token', 'demo_token_' + Date.now());
-      
+
       this.router.navigate(['/dashboard']);
       this.loginSuccess.emit();
       console.log('Login effettuato con successo come admin (modalità demo)');
@@ -89,10 +89,10 @@ export class LoginComponent {
               email: 'admin@palestra.com',
               nome: 'Amministratore'
             };
-            
+
             localStorage.setItem('current_user', JSON.stringify(mockUser));
             localStorage.setItem('auth_token', 'demo_token_' + Date.now());
-            
+
             this.router.navigate(['/dashboard']);
             this.loginSuccess.emit();
             console.log('Backend non disponibile - login demo effettuato');
