@@ -506,14 +506,14 @@ class DashboardController {
         message: 'Errore interno del server'
       });
     }
-  }
-
-  // Ottieni tutti gli accessi
+  }  // Ottieni tutti gli accessi
   static async getAccesses(req, res) {
     try {
       const [accesses] = await pool.execute(`
         SELECT
-          i.*,
+          i.id,
+          i.id_utente,
+          i.data_ora,
           u.nome,
           u.cognome,
           u.email,
@@ -521,12 +521,20 @@ class DashboardController {
         FROM Ingressi i
         JOIN Utenti u ON i.id_utente = u.id
         ORDER BY i.data_ora DESC
-        LIMIT 100
+        LIMIT 200
       `);
+
+      // Formatta le date per assicurarsi che siano corrette
+      const formattedAccesses = accesses.map(access => ({
+        ...access,
+        data_ora: access.data_ora instanceof Date
+          ? access.data_ora.toISOString()
+          : new Date(access.data_ora).toISOString()
+      }));
 
       res.json({
         success: true,
-        data: accesses
+        data: formattedAccesses
       });
 
     } catch (error) {
@@ -536,7 +544,7 @@ class DashboardController {
         message: 'Errore interno del server'
       });
     }
-  }  // Registra un nuovo accesso
+  }// Registra un nuovo accesso
   static async createAccess(req, res) {
     try {
       const { id_utente, data_ora } = req.body;
@@ -560,29 +568,40 @@ class DashboardController {
           success: false,
           message: 'Utente non trovato'
         });
-      }      // Usa sempre l'orario JavaScript (attuale o fornito dal frontend)
-      const timestampAccesso = data_ora ? new Date(data_ora) : new Date();
-
-      // Validazione della data se fornita
-      if (data_ora && isNaN(timestampAccesso.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: 'Formato data/ora non valido'
-        });
       }
 
-      // Formatta la data per MySQL mantenendo il fuso orario locale
-      // Utilizziamo toLocaleString per ottenere l'orario nel fuso orario italiano
-      const italianTime = timestampAccesso.toLocaleString('it-IT', {
-        timeZone: 'Europe/Rome'
+      // Gestione del timestamp - usa l'orario fornito o quello attuale
+      let timestampAccesso;
+      if (data_ora) {
+        timestampAccesso = new Date(data_ora);
+        // Validazione della data
+        if (isNaN(timestampAccesso.getTime())) {
+          return res.status(400).json({
+            success: false,
+            message: 'Formato data/ora non valido'
+          });
+        }
+      } else {
+        timestampAccesso = new Date();
+      }
+
+      // Formatta per MySQL (YYYY-MM-DD HH:MM:SS)
+      const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');
+
+      console.log('Registrando accesso:', {
+        id_utente,
+        timestamp_originale: data_ora,
+        timestamp_processato: timestampAccesso.toISOString(),
+        mysql_format: mysqlTimestamp
       });
-      console.log('Orario locale italiano:', italianTime);
-      const date = new Date();
-      console.log('Data e ora corrente:', date);
+
+      // Inserisci l'accesso nel database
       const [result] = await pool.execute(
-        'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ADDTIME(?, "02:00:00"))',
-        [id_utente, date]
-      );      // Recupera l'accesso appena creato con i dati dell'utente
+        'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
+        [id_utente, mysqlTimestamp]
+      );
+
+      // Recupera l'accesso appena creato con i dati dell'utente
       const [newAccess] = await pool.execute(`
         SELECT
           i.id,
@@ -590,16 +609,25 @@ class DashboardController {
           i.data_ora,
           u.nome,
           u.cognome,
-          u.email
+          u.email,
+          CONCAT(u.nome, ' ', u.cognome) as nome_utente
         FROM Ingressi i
         JOIN Utenti u ON i.id_utente = u.id
         WHERE i.id = ?
       `, [result.insertId]);
 
+      // Formatta la data di risposta
+      const accessData = {
+        ...newAccess[0],
+        data_ora: newAccess[0].data_ora instanceof Date
+          ? newAccess[0].data_ora.toISOString()
+          : new Date(newAccess[0].data_ora).toISOString()
+      };
+
       res.json({
         success: true,
         message: 'Accesso registrato con successo',
-        data: newAccess[0]
+        data: accessData
       });
 
     } catch (error) {
@@ -623,7 +651,7 @@ class DashboardController {
         });
       }
 
-      // Validazione della data con orario JavaScript
+      // Validazione della data
       const timestampAccesso = new Date(data_ora);
       if (isNaN(timestampAccesso.getTime())) {
         return res.status(400).json({
@@ -658,10 +686,10 @@ class DashboardController {
         });
       }
 
-      // Formatta la data per MySQL usando l'orario JavaScript
+      // Formatta per MySQL
       const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');
 
-      // Aggiornamento dell'accesso con timestamp JavaScript
+      // Aggiornamento dell'accesso
       await pool.execute(
         'UPDATE Ingressi SET id_utente = ?, data_ora = ? WHERE id = ?',
         [id_utente, mysqlTimestamp, id]
@@ -675,16 +703,25 @@ class DashboardController {
           i.data_ora,
           u.nome,
           u.cognome,
-          u.email
+          u.email,
+          CONCAT(u.nome, ' ', u.cognome) as nome_utente
         FROM Ingressi i
         JOIN Utenti u ON i.id_utente = u.id
         WHERE i.id = ?
       `, [id]);
 
+      // Formatta la data di risposta
+      const accessData = {
+        ...updatedAccess[0],
+        data_ora: updatedAccess[0].data_ora instanceof Date
+          ? updatedAccess[0].data_ora.toISOString()
+          : new Date(updatedAccess[0].data_ora).toISOString()
+      };
+
       res.json({
         success: true,
         message: 'Accesso aggiornato con successo',
-        data: updatedAccess[0]
+        data: accessData
       });
 
     } catch (error) {
@@ -695,7 +732,6 @@ class DashboardController {
       });
     }
   }
-
   // Ottieni statistiche dashboard
   static async getStats(req, res) {
     try {
@@ -707,30 +743,44 @@ class DashboardController {
         'SELECT COUNT(*) as count FROM Abbonamenti WHERE data_fine >= CURDATE()'
       );
 
-      // Accessi oggi
-      const [todayAccesses] = await pool.execute(
-        'SELECT COUNT(*) as count FROM Ingressi WHERE DATE(data_ora) = CURDATE()'
-      );
-
-      // Accessi questa settimana
-      const [weekAccesses] = await pool.execute(`
+      // Accessi oggi - migliorato per gestire il fuso orario
+      const [todayAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
-        WHERE data_ora >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+        WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = CURDATE()
       `);
 
-      // Ultimi accessi (top 5 utenti con accessi recenti)
+      // Accessi questa settimana - migliorato
+      const [weekAccesses] = await pool.execute(`
+        SELECT COUNT(*) as count FROM Ingressi
+        WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+      `);
+
+      // Accessi questo mese
+      const [monthAccesses] = await pool.execute(`
+        SELECT COUNT(*) as count FROM Ingressi
+        WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
+        AND MONTH(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = MONTH(CURDATE())
+      `);
+
+      // Ultimi accessi (top 5 utenti con accessi recenti) - migliorato
       const [recentAccesses] = await pool.execute(`
         SELECT
           u.nome,
           u.cognome,
           MAX(i.data_ora) as ultimo_accesso,
-          COUNT(i.id) as totale_accessi_oggi
+          COUNT(CASE WHEN DATE(CONVERT_TZ(i.data_ora, '+00:00', '+01:00')) = CURDATE() THEN 1 END) as totale_accessi_oggi
         FROM Utenti u
-        LEFT JOIN Ingressi i ON u.id = i.id_utente AND DATE(i.data_ora) = CURDATE()
+        LEFT JOIN Ingressi i ON u.id = i.id_utente
         WHERE i.id IS NOT NULL
         GROUP BY u.id, u.nome, u.cognome
         ORDER BY ultimo_accesso DESC
         LIMIT 5
+      `);
+
+      // Statistiche aggiuntive
+      const [accessesThisYear] = await pool.execute(`
+        SELECT COUNT(*) as count FROM Ingressi
+        WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
       `);
 
       const stats = {
@@ -738,7 +788,14 @@ class DashboardController {
         abbonamenti_attivi: activeSubscriptions[0].count,
         accessi_oggi: todayAccesses[0].count,
         accessi_settimana: weekAccesses[0].count,
-        ultimi_accessi: recentAccesses
+        accessi_mese: monthAccesses[0].count,
+        accessi_anno: accessesThisYear[0].count,
+        ultimi_accessi: recentAccesses.map(access => ({
+          ...access,
+          ultimo_accesso: access.ultimo_accesso instanceof Date
+            ? access.ultimo_accesso.toISOString()
+            : new Date(access.ultimo_accesso).toISOString()
+        }))
       };
 
       res.json({

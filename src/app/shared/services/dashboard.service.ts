@@ -52,6 +52,8 @@ export interface DashboardStats {
   abbonamenti_attivi: number;
   accessi_oggi: number;
   accessi_settimana: number;
+  accessi_mese: number;
+  accessi_anno: number;
   ultimi_accessi: {
     nome: string;
     cognome: string;

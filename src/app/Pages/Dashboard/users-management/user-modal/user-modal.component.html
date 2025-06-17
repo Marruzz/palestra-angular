@@ -268,8 +268,8 @@
                 </div>
                 <div class="text-sm text-gray-600">
                   <p>
-                    Dal {{ abbonamento.data_inizio }} al
-                    {{ abbonamento.data_fine }}
+                    Dal {{ abbonamento.data_inizio | date : "dd, mm, YYYY" }} al
+                    {{ abbonamento.data_fine | date : "dd, mm, YYYY" }}
                   </p>
                   <p>
                     Durata: {{ abbonamento.durata_mesi }}

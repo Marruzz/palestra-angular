@@ -571,14 +571,16 @@ export class DashboardComponent implements OnInit {
     this.showAccessModal = false;
     this.resetAccessForm();
   }
-
   private resetAccessForm() {
+    const now = new Date();
+    // Formatta per input datetime-local (YYYY-MM-DDTHH:MM)
+    const formattedNow = now.toISOString().slice(0, 16);
+
     this.accessForm = {
       id_utente: 0,
-      data_ora: new Date().toISOString().slice(0, 16) // Formato datetime-local
+      data_ora: formattedNow
     };
-  }
-  async saveAccess() {
+  }async saveAccess() {
     try {
       this.isLoading = true;
       this.errorMessage = '';
@@ -587,6 +589,7 @@ export class DashboardComponent implements OnInit {
         this.dashboardService.createAccess(this.accessForm).subscribe({
           next: (response) => {
             if (response.success) {
+              console.log('Accesso registrato con successo:', response.data);
               resolve();
             } else {
               reject(new Error(response.message));
@@ -596,16 +599,12 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-      // Ricarica accessi e statistiche
-      this.loadedSections.accesses = false;
-      this.loadedSections.stats = false;
-      await Promise.all([
-        this.loadAccessesIfNeeded(),
-        this.loadStatsIfNeeded()
-      ]);
+      // Ricarica accessi e statistiche usando il nuovo metodo
+      await this.refreshAccessesAndStats();
       this.closeAccessModal();
 
     } catch (error: any) {
+      console.error('Errore nella registrazione accesso:', error);
       this.errorMessage = error.message || 'Errore nella registrazione accesso';
     } finally {
       this.isLoading = false;
@@ -694,28 +693,43 @@ export class DashboardComponent implements OnInit {
     await this.loadStatsIfNeeded();
   }
 
+  // Refresh specifico per accessi e statistiche dopo registrazione
+  async refreshAccessesAndStats(): Promise<void> {
+    this.loadedSections.accesses = false;
+    this.loadedSections.stats = false;
+
+    await Promise.all([
+      this.loadAccessesIfNeeded(),
+      this.loadStatsIfNeeded()
+    ]);
+  }
+
   // Utility methods
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT');
-  }
-  formatDateTime(dateString: string): string {
-    const date = new Date(dateString);
-    // Verifica se la data è valida
-    if (isNaN(date.getTime())) {
+  }  formatDateTime(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      // Verifica se la data è valida
+      if (isNaN(date.getTime())) {
+        return 'Data non valida';
+      }
+
+      // Formatta con il fuso orario italiano
+      return date.toLocaleString('it-IT', {
+        timeZone: 'Europe/Rome',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch (error) {
+      console.error('Errore nel formato data:', error);
       return 'Data non valida';
     }
-
-    // Formatta con il fuso orario italiano
-    return date.toLocaleString('it-IT', {
-      timeZone: 'Europe/Rome',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
   }
 
   getUserById(id: number): PalestraUser | undefined {
