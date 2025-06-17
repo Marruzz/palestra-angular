@@ -1,0 +1,54 @@
+
+/* Stili personalizzati per il modal */
+.readonly-field {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+.readonly-field:focus {
+  border-color: #d1d5db;
+  outline: none;
+  box-shadow: none;
+}
+
+.section-divider {
+  border-top: 1px solid #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+.subscription-item {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.subscription-active {
+  border-color: #059669;
+  background-color: #ecfdf5;
+}
+
+.subscription-expired {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-expired {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

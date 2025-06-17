@@ -1,5 +1,5 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl max-w-md w-full p-6">
+  <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-medium text-gray-900">
         {{ selectedUser ? 'Modifica Utente' : 'Nuovo Utente' }}
@@ -7,64 +7,187 @@
       <button (click)="onCloseUserModal()" class="text-gray-400 hover:text-gray-600">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div><form (ngSubmit)="onSaveUser()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-        <input
-          type="text"
-          [(ngModel)]="userForm.nome"
-          name="nome"
-          required
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Mario"
-        >
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Cognome</label>
-        <input
-          type="text"
-          [(ngModel)]="userForm.cognome"
-          name="cognome"
-          required
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Rossi"
-        >
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input
-          type="email"
-          [(ngModel)]="userForm.email"
-          name="email"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          placeholder="mario.rossi@email.com"
-        >
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Data di Nascita</label>
-        <input
-          type="date"
-          [(ngModel)]="userForm.data_nascita"
-          name="data_nascita"
-          required
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-        >
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Codice Fiscale</label>
-        <input
-          type="text"
-          [(ngModel)]="userForm.codice_fiscale"
-          name="codice_fiscale"
-          required
-          maxlength="16"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          placeholder="RSSMRA80A01H501X"
-        >
-      </div>
-      <div class="flex justify-end space-x-3 mt-6">
+        </svg>      </button>
+    </div>    <form (ngSubmit)="onSaveUser()" class="space-y-4">
+      <!-- Sezione Dati Personali -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="text-md font-medium text-gray-900 mb-3">
+          {{ selectedUser ? 'Dati Personali (Solo Visualizzazione)' : 'Dati Personali' }}
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+            <input
+              type="text"
+              [(ngModel)]="userForm.nome"
+              name="nome"
+              required
+              [readonly]="selectedUser !== null"
+              [class]="selectedUser ? 'w-full px-3 py-2 border border-gray-300 rounded-lg readonly-field' : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'"
+              placeholder="Mario"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cognome</label>
+            <input
+              type="text"
+              [(ngModel)]="userForm.cognome"
+              name="cognome"
+              required
+              [readonly]="selectedUser !== null"
+              [class]="selectedUser ? 'w-full px-3 py-2 border border-gray-300 rounded-lg readonly-field' : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'"
+              placeholder="Rossi"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              [(ngModel)]="userForm.email"
+              name="email"
+              [readonly]="selectedUser !== null"
+              [class]="selectedUser ? 'w-full px-3 py-2 border border-gray-300 rounded-lg readonly-field' : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'"
+              placeholder="mario.rossi@email.com"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Data di Nascita</label>
+            <input
+              type="date"
+              [(ngModel)]="userForm.data_nascita"
+              name="data_nascita"
+              required
+              [readonly]="selectedUser !== null"
+              [class]="selectedUser ? 'w-full px-3 py-2 border border-gray-300 rounded-lg readonly-field' : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'"
+            >
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Codice Fiscale</label>
+            <input
+              type="text"
+              [(ngModel)]="userForm.codice_fiscale"
+              name="codice_fiscale"
+              required
+              [readonly]="selectedUser !== null"
+              maxlength="16"
+              [class]="selectedUser ? 'w-full px-3 py-2 border border-gray-300 rounded-lg readonly-field' : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'"
+              placeholder="RSSMRA80A01H501X"
+            >
+          </div>
+        </div>      </div>
+
+      <!-- Sezione Abbonamenti (solo per utenti esistenti) -->
+      <div *ngIf="selectedUser" class="section-divider"></div>
+
+      <div *ngIf="selectedUser">
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="text-md font-medium text-gray-900">Abbonamenti Attivi</h4>
+          <button
+            type="button"
+            (click)="showAddAbbonamento = !showAddAbbonamento"
+            class="px-3 py-1 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+          >
+            + Aggiungi Abbonamento
+          </button>
+        </div>
+
+        <!-- Form per aggiungere nuovo abbonamento -->
+        <div *ngIf="showAddAbbonamento" class="bg-blue-50 p-4 rounded-lg mb-4">
+          <h5 class="text-sm font-medium text-gray-900 mb-3">Nuovo Abbonamento</h5>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Corso</label>
+              <select
+                [(ngModel)]="newAbbonamento.id_corso"
+                name="nuovo_corso"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="0">Seleziona un corso</option>
+                <option *ngFor="let corso of availableCorsi" [value]="corso.id">
+                  {{ corso.nome_corso }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Data Inizio</label>
+              <input
+                type="date"
+                [(ngModel)]="newAbbonamento.data_inizio"
+                name="nuova_data_inizio"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Durata (mesi)</label>
+              <input
+                type="number"
+                [(ngModel)]="newAbbonamento.durata_mesi"
+                name="nuova_durata"
+                min="1"
+                max="12"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              >
+            </div>
+          </div>
+          <div class="flex justify-end space-x-2 mt-3">
+            <button
+              type="button"
+              (click)="showAddAbbonamento = false; resetNewAbbonamento()"
+              class="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              Annulla
+            </button>
+            <button
+              type="button"
+              (click)="addAbbonamento()"
+              [disabled]="!newAbbonamento.id_corso || !newAbbonamento.data_inizio"
+              class="px-3 py-1 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 rounded-lg transition-colors"
+            >
+              Aggiungi
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista abbonamenti esistenti -->
+        <div class="space-y-3">
+          <div *ngIf="userAbbonamenti.length === 0" class="text-center py-4 text-gray-500">
+            Nessun abbonamento presente
+          </div>
+          <div
+            *ngFor="let abbonamento of userAbbonamenti; let i = index"
+            class="subscription-item"
+            [ngClass]="isAbbonamentoActive(abbonamento) ? 'subscription-active' : 'subscription-expired'"
+          >
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="flex items-center space-x-2 mb-2">
+                  <h5 class="font-medium text-gray-900">{{ getCorsoName(abbonamento.id_corso) }}</h5>
+                  <span
+                    class="status-badge"
+                    [ngClass]="isAbbonamentoActive(abbonamento) ? 'status-active' : 'status-expired'"
+                  >
+                    {{ isAbbonamentoActive(abbonamento) ? 'Attivo' : 'Scaduto' }}
+                  </span>
+                </div>
+                <div class="text-sm text-gray-600">
+                  <p>Dal {{ abbonamento.data_inizio }} al {{ abbonamento.data_fine }}</p>
+                  <p>Durata: {{ abbonamento.durata_mesi }} {{ abbonamento.durata_mesi === 1 ? 'mese' : 'mesi' }}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                (click)="removeAbbonamento(i)"
+                class="text-red-600 hover:text-red-800 ml-3"
+                title="Rimuovi abbonamento"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>      <div class="flex justify-end space-x-3 mt-6">
         <button
           type="button"
           (click)="onCloseUserModal()"
@@ -76,7 +199,7 @@
           type="submit"
           class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
         >
-          {{ selectedUser ? 'Aggiorna' : 'Crea' }} Utente
+          Aggiorna Abbonamenti
         </button>
       </div>
     </form>

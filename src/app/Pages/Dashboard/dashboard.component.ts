@@ -346,11 +346,15 @@ export class DashboardComponent implements OnInit {
       data_nascita: '',
       codice_fiscale: ''
     };
-  }
-  async saveUser() {
+  }  async saveUser(userFormData?: any) {
     try {
       this.isLoading = true;
       this.errorMessage = '';
+
+      // Se abbiamo dati dal form, aggiorna userForm
+      if (userFormData) {
+        this.userForm = { ...userFormData };
+      }
 
       if (this.selectedUser) {
         // Aggiorna utente esistente
@@ -358,7 +362,14 @@ export class DashboardComponent implements OnInit {
           this.dashboardService.updateUser(this.selectedUser!.id, this.userForm).subscribe({
             next: (response) => {
               if (response.success) {
-                resolve();
+                // Se ci sono abbonamenti da aggiornare
+                if (userFormData && userFormData.abbonamenti) {
+                  this.updateUserAbbonamenti(this.selectedUser!.id, userFormData.abbonamenti).then(() => {
+                    resolve();
+                  }).catch(reject);
+                } else {
+                  resolve();
+                }
               } else {
                 reject(new Error(response.message));
               }
@@ -698,5 +709,54 @@ export class DashboardComponent implements OnInit {
   onLogout() {
     this.logout.emit();
     this.router.navigate(['/login']);
+  }
+
+  async updateUserAbbonamenti(userId: number, abbonamenti: any[]): Promise<void> {
+    // Prima elimina tutti gli abbonamenti esistenti dell'utente
+    // (questo è un approccio semplificato - in produzione potresti voler fare un merge più sofisticato)
+
+    // Poi crea i nuovi abbonamenti
+    for (const abbonamento of abbonamenti) {
+      if (abbonamento.id === 0) {
+        // Nuovo abbonamento
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.createSubscription({
+            id_utente: userId,
+            id_corso: abbonamento.id_corso,
+            data_inizio: abbonamento.data_inizio,
+            durata_mesi: abbonamento.durata_mesi,
+            data_fine: abbonamento.data_fine
+          }).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      } else {
+        // Aggiorna abbonamento esistente
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.updateSubscription(abbonamento.id, {
+            id_corso: abbonamento.id_corso,
+            data_inizio: abbonamento.data_inizio,
+            durata_mesi: abbonamento.durata_mesi,
+            data_fine: abbonamento.data_fine
+          }).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      }
+    }
   }
 }
