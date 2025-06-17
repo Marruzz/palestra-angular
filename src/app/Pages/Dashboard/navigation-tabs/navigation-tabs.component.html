@@ -47,8 +47,7 @@
         ></path>
       </svg>
       Abbonamenti
-    </button>
-    <button
+    </button>    <button
       (click)="onTabClick('accesses')"
       [class]="
         isAccessesView
@@ -71,6 +70,30 @@
         ></path>
       </svg>
       <span class="hidden sm:inline">Registro </span>Accessi
+    </button>
+    <button
+      (click)="onTabClick('corsi')"
+      [class]="
+        isCorsiView
+          ? 'border-blue-500 text-blue-600'
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+      "
+      class="whitespace-nowrap py-4 lg:py-5 px-2 border-b-2 font-medium text-sm lg:text-base transition-colors min-w-0 flex-1 lg:flex-none"
+    >
+      <svg
+        class="w-4 h-4 lg:w-5 lg:h-5 inline mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+        ></path>
+      </svg>
+      Corsi
     </button>
     <button
       (click)="onTabClick('stats')"

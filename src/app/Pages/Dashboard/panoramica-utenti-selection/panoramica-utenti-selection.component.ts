@@ -1,26 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// Interfacce per i dati
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  subscription?: Subscription;
-  registrationDate: string;
-  lastAccess?: string;
-  isActive: boolean;
-}
-
-interface Subscription {
-  id: number;
-  type: 'monthly' | 'quarterly' | 'yearly';
-  startDate: string;
-  endDate: string;
-  price: number;
-  isActive: boolean;
-}
+import { PalestraUser, DashboardStats } from '../../../shared/services/dashboard.service';
 
 @Component({
   selector: 'app-panoramica-utenti-selection',
@@ -29,23 +9,22 @@ interface Subscription {
   styleUrl: './panoramica-utenti-selection.component.css'
 })
 export class PanoramicaUtentiSelection {
-  @Input() users: User[] = [];
-  @Input() totalUsers: number = 0;
-  @Input() activeUsers: number = 0;
-  @Output() userEdit = new EventEmitter<User>();
-  @Output() userDelete = new EventEmitter<number>();
-  @Output() assignSubscription = new EventEmitter<{userId: number, type: 'monthly' | 'quarterly' | 'yearly'}>();
+  @Input() users: PalestraUser[] = [];
+  @Input() stats: DashboardStats | null = null;
+  @Output() userEdit = new EventEmitter<PalestraUser>();
+  @Output() userDelete = new EventEmitter<PalestraUser>();
 
-  onEditUser(user: User) {
+  onEditUser(user: PalestraUser) {
     this.userEdit.emit(user);
   }
 
-  onDeleteUser(userId: number) {
-    this.userDelete.emit(userId);
+  onDeleteUser(user: PalestraUser) {
+    this.userDelete.emit(user);
   }
 
-  onAssignSubscription(userId: number, type: 'monthly' | 'quarterly' | 'yearly') {
-    this.assignSubscription.emit({ userId, type });
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT');
   }
 
   getUserInitials(name: string): string {

@@ -3,26 +3,26 @@
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mt-1 flex flex-col items-center w-full">
   <!-- Main Content -->
-  <div *ngIf="!isLoading" class="px-6 lg:px-8 space-y-8 w-full flex flex-col items-center">    <!-- Stats Cards -->
+  <div *ngIf="!isLoading" class="px-6 lg:px-8 space-y-8 w-full flex flex-col items-center">
+    
+    <!-- Stats Cards -->
     <app-stats-cards
       [stats]="stats"
       [isLoading]="isLoading">
     </app-stats-cards>
-
+    
     <!-- Panoramica Utenti Section -->
     <app-panoramica-utenti-selection
       [users]="users"
-      [totalUsers]="totalUsers"
-      [activeUsers]="activeUsers"
+      [stats]="stats"
       (userEdit)="openUserModal($event)"
-      (userDelete)="deleteUser($event)"
-      (assignSubscription)="assignSubscription($event.userId, $event.type)">
+      (userDelete)="deleteUser($event)">
     </app-panoramica-utenti-selection>
 
     <!-- Navigation Tabs -->
     <app-navigation-tabs
       [currentView]="currentView"
-      (viewChange)="onViewChange($event)">
+      (viewChange)="setView($event)">
     </app-navigation-tabs>
 
     <!-- Content based on current view -->
@@ -35,47 +35,123 @@
         [showUserModal]="showUserModal"
         [userForm]="userForm"
         [selectedUser]="selectedUser"
+        [corsi]="corsi"
         (userModalOpen)="openUserModal($event)"
         (userModalClose)="closeUserModal()"
         (userSave)="saveUser()"
-        (userDelete)="deleteUser($event)"
-        (assignSubscription)="assignSubscription($event.userId, $event.type)">
+        (userDelete)="deleteUser($event)">
       </app-users-management>
 
       <!-- Subscriptions Management -->
       <app-subscriptions-management
         *ngIf="currentView === 'subscriptions'"
-        [subscriptions]="subscriptions">
+        [subscriptions]="abbonamenti"
+        [users]="users"
+        [corsi]="corsi"
+        [showSubscriptionModal]="showSubscriptionModal"
+        [subscriptionForm]="subscriptionForm"
+        [selectedAbbonamento]="selectedAbbonamento"
+        (subscriptionModalOpen)="openSubscriptionModal($event)"
+        (subscriptionModalClose)="closeSubscriptionModal()"
+        (subscriptionSave)="saveSubscription()"
+        (subscriptionDelete)="deleteSubscription($event)">
       </app-subscriptions-management>
 
       <!-- Accesses Management -->
       <app-accesses-management
         *ngIf="currentView === 'accesses'"
-        [accesses]="accesses"
+        [accesses]="ingressi"
         [users]="users"
         [showAccessModal]="showAccessModal"
         [accessForm]="accessForm"
         (accessModalOpen)="openAccessModal()"
         (accessModalClose)="closeAccessModal()"
-        (accessRegister)="registerAccess()">
+        (accessSave)="saveAccess()">
       </app-accesses-management>
+
+      <!-- Corsi Management -->
+      <div *ngIf="currentView === 'corsi'" class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Gestione Corsi</h2>
+          <button (click)="openCorsoModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            Nuovo Corso
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div *ngFor="let corso of corsi" class="bg-white rounded-lg p-4 shadow border">
+            <h3 class="font-semibold text-lg mb-2">{{ corso.nome_corso }}</h3>
+            <p class="text-gray-600 mb-2" *ngIf="corso.descrizione">{{ corso.descrizione }}</p>
+            <p class="text-sm text-gray-500 mb-3">Durata: {{ corso.durata_mesi_default }} mesi</p>
+            <div class="flex space-x-2">
+              <button (click)="openCorsoModal(corso)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">
+                Modifica
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal per Corso -->
+        <div *ngIf="showCorsoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full m-4">
+            <h3 class="text-lg font-semibold mb-4">{{ corsoForm.id ? 'Modifica' : 'Nuovo' }} Corso</h3>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome Corso</label>
+                <input [(ngModel)]="corsoForm.nome_corso" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
+                <textarea [(ngModel)]="corsoForm.descrizione" class="w-full px-3 py-2 border border-gray-300 rounded-md" rows="3"></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Durata Mesi Default</label>
+                <input [(ngModel)]="corsoForm.durata_mesi_default" type="number" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+              </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+              <button (click)="closeCorsoModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                Annulla
+              </button>
+              <button (click)="saveCorso()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                Salva
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Stats View -->
       <div *ngIf="currentView === 'stats'" class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Statistiche Dettagliate</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Statistiche avanzate qui -->
           <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
             <h3 class="text-lg font-semibold mb-2">Utenti Totali</h3>
-            <p class="text-3xl font-bold">{{ totalUsers }}</p>
+            <p class="text-3xl font-bold">{{ stats?.totale_utenti || 0 }}</p>
           </div>
           <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Utenti Attivi</h3>
-            <p class="text-3xl font-bold">{{ activeUsers }}</p>
+            <h3 class="text-lg font-semibold mb-2">Abbonamenti Attivi</h3>
+            <p class="text-3xl font-bold">{{ stats?.abbonamenti_attivi || 0 }}</p>
           </div>
           <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
-            <h3 class="text-lg font-semibold mb-2">Ricavi Mensili</h3>
-            <p class="text-3xl font-bold">€{{ monthlyRevenue.toFixed(2) }}</p>
+            <h3 class="text-lg font-semibold mb-2">Accessi Oggi</h3>
+            <p class="text-3xl font-bold">{{ stats?.accessi_oggi || 0 }}</p>
+          </div>
+          <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Accessi Settimana</h3>
+            <p class="text-3xl font-bold">{{ stats?.accessi_settimana || 0 }}</p>
+          </div>
+          <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Corsi Attivi</h3>
+            <p class="text-3xl font-bold">{{ corsi.length }}</p>
+          </div>
+          <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Totale Abbonamenti</h3>
+            <p class="text-3xl font-bold">{{ abbonamenti.length }}</p>
           </div>
         </div>
       </div>

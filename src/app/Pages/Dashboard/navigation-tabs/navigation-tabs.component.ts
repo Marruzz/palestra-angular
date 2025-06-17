@@ -8,10 +8,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navigation-tabs.component.css'
 })
 export class NavigationTabs {
-  @Input() currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' = 'users';
-  @Output() viewChange = new EventEmitter<'users' | 'subscriptions' | 'accesses' | 'stats'>();
+  @Input() currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' = 'users';
+  @Output() viewChange = new EventEmitter<'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'>();
 
-  onTabClick(view: 'users' | 'subscriptions' | 'accesses' | 'stats') {
+  onTabClick(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
     this.viewChange.emit(view);
   }
 
@@ -20,4 +20,5 @@ export class NavigationTabs {
   get isSubscriptionsView() { return this.currentView === 'subscriptions'; }
   get isAccessesView() { return this.currentView === 'accesses'; }
   get isStatsView() { return this.currentView === 'stats'; }
+  get isCorsiView() { return this.currentView === 'corsi'; }
 }

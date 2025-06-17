@@ -1,34 +1,15 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-// Interfacce
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  subscription?: Subscription;
-  registrationDate: string;
-  lastAccess?: string;
-  isActive: boolean;
-}
-
-interface Subscription {
-  id: number;
-  type: 'monthly' | 'quarterly' | 'yearly';
-  startDate: string;
-  endDate: string;
-  price: number;
-  isActive: boolean;
-}
+import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
 
 interface UserForm {
   id: number;
-  name: string;
+  nome: string;
+  cognome: string;
   email: string;
-  phone: string;
-  isActive: boolean;
+  data_nascita: string;
+  codice_fiscale: string;
 }
 
 @Component({
@@ -38,28 +19,25 @@ interface UserForm {
   styleUrl: './users-management.component.css'
 })
 export class UsersManagementComponent {
-  @Input() users: User[] = [];
+  @Input() users: PalestraUser[] = [];
   @Input() showUserModal: boolean = false;
   @Input() userForm: UserForm = {
     id: 0,
-    name: '',
+    nome: '',
+    cognome: '',
     email: '',
-    phone: '',
-    isActive: true
+    data_nascita: '',
+    codice_fiscale: ''
   };
-  @Input() selectedUser: User | null = null;
+  @Input() selectedUser: PalestraUser | null = null;
+  @Input() corsi: Corso[] = [];
 
-  @Output() userModalOpen = new EventEmitter<User | undefined>();
+  @Output() userModalOpen = new EventEmitter<PalestraUser | undefined>();
   @Output() userModalClose = new EventEmitter<void>();
   @Output() userSave = new EventEmitter<void>();
-  @Output() userDelete = new EventEmitter<number>();
-  @Output() assignSubscription = new EventEmitter<{userId: number, type: 'monthly' | 'quarterly' | 'yearly'}>();
-  @Output() userFormChange = new EventEmitter<UserForm>();
+  @Output() userDelete = new EventEmitter<PalestraUser>();
 
-  // Stato locale per il menu di assegnazione
-  showAssignMenu: number | null = null;
-
-  onOpenUserModal(user?: User) {
+  onOpenUserModal(user?: PalestraUser) {
     this.userModalOpen.emit(user);
   }
 
@@ -71,24 +49,16 @@ export class UsersManagementComponent {
     this.userSave.emit();
   }
 
-  onDeleteUser(userId: number) {
-    this.userDelete.emit(userId);
+  onDeleteUser(user: PalestraUser) {
+    this.userDelete.emit(user);
   }
 
-  onAssignSubscription(userId: number, type: 'monthly' | 'quarterly' | 'yearly') {
-    this.assignSubscription.emit({ userId, type });
-    this.showAssignMenu = null; // Chiudi il menu dopo l'assegnazione
+  getUserInitials(user: PalestraUser): string {
+    return `${user.nome[0] || ''}${user.cognome[0] || ''}`;
   }
 
-  onUserFormChange() {
-    this.userFormChange.emit(this.userForm);
-  }
-
-  toggleAssignMenu(userId: number) {
-    this.showAssignMenu = this.showAssignMenu === userId ? null : userId;
-  }
-
-  getUserInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('');
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT');
   }
 }
