@@ -560,9 +560,7 @@ class DashboardController {
           success: false,
           message: 'Utente non trovato'
         });
-      }
-
-      // Usa sempre l'orario JavaScript (attuale o fornito dal frontend)
+      }      // Usa sempre l'orario JavaScript (attuale o fornito dal frontend)
       const timestampAccesso = data_ora ? new Date(data_ora) : new Date();
 
       // Validazione della data se fornita
@@ -573,11 +571,17 @@ class DashboardController {
         });
       }
 
-      // Formatta la data per MySQL (YYYY-MM-DD HH:mm:ss)
-      const mysqlTimestamp = timestampAccesso.toISOString().slice(0, 19).replace('T', ' ');      // Inserimento dell'accesso nel database con timestamp JavaScript
+      // Formatta la data per MySQL mantenendo il fuso orario locale
+      // Utilizziamo toLocaleString per ottenere l'orario nel fuso orario italiano
+      const italianTime = timestampAccesso.toLocaleString('it-IT', {
+        timeZone: 'Europe/Rome'
+      });
+      console.log('Orario locale italiano:', italianTime);
+      const date = new Date();
+      console.log('Data e ora corrente:', date);
       const [result] = await pool.execute(
-        'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
-        [id_utente, mysqlTimestamp]
+        'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ADDTIME(?, "02:00:00"))',
+        [id_utente, date]
       );      // Recupera l'accesso appena creato con i dati dell'utente
       const [newAccess] = await pool.execute(`
         SELECT

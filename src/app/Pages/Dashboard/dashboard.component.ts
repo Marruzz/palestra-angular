@@ -699,10 +699,23 @@ export class DashboardComponent implements OnInit {
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT');
   }
-
   formatDateTime(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleString('it-IT');
+    // Verifica se la data è valida
+    if (isNaN(date.getTime())) {
+      return 'Data non valida';
+    }
+
+    // Formatta con il fuso orario italiano
+    return date.toLocaleString('it-IT', {
+      timeZone: 'Europe/Rome',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   }
 
   getUserById(id: number): PalestraUser | undefined {

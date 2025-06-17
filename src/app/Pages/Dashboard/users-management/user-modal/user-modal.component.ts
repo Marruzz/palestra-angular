@@ -24,16 +24,23 @@ export class UserModalComponent implements OnInit {
     codice_fiscale: ''
   };
   selectedUser: PalestraUser | null = null;
-  availableCorsi: Corso[] = [];
-  userAbbonamenti: Abbonamento[] = [];
+  availableCorsi: Corso[] = [];  userAbbonamenti: Abbonamento[] = [];
   newAbbonamento = {
     id_corso: 0,
     data_inizio: '',
-    durata_mesi: 1
+    durata_mesi: 1,
+    data_fine: ''
   };
   showAddAbbonamento = false;
 
   constructor(private dashboardService: DashboardService) {}
+
+  formatDateForBackend(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  }
+
   ngOnInit() {
     this.selectedUser = this.user;
     if (this.user) {
@@ -42,7 +49,7 @@ export class UserModalComponent implements OnInit {
         nome: this.user.nome,
         cognome: this.user.cognome,
         email: this.user.email || '',
-        data_nascita: this.user.data_nascita,
+        data_nascita: this.formatDateForBackend(this.user.data_nascita),
         codice_fiscale: this.user.codice_fiscale
       };
       this.userAbbonamenti = [...this.user.abbonamenti];
@@ -74,19 +81,42 @@ export class UserModalComponent implements OnInit {
     return corso ? corso.nome_corso : 'Corso non trovato';
   }
 
-  addAbbonamento() {
-    if (this.newAbbonamento.id_corso && this.newAbbonamento.data_inizio) {
+  onCorsoChange() {
+    if (this.newAbbonamento.id_corso > 0) {
+      const selectedCorso = this.availableCorsi.find(c => c.id == this.newAbbonamento.id_corso);
+      if (selectedCorso && selectedCorso.durata_mesi_default) {
+        this.newAbbonamento.durata_mesi = selectedCorso.durata_mesi_default;
+        this.calculateDataFine();
+      }
+    } else {
+      this.newAbbonamento.durata_mesi = 1;
+      this.newAbbonamento.data_fine = '';
+    }
+  }
+
+  onDataInizioChange() {
+    this.calculateDataFine();
+  }
+
+  calculateDataFine() {
+    if (this.newAbbonamento.data_inizio && this.newAbbonamento.durata_mesi > 0) {
       const dataInizio = new Date(this.newAbbonamento.data_inizio);
       const dataFine = new Date(dataInizio);
       dataFine.setMonth(dataFine.getMonth() + this.newAbbonamento.durata_mesi);
-
+      this.newAbbonamento.data_fine = dataFine.toISOString().split('T')[0];
+    } else {
+      this.newAbbonamento.data_fine = '';
+    }
+  }
+  addAbbonamento() {
+    if (this.newAbbonamento.id_corso && this.newAbbonamento.data_inizio && this.newAbbonamento.data_fine) {
       const nuovoAbbonamento: Abbonamento = {
         id: 0, // Sarà assegnato dal backend
         id_utente: this.userForm.id,
         id_corso: this.newAbbonamento.id_corso,
         data_inizio: this.newAbbonamento.data_inizio,
         durata_mesi: this.newAbbonamento.durata_mesi,
-        data_fine: dataFine.toISOString().split('T')[0],
+        data_fine: this.newAbbonamento.data_fine,
         nome_corso: this.getCorsoName(this.newAbbonamento.id_corso)
       };
 
@@ -99,23 +129,26 @@ export class UserModalComponent implements OnInit {
   removeAbbonamento(index: number) {
     this.userAbbonamenti.splice(index, 1);
   }
-
   resetNewAbbonamento() {
     this.newAbbonamento = {
       id_corso: 0,
       data_inizio: '',
-      durata_mesi: 1
+      durata_mesi: 1,
+      data_fine: ''
     };
   }
 
   onCloseUserModal() {
     this.close.emit();
-  }
-  onSaveUser() {
+  }  onSaveUser() {
     const userData = {
       ...this.userForm,
-      abbonamenti: this.userAbbonamenti
-    };
-    this.save.emit(userData);
+      data_nascita: this.formatDateForBackend(this.userForm.data_nascita),
+      abbonamenti: this.userAbbonamenti.map(abbonamento => ({
+        ...abbonamento,
+        data_inizio: this.formatDateForBackend(abbonamento.data_inizio),
+        data_fine: this.formatDateForBackend(abbonamento.data_fine)
+      }))
+    };    this.save.emit(userData);
   }
 }
