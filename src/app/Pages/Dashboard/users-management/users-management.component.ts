@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
 import { UserModalComponent } from "./user-modal/user-modal.component";
+import { UserCardComponent } from "./user-card/user-card.component";
 
 interface UserForm {
   id: number;
@@ -15,7 +16,7 @@ interface UserForm {
 
 @Component({
   selector: 'app-users-management',
-  imports: [CommonModule, FormsModule, UserModalComponent],
+  imports: [CommonModule, FormsModule, UserModalComponent, UserCardComponent],
   templateUrl: './users-management.component.html',
   styleUrl: './users-management.component.css'
 })
@@ -37,6 +38,10 @@ export class UsersManagementComponent {
   @Output() userSave = new EventEmitter<any>();
   @Output() userDelete = new EventEmitter<PalestraUser>();
 
+  // Aggiunte per la user card
+  showUserCard: boolean = false;
+  selectedUserForCard: PalestraUser | null = null;
+
   onOpenUserModal(user?: PalestraUser) {
     this.userModalOpen.emit(user);
   }
@@ -51,6 +56,22 @@ export class UsersManagementComponent {
 
   onDeleteUser(user: PalestraUser) {
     this.userDelete.emit(user);
+  }
+
+  // Nuovi metodi per gestire la user card
+  onShowUserCard(user: PalestraUser) {
+    this.selectedUserForCard = user;
+    this.showUserCard = true;
+  }
+
+  onCloseUserCard() {
+    this.showUserCard = false;
+    this.selectedUserForCard = null;
+  }
+
+  onEditFromCard(user: PalestraUser) {
+    this.onCloseUserCard();
+    this.onOpenUserModal(user);
   }
 
   getUserInitials(user: PalestraUser): string {

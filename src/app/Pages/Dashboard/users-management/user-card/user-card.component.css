@@ -1,0 +1,85 @@
+/* User Card Component Styles */
+
+.user-card-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.user-card-content {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar for better UX */
+.user-card-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.user-card-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.user-card-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.user-card-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .user-card-content {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* Status badge animations */
+.status-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effects for sections */
+.info-section {
+  transition: background-color 0.2s ease;
+}
+
+.info-section:hover {
+  background-color: #f9fafb;
+}
+
+/* Grid responsive improvements */
+@media (max-width: 640px) {
+  .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

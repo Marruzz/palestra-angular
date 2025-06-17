@@ -32,9 +32,9 @@ export class SubscriptionsManagementComponent {
   @Output() subscriptionSave = new EventEmitter<void>();
   @Output() subscriptionDelete = new EventEmitter<Abbonamento>();
   @Output() subscriptionFormChange = new EventEmitter<any>();
-  getActiveSubscriptionsByType(type: 'monthly' | 'quarterly' | 'yearly'): number {
+  getActiveSubscriptionsByType(type: 'monthly' | 'semester' | 'yearly'): number {
     // Map durata_mesi to subscription type
-    const monthsMap = { 'monthly': 1, 'quarterly': 3, 'yearly': 12 };
+    const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
     const targetMonths = monthsMap[type];
     return this.subscriptions.filter(s => s.durata_mesi === targetMonths).length;
   }
@@ -42,7 +42,7 @@ export class SubscriptionsManagementComponent {
   getTypeLabel(type: string): string {
     switch (type) {
       case 'monthly': return 'Mensile';
-      case 'quarterly': return 'Trimestrale';
+      case 'semester': return 'Semestrale';
       case 'yearly': return 'Annuale';
       default: return type;
     }

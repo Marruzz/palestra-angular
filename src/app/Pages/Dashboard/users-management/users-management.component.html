@@ -26,7 +26,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let user of users" class="hover:bg-gray-50">
+          <tr *ngFor="let user of users" class="hover:bg-gray-50 cursor-pointer" (click)="onShowUserCard(user)">
             <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <div class="flex-shrink-0 h-8 w-8 lg:h-10 lg:w-10">
@@ -56,8 +56,14 @@
                   Nessun abbonamento
                 </span>
               </div>
-            </td><td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+            </td>            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium" (click)="$event.stopPropagation()">
               <div class="flex flex-col space-y-1 min-w-[80px]">
+                <button
+                  (click)="onShowUserCard(user)"
+                  class="text-green-600 hover:text-green-800 transition-colors text-xs font-medium px-2 py-1 rounded hover:bg-green-50"
+                >
+                  Visualizza
+                </button>
                 <button
                   (click)="onOpenUserModal(user)"
                   class="text-blue-600 hover:text-blue-800 transition-colors text-xs font-medium px-2 py-1 rounded hover:bg-blue-50"
@@ -78,7 +84,7 @@
     </div>
   </div>
   <!-- Mobile Card View -->
-  <div class="md:hidden space-y-3">    <div *ngFor="let user of users" class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 user-card">
+  <div class="md:hidden space-y-3">    <div *ngFor="let user of users" class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 user-card cursor-pointer" (click)="onShowUserCard(user)">
       <div class="flex items-start justify-between mb-2">
         <div class="flex items-center flex-1 min-w-0">
           <div class="flex-shrink-0 h-10 w-10 user-avatar">
@@ -90,8 +96,13 @@
             <div class="text-sm font-medium text-gray-900 truncate">{{ user.nome }} {{ user.cognome }}</div>
             <div class="text-xs text-gray-500">ID: {{ user.id }}</div>
           </div>
-        </div>
-        <div class="flex space-x-2 ml-2 user-actions">
+        </div>        <div class="flex space-x-2 ml-2 user-actions" (click)="$event.stopPropagation()">
+          <button
+            (click)="onShowUserCard(user)"
+            class="text-green-600 hover:text-green-800 transition-colors text-xs font-medium px-2 py-1 rounded hover:bg-green-50"
+          >
+            Visualizza
+          </button>
           <button
             (click)="onOpenUserModal(user)"
             class="text-blue-600 hover:text-blue-800 transition-colors text-xs font-medium px-2 py-1 rounded hover:bg-blue-50"
@@ -156,3 +167,11 @@
   [user]="selectedUser"
   (close)="onCloseUserModal()"
   (save)="onSaveUser($event)"/>
+
+<!-- User Card -->
+<app-user-card
+  [user]="selectedUserForCard"
+  [corsi]="corsi"
+  [isVisible]="showUserCard"
+  (close)="onCloseUserCard()"
+  (edit)="onEditFromCard($event)"/>
