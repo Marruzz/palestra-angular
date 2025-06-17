@@ -739,26 +739,32 @@ class DashboardController {
         success: false,
         message: 'Errore interno del server'
       });
-    }
-  }
+    }  }
+
   // Ottieni statistiche dashboard
   static async getStats(req, res) {
     try {
       // Totale utenti
       const [totalUsers] = await pool.execute('SELECT COUNT(*) as count FROM Utenti');
 
+      // Utenti entrati oggi (utenti unici)
+      const [uniqueUsersToday] = await pool.execute(`
+        SELECT COUNT(DISTINCT id_utente) as count FROM Ingressi
+        WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = CURDATE()
+      `);
+
       // Abbonamenti attivi (non scaduti)
       const [activeSubscriptions] = await pool.execute(
         'SELECT COUNT(*) as count FROM Abbonamenti WHERE data_fine >= CURDATE()'
       );
 
-      // Accessi oggi - migliorato per gestire il fuso orario
+      // Accessi oggi
       const [todayAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = CURDATE()
       `);
 
-      // Accessi questa settimana - migliorato
+      // Accessi questa settimana
       const [weekAccesses] = await pool.execute(`
         SELECT COUNT(*) as count FROM Ingressi
         WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
@@ -771,7 +777,61 @@ class DashboardController {
         AND MONTH(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = MONTH(CURDATE())
       `);
 
-      // Ultimi accessi (top 5 utenti con accessi recenti) - migliorato
+      // Accessi questo anno
+      const [accessesThisYear] = await pool.execute(`
+        SELECT COUNT(*) as count FROM Ingressi
+        WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
+      `);
+
+      // Accessi di sempre
+      const [totalAccesses] = await pool.execute('SELECT COUNT(*) as count FROM Ingressi');
+
+      // Corsi attivi
+      const [activeCourses] = await pool.execute('SELECT COUNT(*) as count FROM Corsi');
+
+      // Totale abbonamenti (tutti, anche scaduti)
+      const [totalSubscriptions] = await pool.execute('SELECT COUNT(*) as count FROM Abbonamenti');
+
+      // Età media utenti
+      const [avgAge] = await pool.execute(`
+        SELECT AVG(YEAR(CURDATE()) - YEAR(data_nascita)) as avg_age FROM Utenti
+        WHERE data_nascita IS NOT NULL
+      `);
+
+      // Corso più frequentato
+      const [mostPopularCourse] = await pool.execute(`
+        SELECT c.nome_corso, COUNT(a.id) as freq
+        FROM Abbonamenti a
+        JOIN Corsi c ON a.id_corso = c.id
+        WHERE a.data_fine >= CURDATE()
+        GROUP BY c.id, c.nome_corso
+        ORDER BY freq DESC
+        LIMIT 1
+      `);
+
+      // Corso meno frequentato
+      const [leastPopularCourse] = await pool.execute(`
+        SELECT c.nome_corso, COUNT(a.id) as freq
+        FROM Corsi c
+        LEFT JOIN Abbonamenti a ON c.id = a.id_corso AND a.data_fine >= CURDATE()
+        GROUP BY c.id, c.nome_corso
+        ORDER BY freq ASC
+        LIMIT 1
+      `);
+
+      // Tempo medio entrata
+      const [avgEntryTime] = await pool.execute(`
+        SELECT TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TIME(CONVERT_TZ(data_ora, '+00:00', '+01:00'))))), '%H:%i') as avg_time
+        FROM Ingressi
+        WHERE DATE(CONVERT_TZ(data_ora, '+00:00', '+01:00')) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+      `);
+
+      // Durata media corso
+      const [avgCourseDuration] = await pool.execute(`
+        SELECT AVG(durata_mesi) as avg_duration FROM Abbonamenti
+      `);
+
+      // Ultimi accessi (top 5 utenti con accessi recenti)
       const [recentAccesses] = await pool.execute(`
         SELECT
           u.nome,
@@ -786,19 +846,22 @@ class DashboardController {
         LIMIT 5
       `);
 
-      // Statistiche aggiuntive
-      const [accessesThisYear] = await pool.execute(`
-        SELECT COUNT(*) as count FROM Ingressi
-        WHERE YEAR(CONVERT_TZ(data_ora, '+00:00', '+01:00')) = YEAR(CURDATE())
-      `);
-
       const stats = {
         totale_utenti: totalUsers[0].count,
+        utenti_entrati_oggi: uniqueUsersToday[0].count,
         abbonamenti_attivi: activeSubscriptions[0].count,
         accessi_oggi: todayAccesses[0].count,
         accessi_settimana: weekAccesses[0].count,
         accessi_mese: monthAccesses[0].count,
         accessi_anno: accessesThisYear[0].count,
+        accessi_sempre: totalAccesses[0].count,
+        corsi_attivi: activeCourses[0].count,
+        totale_abbonamenti: totalSubscriptions[0].count,
+        eta_media_utenti: avgAge[0].avg_age ? Math.round(avgAge[0].avg_age) : 0,
+        corso_piu_frequentato: mostPopularCourse.length > 0 ? mostPopularCourse[0].nome_corso : 'Nessuno',
+        corso_meno_frequentato: leastPopularCourse.length > 0 ? leastPopularCourse[0].nome_corso : 'Nessuno',
+        tempo_medio_entrata: avgEntryTime[0].avg_time || '00:00',
+        durata_media_corso: avgCourseDuration[0].avg_duration ? Math.round(avgCourseDuration[0].avg_duration) : 0,
         ultimi_accessi: recentAccesses.map(access => ({
           ...access,
           ultimo_accesso: access.ultimo_accesso instanceof Date
@@ -821,81 +884,89 @@ class DashboardController {
     }
   }
 
-  // Ottieni tutti i corsi
-  static async getCorsi(req, res) {
+  // Nuovi endpoint per il calcolo delle statistiche
+
+  // Ottieni tutti gli utenti semplificati
+  static async getUsersSimple(req, res) {
     try {
-      const [corsi] = await pool.execute(`
-        SELECT
-          c.*,
-          COUNT(a.id) as abbonamenti_attivi
-        FROM Corsi c
-        LEFT JOIN Abbonamenti a ON c.id = a.id_corso AND a.data_fine >= CURDATE()
-        GROUP BY c.id, c.nome_corso, c.descrizione, c.durata_mesi_default
-        ORDER BY c.nome_corso
+      const [users] = await pool.execute(`
+        SELECT id, nome, cognome, email, data_nascita, codice_fiscale
+        FROM Utenti
+        ORDER BY id
       `);
 
-      res.json({
-        success: true,
-        data: corsi
-      });
-
+      res.json(users);
     } catch (error) {
-      console.error('Errore nel recupero corsi:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Errore interno del server'
-      });
+      console.error('Errore nell\'ottenere gli utenti:', error);
+      res.status(500).json({ message: 'Errore interno del server' });
     }
   }
 
-  // Crea un nuovo corso
-  static async createCorso(req, res) {
+  // Ottieni tutti gli accessi
+  static async getAccessi(req, res) {
     try {
-      const { nome_corso, descrizione, durata_mesi_default } = req.body;
+      const [accessi] = await pool.execute(`
+        SELECT
+          a.id,
+          a.id_utente,
+          DATE_FORMAT(a.data_accesso, '%Y-%m-%d') as data_accesso,
+          TIME_FORMAT(a.orario_entrata, '%H:%i') as orario_entrata,
+          TIME_FORMAT(a.orario_uscita, '%H:%i') as orario_uscita,
+          u.nome as nome_utente,
+          u.cognome as cognome_utente
+        FROM Accessi a
+        LEFT JOIN Utenti u ON a.id_utente = u.id
+        ORDER BY a.data_accesso DESC, a.orario_entrata DESC
+      `);
 
-      if (!nome_corso) {
-        return res.status(400).json({
-          success: false,
-          message: 'Nome corso è obbligatorio'
-        });
-      }
-
-      // Verifica se esiste già un corso con lo stesso nome e durata
-      const [existingCourse] = await pool.execute(
-        'SELECT id FROM Corsi WHERE nome_corso = ? AND durata_mesi_default = ?',
-        [nome_corso, durata_mesi_default || null]
-      );
-
-      if (existingCourse.length > 0) {
-        return res.status(409).json({
-          success: false,
-          message: 'Esiste già un corso con questo nome e durata'
-        });
-      }
-
-      const [result] = await pool.execute(
-        'INSERT INTO Corsi (nome_corso, descrizione, durata_mesi_default) VALUES (?, ?, ?)',
-        [nome_corso, descrizione || null, durata_mesi_default || null]
-      );
-
-      // Recupera il corso appena creato
-      const [newCourse] = await pool.execute(
-        'SELECT * FROM Corsi WHERE id = ?',
-        [result.insertId]
-      );
-
-      res.status(201).json({
-        success: true,
-        data: newCourse[0],
-        message: 'Corso creato con successo'
-      });
-
+      res.json(accessi);
     } catch (error) {
-      console.error('Errore nella creazione corso:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Errore interno del server'
-      });
+      console.error('Errore nell\'ottenere gli accessi:', error);
+      res.status(500).json({ message: 'Errore interno del server' });
+    }
+  }
+
+  // Ottieni tutti gli abbonamenti semplificati
+  static async getAbbonamentiSimple(req, res) {
+    try {
+      const [abbonamenti] = await pool.execute(`
+        SELECT
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as data_inizio,
+          a.durata_mesi,
+          CASE
+            WHEN DATE_ADD(a.data_inizio, INTERVAL a.durata_mesi MONTH) >= CURDATE()
+            THEN true
+            ELSE false
+          END as attivo,
+          c.nome_corso
+        FROM Abbonamenti a
+        LEFT JOIN Corsi c ON a.id_corso = c.id
+        ORDER BY a.data_inizio DESC
+      `);
+
+      res.json(abbonamenti);
+    } catch (error) {
+      console.error('Errore nell\'ottenere gli abbonamenti:', error);
+      res.status(500).json({ message: 'Errore interno del server' });
+    }
+  }
+
+  // Ottieni tutti i corsi semplificati
+  static async getCorsiSimple(req, res) {
+    try {
+      const [corsi] = await pool.execute(`
+        SELECT id, nome_corso, descrizione, durata_mesi_default
+        FROM Corsi
+        ORDER BY nome_corso
+      `);
+
+      res.json(corsi);
+    } catch (error) {
+      console.error('Errore nell\'ottenere i corsi:', error);
+      res.status(500).json({ message: 'Errore interno del server' });
     }
   }
 

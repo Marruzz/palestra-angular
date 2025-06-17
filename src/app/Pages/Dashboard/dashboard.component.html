@@ -81,11 +81,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Stats Cards -->
+    <!-- Stats Cards Summary (sempre visibili) -->
     <div class="mb-8">
-      <app-stats-cards [stats]="stats" [isLoading]="isLoading">
-      </app-stats-cards>
+      <app-stats-cards-summary [stats]="stats" [isLoading]="isLoading" *ngIf="currentView !='stats'">
+      </app-stats-cards-summary>
     </div>
     <!-- Navigation Tabs -->
     <div class="mb-8">
@@ -474,201 +473,49 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">Utenti Totali</h3>
-              <p class="text-3xl font-bold text-blue-600">
-                {{ stats?.totale_utenti || 0 }}
-              </p>
-              <p class="text-sm text-gray-600">Membri registrati</p>
-            </div>
-          </div>
+        <!-- Utilizziamo il componente stats-cards per mostrare tutte le statistiche -->
+        <app-stats-cards [stats]="stats" [isLoading]="isLoading"></app-stats-cards>
 
-          <div
-            class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+        <!-- Sezione degli ultimi accessi -->
+        <div class="mt-12">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Ultimi Accessi</h3>
+          <div class="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
+            <div *ngIf="stats?.ultimi_accessi && stats!.ultimi_accessi!.length > 0; else noAccesses">
+              <div class="space-y-4">
+                <div
+                  *ngFor="let accesso of stats?.ultimi_accessi || []"
+                  class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-gray-900">{{ accesso.nome }} {{ accesso.cognome }}</p>
+                      <p class="text-sm text-gray-600">
+                        Ultimo accesso: {{ accesso.ultimo_accesso | date:'short' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {{ accesso.totale_accessi_oggi }} accessi oggi
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">
-                Abbonamenti Attivi
-              </h3>
-              <p class="text-3xl font-bold text-green-600">
-                {{ stats?.abbonamenti_attivi || 0 }}
-              </p>
-              <p class="text-sm text-gray-600">Abbonamenti validi</p>
-            </div>
-          </div>
-
-          <div
-            class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                  ></path>
+            <ng-template #noAccesses>
+              <div class="text-center py-8">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Nessun accesso registrato</h3>
+                <p class="mt-1 text-sm text-gray-500">Non ci sono accessi recenti da mostrare.</p>
               </div>
-            </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">Accessi Oggi</h3>
-              <p class="text-3xl font-bold text-purple-600">
-                {{ stats?.accessi_oggi || 0 }}
-              </p>
-              <p class="text-sm text-gray-600">Visite di oggi</p>
-            </div>
-          </div>
-
-          <div
-            class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">
-                Accessi Settimana
-              </h3>
-              <p class="text-3xl font-bold text-orange-600">
-                {{ stats?.accessi_settimana || 0 }}
-              </p>
-              <p class="text-sm text-gray-600">Visite settimanali</p>
-            </div>
-          </div>
-
-          <div
-            class="bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">Corsi Attivi</h3>
-              <p class="text-3xl font-bold text-teal-600">{{ corsi.length }}</p>
-              <p class="text-sm text-gray-600">Corsi disponibili</p>
-            </div>
-          </div>
-
-          <div
-            class="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div
-                class="w-12 h-12 bg-pink-500 rounded-xl flex items-center justify-center"
-              >
-                <svg
-                  class="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <h3 class="text-lg font-semibold text-gray-900">
-                Totale Abbonamenti
-              </h3>
-              <p class="text-3xl font-bold text-pink-600">
-                {{ abbonamenti.length }}
-              </p>
-              <p class="text-sm text-gray-600">Abbonamenti registrati</p>
-            </div>
+            </ng-template>
           </div>
         </div>
       </div>

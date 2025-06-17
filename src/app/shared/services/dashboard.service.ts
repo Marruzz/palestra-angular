@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { StatsService, CalculatedStats } from './stats.service';
 
 // Interfacce aggiornate per il nuovo database schema
 export interface PalestraUser {
   id: number;
   nome: string;
   cognome: string;
-  email?: string;
+  email: string;
   data_nascita: string;
   codice_fiscale: string;
   abbonamenti: Abbonamento[];
@@ -49,11 +50,22 @@ export interface Ingresso {
 
 export interface DashboardStats {
   totale_utenti: number;
+  utenti_entrati_oggi: number;
   abbonamenti_attivi: number;
   accessi_oggi: number;
   accessi_settimana: number;
   accessi_mese: number;
   accessi_anno: number;
+  accessi_sempre: number;
+  corsi_attivi: number;
+  totale_abbonamenti: number;
+  eta_media_utenti: number;
+  corso_piu_frequentato: string;
+  corso_meno_frequentato: string;
+  tempo_medio_entrata: string;
+  durata_media_corso: number;
+  corso_bottom: number | string;
+  corso_top: number | string;
   ultimi_accessi: {
     nome: string;
     cognome: string;
@@ -68,7 +80,10 @@ export interface DashboardStats {
 export class DashboardService {
   private apiUrl = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private statsService: StatsService
+  ) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -295,22 +310,48 @@ export class DashboardService {
         })
       );
   }
-
-  // Metodi per le statistiche
+  // Metodi per le statistiche - ora utilizza StatsService
   getDashboardStats(): Observable<{
     success: boolean;
     data: DashboardStats;
     message?: string;
-  }> {
-    return this.http
-      .get<{ success: boolean; data: DashboardStats; message?: string }>(
-        `${this.apiUrl}/dashboard/stats`,
-        { headers: this.getHeaders() }
-      )
-      .pipe(
-        catchError((error) => {
-          return throwError(() => new Error('Backend non disponibile'));
-        })
-      );
+  }> {    return this.statsService.calculateStats().pipe(
+      map((stats: CalculatedStats) => ({
+        success: true,
+        data: stats as DashboardStats,
+        message: 'Statistiche calcolate con successo'
+      })),
+      catchError((error) => {
+        console.error('Errore nel calcolo delle statistiche:', error);
+        return of({
+          success: false,
+          data: this.getEmptyStats(),
+          message: 'Errore nel calcolo delle statistiche'
+        });
+      })
+    );
+  }
+
+  private getEmptyStats(): DashboardStats {
+    return {
+      totale_utenti: 0,
+      utenti_entrati_oggi: 0,
+      abbonamenti_attivi: 0,
+      accessi_oggi: 0,
+      accessi_settimana: 0,
+      accessi_mese: 0,
+      accessi_anno: 0,
+      accessi_sempre: 0,
+      corsi_attivi: 0,
+      totale_abbonamenti: 0,
+      eta_media_utenti: 0,
+      corso_piu_frequentato: 'N/A',
+      corso_meno_frequentato: 'N/A',
+      tempo_medio_entrata: 'N/A',
+      durata_media_corso: 0,
+      corso_bottom: 'N/A',
+      corso_top: 'N/A',
+      ultimi_accessi: []
+    };
   }
 }

@@ -29,4 +29,10 @@ router.post('/accesses', DashboardController.createAccess);
 // Rotte per le statistiche
 router.get('/stats', DashboardController.getStats);
 
+// Nuove rotte per i dati semplificati (per il calcolo delle statistiche)
+router.get('/users-simple', DashboardController.getUsersSimple);
+router.get('/accessi', DashboardController.getAccessi);
+router.get('/abbonamenti-simple', DashboardController.getAbbonamentiSimple);
+router.get('/corsi-simple', DashboardController.getCorsiSimple);
+
 module.exports = router;

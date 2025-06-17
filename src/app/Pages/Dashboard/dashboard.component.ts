@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
 import { StatsCards } from './stats-cards/stats-cards.component';
+import { StatsCardsSummary } from './stats-cards-summary/stats-cards-summary.component';
 import { PanoramicaUtentiSelection } from './panoramica-utenti-selection/panoramica-utenti-selection.component';
 import { NavigationTabs } from './navigation-tabs/navigation-tabs.component';
 import { UsersManagementComponent } from './users-management/users-management.component';
@@ -27,6 +28,7 @@ import {
     HeaderComponent,
     LoadingSpinner,
     StatsCards,
+    StatsCardsSummary,
     PanoramicaUtentiSelection,
     NavigationTabs,
     UsersManagementComponent,
