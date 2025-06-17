@@ -118,7 +118,7 @@ export class UserCardComponent {
     return age;
   }
 
-  
+
   getActiveAbbonamentiCount(): number {
     if (!this.user?.abbonamenti) return 0;
     return this.user.abbonamenti.filter(

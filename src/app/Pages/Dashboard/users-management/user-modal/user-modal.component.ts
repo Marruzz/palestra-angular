@@ -47,9 +47,30 @@ export class UserModalComponent implements OnInit {
     return date.toISOString().split('T')[0];
   }
 
+  formatDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data non valida';
+      }
+      return date.toLocaleDateString('it-IT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      return 'Data non valida';
+    }
+  }
+
   ngOnInit() {
     this.selectedUser = this.user;
     if (this.user) {
+      console.log('User modal - dati utente ricevuti:', this.user);
+      console.log('User modal - abbonamenti ricevuti:', this.user.abbonamenti);
+
       this.userForm = {
         id: this.user.id,
         nome: this.user.nome,
@@ -126,7 +147,7 @@ export class UserModalComponent implements OnInit {
       this.newAbbonamento.data_fine
     ) {
       const nuovoAbbonamento: Abbonamento = {
-        id: 0, 
+        id: 0,
         id_utente: this.userForm.id,
         id_corso: this.newAbbonamento.id_corso,
         data_inizio: this.newAbbonamento.data_inizio,

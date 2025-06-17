@@ -745,8 +745,21 @@ export class DashboardComponent implements OnInit {
 
   // Utility methods
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT');
+    if (!dateString) return 'N/A';
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data non valida';
+      }
+      return date.toLocaleDateString('it-IT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Data non valida';
+    }
   }
   formatDateTime(dateString: string): string {
     try {
