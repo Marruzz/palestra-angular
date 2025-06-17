@@ -1,10 +1,26 @@
+import { StatsCards } from './stats-cards/stats-cards.component';
 import { Component, OnInit, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { LoadingSpinner } from "../../shared/loading-spinner/loading-spinner.component";
+import {
+  DashboardService,
+  PalestraUser,
+  Subscription as PalestraSubscription,
+  Access as PalestraAccess,
+  DashboardStats
+} from '../../shared/services/dashboard.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { PanoramicaUtentiSelection } from "./panoramica-utenti-selection/panoramica-utenti-selection.component";
+import { NavigationTabs } from "./navigation-tabs/navigation-tabs.component";
+import { UsersManagementComponent } from "./users-management/users-management.component";
+import { SubscriptionsManagementComponent } from "./subscriptions-management/subscriptions-management.component";
+import { AccessesManagementComponent } from "./accesses-management/accesses-management.component";
+import { StatsOverviewComponent } from "./stats-overview/stats-overview.component";
 
+// Interfacce locali per compatibilità con il template esistente
 interface User {
   id: number;
   name: string;
@@ -35,7 +51,19 @@ interface Access {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule, HeaderComponent, LoadingSpinner],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    HeaderComponent, 
+    LoadingSpinner, 
+    StatsCards, 
+    PanoramicaUtentiSelection,
+    NavigationTabs,
+    UsersManagementComponent,
+    SubscriptionsManagementComponent,
+    AccessesManagementComponent,
+    StatsOverviewComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -54,6 +82,7 @@ export class DashboardComponent implements OnInit {
   showUserModal = false;
   showAccessModal = false;
   selectedUser: User | null = null;
+  errorMessage = '';
 
   // Form data
   userForm = {
@@ -75,83 +104,165 @@ export class DashboardComponent implements OnInit {
   totalSubscriptions = 0;
   todayAccesses = 0;
   monthlyRevenue = 0;
+
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: AuthService
+  ) {}
+
   ngOnInit() {
     this.loadDashboardData();
   }
 
   private loadDashboardData() {
     this.isLoading = true;
+    this.errorMessage = '';
 
-    setTimeout(() => {
-      this.loadUsers();
-      this.loadSubscriptions();
-      this.loadAccesses();
-      this.updateCounters();
+    // Carica tutti i dati in parallelo
+    Promise.all([
+      this.loadUsers(),
+      this.loadSubscriptions(),
+      this.loadAccesses(),
+      this.loadStats()
+    ]).then(() => {
       this.isLoading = false;
-    }, 1000);
+    }).catch(error => {
+      console.error('Errore nel caricamento dei dati:', error);
+      this.errorMessage = 'Errore nel caricamento dei dati. Riprova più tardi.';
+      this.isLoading = false;
+    });
   }
 
-  private loadUsers() {
-    this.users = [
-      {
-        id: 1,
-        name: 'Mario Rossi',
-        email: 'mario.rossi@email.com',
-        phone: '+39 123 456 7890',
-        registrationDate: '2024-01-15',
-        lastAccess: '2025-06-15',
-        isActive: true,
-        subscription: { id: 1, type: 'monthly', startDate: '2025-06-01', endDate: '2025-06-30', price: 49.99, isActive: true }
-      },
-      {
-        id: 2,
-        name: 'Anna Verdi',
-        email: 'anna.verdi@email.com',
-        phone: '+39 987 654 3210',
-        registrationDate: '2024-03-20',
-        lastAccess: '2025-06-14',
-        isActive: true,
-        subscription: { id: 2, type: 'quarterly', startDate: '2025-04-01', endDate: '2025-06-30', price: 139.99, isActive: true }
-      },
-      {
-        id: 3,
-        name: 'Luca Bianchi',
-        email: 'luca.bianchi@email.com',
-        phone: '+39 555 777 9999',
-        registrationDate: '2024-05-10',
-        lastAccess: '2025-06-10',
-        isActive: false
-      }
-    ];
+  private loadUsers(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.dashboardService.getUsers().subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Converte i dati dal formato database al formato del template
+            this.users = response.data.map(user => ({
+              id: user.id,
+              name: `${user.nome} ${user.cognome}`,
+              email: user.email,
+              phone: user.telefono || '',
+              registrationDate: this.formatDate(user.data_iscrizione),
+              lastAccess: user.ultimo_accesso ? this.formatDate(user.ultimo_accesso) : undefined,
+              isActive: user.attivo,
+              subscription: user.abbonamento ? {
+                id: user.abbonamento.id,
+                type: this.mapSubscriptionType(user.abbonamento.tipo),
+                startDate: this.formatDate(user.abbonamento.data_inizio),
+                endDate: this.formatDate(user.abbonamento.data_fine),
+                price: user.abbonamento.prezzo,
+                isActive: user.abbonamento.attivo
+              } : undefined
+            }));
+            resolve();
+          } else {
+            reject(new Error(response.message || 'Errore nel caricamento utenti'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
   }
 
-  private loadSubscriptions() {
-    this.subscriptions = [
-      { id: 1, type: 'monthly', startDate: '2025-06-01', endDate: '2025-06-30', price: 49.99, isActive: true },
-      { id: 2, type: 'quarterly', startDate: '2025-04-01', endDate: '2025-06-30', price: 139.99, isActive: true },
-      { id: 3, type: 'yearly', startDate: '2025-01-01', endDate: '2025-12-31', price: 499.99, isActive: true }
-    ];
+  private loadSubscriptions(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.dashboardService.getSubscriptions().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.subscriptions = response.data.map(sub => ({
+              id: sub.id,
+              type: this.mapSubscriptionType(sub.tipo),
+              startDate: this.formatDate(sub.data_inizio),
+              endDate: this.formatDate(sub.data_fine),
+              price: sub.prezzo,
+              isActive: sub.attivo
+            }));
+            resolve();
+          } else {
+            reject(new Error(response.message || 'Errore nel caricamento abbonamenti'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
   }
 
-  private loadAccesses() {
-    this.accesses = [
-      { id: 1, userId: 1, userName: 'Mario Rossi', timestamp: '2025-06-16 08:30', type: 'entry' },
-      { id: 2, userId: 2, userName: 'Anna Verdi', timestamp: '2025-06-16 09:15', type: 'entry' },
-      { id: 3, userId: 1, userName: 'Mario Rossi', timestamp: '2025-06-16 10:45', type: 'exit' },
-      { id: 4, userId: 3, userName: 'Luca Bianchi', timestamp: '2025-06-15 18:20', type: 'entry' },
-      { id: 5, userId: 3, userName: 'Luca Bianchi', timestamp: '2025-06-15 19:30', type: 'exit' }
-    ];
+  private loadAccesses(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.dashboardService.getAccesses().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.accesses = response.data.map(access => ({
+              id: access.id,
+              userId: access.user_id,
+              userName: access.nome_utente,
+              timestamp: this.formatDateTime(access.timestamp),
+              type: access.tipo === 'entrata' ? 'entry' : 'exit'
+            }));
+            resolve();
+          } else {
+            reject(new Error(response.message || 'Errore nel caricamento accessi'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
   }
 
-  private updateCounters() {
-    this.totalUsers = this.users.length;
-    this.activeUsers = this.users.filter(u => u.isActive).length;
-    this.totalSubscriptions = this.subscriptions.filter(s => s.isActive).length;
-    this.todayAccesses = this.accesses.filter(a => a.timestamp.includes('2025-06-16')).length;
-    this.monthlyRevenue = this.subscriptions.filter(s => s.isActive).reduce((sum, s) => sum + s.price, 0);
+  private loadStats(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.dashboardService.getDashboardStats().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.totalUsers = response.data.totale_utenti;
+            this.activeUsers = response.data.utenti_attivi;
+            this.totalSubscriptions = response.data.abbonamenti_attivi;
+            this.todayAccesses = response.data.accessi_oggi;
+            this.monthlyRevenue = response.data.ricavi_mensili;
+            resolve();
+          } else {
+            reject(new Error(response.message || 'Errore nel caricamento statistiche'));
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
   }
+
+  // Metodi di utilità per la conversione dei dati
+  private mapSubscriptionType(tipo: string): 'monthly' | 'quarterly' | 'yearly' {
+    switch (tipo) {
+      case 'mensile': return 'monthly';
+      case 'trimestrale': return 'quarterly';
+      case 'annuale': return 'yearly';
+      default: return 'monthly';
+    }
+  }
+
+  private formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('it-IT');
+  }
+  private formatDateTime(dateString: string): string {
+    return new Date(dateString).toLocaleString('it-IT');
+  }
+
+  // Metodi esistenti per gestire l'UI (mantenuti dal codice originale)
 
   // Metodi per cambiare vista
+  onViewChange(view: 'users' | 'subscriptions' | 'accesses' | 'stats') {
+    this.currentView = view;
+  }
+
   showUsers() { this.currentView = 'users'; }
   showSubscriptions() { this.currentView = 'subscriptions'; }
   showAccesses() { this.currentView = 'accesses'; }
@@ -180,58 +291,123 @@ export class DashboardComponent implements OnInit {
     this.resetUserForm();
     this.selectedUser = null;
   }
-
   saveUser() {
+    if (!this.userForm.name || !this.userForm.email) {
+      alert('Nome e email sono obbligatori');
+      return;
+    }
+
+    // Estrai nome e cognome dal campo name
+    const nameParts = this.userForm.name.trim().split(' ');
+    const nome = nameParts[0] || '';
+    const cognome = nameParts.slice(1).join(' ') || '';
+
+    const userData = {
+      nome,
+      cognome,
+      email: this.userForm.email,
+      telefono: this.userForm.phone,
+      attivo: this.userForm.isActive
+    };
+
+    this.isLoading = true;
+
     if (this.selectedUser) {
       // Update existing user
-      const index = this.users.findIndex(u => u.id === this.selectedUser!.id);
-      if (index > -1) {
-        this.users[index] = { ...this.users[index], ...this.userForm };
-      }
+      this.dashboardService.updateUser(this.selectedUser.id, userData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.loadDashboardData(); // Ricarica tutti i dati
+            this.closeUserModal();
+          } else {
+            alert(response.message);
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Errore nell\'aggiornamento utente:', error);
+          alert('Errore nell\'aggiornamento dell\'utente');
+        }
+      });
     } else {
       // Add new user
-      const newUser: User = {
-        ...this.userForm,
-        id: Math.max(...this.users.map(u => u.id)) + 1,
-        registrationDate: new Date().toISOString().split('T')[0],
-        isActive: true
-      };
-      this.users.push(newUser);
+      this.dashboardService.createUser(userData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.loadDashboardData(); // Ricarica tutti i dati
+            this.closeUserModal();
+          } else {
+            alert(response.message);
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Errore nella creazione utente:', error);
+          alert('Errore nella creazione dell\'utente');
+        }
+      });
     }
-    this.updateCounters();
-    this.closeUserModal();
   }
 
   deleteUser(userId: number) {
     if (confirm('Sei sicuro di voler eliminare questo utente?')) {
-      this.users = this.users.filter(u => u.id !== userId);
-      this.updateCounters();
+      this.isLoading = true;
+
+      this.dashboardService.deleteUser(userId).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.loadDashboardData(); // Ricarica tutti i dati
+          } else {
+            alert(response.message);
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Errore nell\'eliminazione utente:', error);
+          alert('Errore nell\'eliminazione dell\'utente');
+        }
+      });
     }
   }
 
   assignSubscription(userId: number, subscriptionType: 'monthly' | 'quarterly' | 'yearly') {
-    const user = this.users.find(u => u.id === userId);
-    if (!user) return;
-
-    const prices = { monthly: 49.99, quarterly: 139.99, yearly: 499.99 };
+    const prices = { monthly: 50.00, quarterly: 140.00, yearly: 500.00 };
     const durations = { monthly: 1, quarterly: 3, yearly: 12 };
+    const typeMapping = { monthly: 'mensile', quarterly: 'trimestrale', yearly: 'annuale' } as const;
 
     const startDate = new Date();
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + durations[subscriptionType]);
 
-    const newSubscription: Subscription = {
-      id: Math.max(...this.subscriptions.map(s => s.id)) + 1,
-      type: subscriptionType,
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      price: prices[subscriptionType],
-      isActive: true
+    const subscriptionData = {
+      user_id: userId,
+      tipo: typeMapping[subscriptionType],
+      data_inizio: startDate.toISOString().split('T')[0],
+      data_fine: endDate.toISOString().split('T')[0],
+      prezzo: prices[subscriptionType],
+      attivo: true
     };
 
-    this.subscriptions.push(newSubscription);
-    user.subscription = newSubscription;
-    this.updateCounters();
+    this.isLoading = true;
+
+    this.dashboardService.createSubscription(subscriptionData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.loadDashboardData(); // Ricarica tutti i dati
+        } else {
+          alert(response.message);
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Errore nella creazione abbonamento:', error);
+        alert('Errore nella creazione dell\'abbonamento');
+      }
+    });
   }
 
   // Gestione accessi
@@ -243,26 +419,35 @@ export class DashboardComponent implements OnInit {
   closeAccessModal() {
     this.showAccessModal = false;
   }
-
   registerAccess() {
-    const user = this.users.find(u => u.id === this.accessForm.userId);
-    if (!user) {
-      alert('Utente non trovato');
+    if (!this.accessForm.userId) {
+      alert('Seleziona un utente');
       return;
     }
 
-    const newAccess: Access = {
-      id: Math.max(...this.accesses.map(a => a.id)) + 1,
-      userId: this.accessForm.userId,
-      userName: user.name,
-      timestamp: new Date().toLocaleString('it-IT'),
-      type: this.accessForm.type
-    };
+    const accessData = {
+      user_id: this.accessForm.userId,
+      tipo: this.accessForm.type === 'entry' ? 'entrata' : 'uscita'
+    } as const;
 
-    this.accesses.unshift(newAccess);
-    user.lastAccess = new Date().toISOString().split('T')[0];
-    this.updateCounters();
-    this.closeAccessModal();
+    this.isLoading = true;
+
+    this.dashboardService.createAccess(accessData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.loadDashboardData(); // Ricarica tutti i dati
+          this.closeAccessModal();
+        } else {
+          alert(response.message);
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Errore nella registrazione accesso:', error);
+        alert('Errore nella registrazione dell\'accesso');
+      }
+    });
   }
 
   // Helper methods for template

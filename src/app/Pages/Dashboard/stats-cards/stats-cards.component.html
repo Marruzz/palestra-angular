@@ -1,0 +1,169 @@
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8 justify-items-center xl:justify-items-center w-full max-w-6xl"
+    >
+      <div
+        class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300 w-full max-w-xs xl:max-w-none"
+      >
+        <div class="flex items-center justify-center xl:justify-start">
+          <div
+            class="p-3 lg:p-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
+          >
+            <svg
+              class="w-6 h-6 lg:w-7 lg:h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-4 lg:ml-5 min-w-0 text-center xl:text-left">
+            <p
+              class="text-sm lg:text-base font-medium text-gray-600 truncate mb-1"
+            >
+              Utenti Totali
+            </p>
+            <p class="text-2xl lg:text-3xl font-bold text-gray-900">
+              {{ totalUsers }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300 w-full max-w-xs xl:max-w-none"
+      >
+        <div class="flex items-center justify-center xl:justify-start">
+          <div
+            class="p-3 lg:p-4 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+          >
+            <svg
+              class="w-6 h-6 lg:w-7 lg:h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-4 lg:ml-5 min-w-0 text-center xl:text-left">
+            <p
+              class="text-sm lg:text-base font-medium text-gray-600 truncate mb-1"
+            >
+              Utenti Attivi
+            </p>
+            <p class="text-2xl lg:text-3xl font-bold text-gray-900">
+              {{ activeUsers }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300 w-full max-w-xs xl:max-w-none"
+      >
+        <div class="flex items-center justify-center xl:justify-start">
+          <div
+            class="p-3 lg:p-4 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg"
+          >
+            <svg
+              class="w-6 h-6 lg:w-7 lg:h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-4 lg:ml-5 min-w-0 text-center xl:text-left">
+            <p
+              class="text-sm lg:text-base font-medium text-gray-600 truncate mb-1"
+            >
+              Abbonamenti
+            </p>
+            <p class="text-2xl lg:text-3xl font-bold text-gray-900">
+              {{ totalSubscriptions }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300 w-full max-w-xs xl:max-w-none"
+      >
+        <div class="flex items-center justify-center xl:justify-start">
+          <div
+            class="p-3 lg:p-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg"
+          >
+            <svg
+              class="w-6 h-6 lg:w-7 lg:h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-4 lg:ml-5 min-w-0 text-center xl:text-left">
+            <p
+              class="text-sm lg:text-base font-medium text-gray-600 truncate mb-1"
+            >
+              Accessi Oggi
+            </p>
+            <p class="text-2xl lg:text-3xl font-bold text-gray-900">
+              {{ todayAccesses }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300 w-full max-w-xs xl:max-w-none"
+      >
+        <div class="flex items-center justify-center xl:justify-start">
+          <div
+            class="p-3 lg:p-4 rounded-xl bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg"
+          >
+            <svg
+              class="w-6 h-6 lg:w-7 lg:h-7"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-4 lg:ml-5 min-w-0 text-center xl:text-left">
+            <p
+              class="text-sm lg:text-base font-medium text-gray-600 truncate mb-1"
+            >
+              Ricavi Mensili
+            </p>
+            <p class="text-2xl lg:text-3xl font-bold text-gray-900">
+              €{{ monthlyRevenue.toFixed(2) }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
