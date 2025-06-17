@@ -257,15 +257,17 @@ export class DashboardComponent implements OnInit {
         },
       });
     });
-  }
-  private async loadStats(): Promise<void> {
+  }  private async loadStats(): Promise<void> {
+    console.log('Loading stats...');
     return new Promise((resolve, reject) => {
       this.statsService.calculateStats().subscribe({
         next: (stats) => {
+          console.log('Stats loaded successfully:', stats);
           this.stats = stats;
           resolve();
         },
         error: (error) => {
+          console.error('Error loading stats:', error);
           reject(error);
         },
       });

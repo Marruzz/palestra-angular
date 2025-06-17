@@ -72,9 +72,7 @@ export class StatsService {
   private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
-  /**
-   * Ottiene tutti i dati grezzi necessari per i calcoli
-   */
+
   private getRawData(): Observable<{
     users: RawUser[];
     accessi: RawAccesso[];
@@ -93,50 +91,70 @@ export class StatsService {
       ),
       corsi: this.http.get<RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`).pipe(
         catchError(() => of([]))
-      )
+      ),
     });
-  }
-  calculateStats(): Observable<CalculatedStats> {
+  }  calculateStats(): Observable<CalculatedStats> {
     return this.getRawData().pipe(
       map(({ users, accessi, abbonamenti, corsi }) => {
+        // Validazione dei dati di input
+        const validUsers = Array.isArray(users) ? users : [];
+        const validAccessi = Array.isArray(accessi) ? accessi : [];
+        const validAbbonamenti = Array.isArray(abbonamenti) ? abbonamenti : [];
+        const validCorsi = Array.isArray(corsi) ? corsi : [];
+
+        console.log('Raw data validation:', {
+          users: { isArray: Array.isArray(users), length: validUsers.length },
+          accessi: { isArray: Array.isArray(accessi), length: validAccessi.length },
+          abbonamenti: { isArray: Array.isArray(abbonamenti), length: validAbbonamenti.length },
+          corsi: { isArray: Array.isArray(corsi), length: validCorsi.length }
+        });
+
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
         const oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
         const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
 
+        console.log('Raw data counts:', {
+          users: users.length,
+          accessi: accessi.length,
+          abbonamenti: abbonamenti.length,
+          corsi: corsi.length
+        });
+
         // 1. Totale utenti
         const totale_utenti = users.length;
 
         // 2. Utenti entrati oggi
+        const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
         const accessiOggi = accessi.filter(a => {
-          const dataAccesso = new Date(a.data_accesso);
-          return dataAccesso >= today && dataAccesso < new Date(today.getTime() + 24 * 60 * 60 * 1000);
+          return a.data_accesso === todayString;
         });
 
-        const utentiUniviOggi = new Set(accessiOggi.map(a => a.id_utente));
-        const utenti_entrati_oggi = utentiUniviOggi.size;        // 3. Abbonamenti attivi - utilizza il campo 'attivo' dal database
+        const utentiUniciOggi = new Set(accessiOggi.map(a => a.id_utente));
+        const utenti_entrati_oggi = utentiUniciOggi.size;
+        // 3. Abbonamenti attivi - utilizza il campo 'attivo' dal database
         const abbonamenti_attivi = abbonamenti.filter(a => Boolean(a.attivo)).length;
 
         // 4. Accessi oggi
         const accessi_oggi = accessiOggi.length;
 
         // 5. Accessi settimana
+        const oneWeekAgoString = oneWeekAgo.toISOString().split('T')[0];
         const accessi_settimana = accessi.filter(a => {
-          const dataAccesso = new Date(a.data_accesso);
-          return dataAccesso >= oneWeekAgo;
+          return a.data_accesso >= oneWeekAgoString;
         }).length;
 
         // 6. Accessi mese
+        const oneMonthAgoString = oneMonthAgo.toISOString().split('T')[0];
         const accessi_mese = accessi.filter(a => {
-          const dataAccesso = new Date(a.data_accesso);
-          return dataAccesso >= oneMonthAgo;
+          return a.data_accesso >= oneMonthAgoString;
         }).length;
 
         // 7. Accessi anno
+        const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
         const accessi_anno = accessi.filter(a => {
-          const dataAccesso = new Date(a.data_accesso);
-          return dataAccesso >= oneYearAgo;
+          return a.data_accesso >= oneYearAgoString;
         }).length;
 
         // 8. Accessi sempre (totale)
@@ -163,12 +181,10 @@ export class StatsService {
         const tempo_medio_entrata = this.calculateAverageEntryTime(accessi);
 
         // 15. Durata media corso
-        const durata_media_corso = this.calculateAverageCourseLength(abbonamenti);
-
-        // Ultimi accessi
+        const durata_media_corso = this.calculateAverageCourseLength(abbonamenti);        // Ultimi accessi
         const ultimi_accessi = this.getRecentAccesses(accessi, users);
 
-        return {
+        const calculatedStats = {
           totale_utenti,
           utenti_entrati_oggi,
           abbonamenti_attivi,
@@ -186,6 +202,10 @@ export class StatsService {
           durata_media_corso,
           ultimi_accessi
         };
+
+        console.log('Calculated stats:', calculatedStats);
+
+        return calculatedStats;
       }),
       catchError(error => {
         console.error('Errore nel calcolo delle statistiche:', error);
@@ -219,12 +239,19 @@ export class StatsService {
 
   /**
    * Calcola le statistiche dei corsi
-   */
-  private calculateCourseStats(abbonamenti: RawAbbonamento[], corsi: RawCorso[]): {
+   */  private calculateCourseStats(abbonamenti: RawAbbonamento[], corsi: RawCorso[]): {
     mostPopular: string;
     leastPopular: string;
   } {
-    if (corsi.length === 0) {
+    // Verifica che corsi sia un array e non sia vuoto
+    if (!Array.isArray(corsi) || corsi.length === 0) {
+      console.warn('Corsi non è un array valido o è vuoto:', corsi);
+      return { mostPopular: 'N/A', leastPopular: 'N/A' };
+    }
+
+    // Verifica che abbonamenti sia un array
+    if (!Array.isArray(abbonamenti)) {
+      console.warn('Abbonamenti non è un array valido:', abbonamenti);
       return { mostPopular: 'N/A', leastPopular: 'N/A' };
     }
 
