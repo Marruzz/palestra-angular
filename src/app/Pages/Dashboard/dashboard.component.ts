@@ -39,13 +39,21 @@ import {
 export class DashboardComponent implements OnInit {
   @Output() logout = new EventEmitter<void>();
   private router = inject(Router);
-
   // Dati dal database
   users: PalestraUser[] = [];
   abbonamenti: Abbonamento[] = [];
   ingressi: Ingresso[] = [];
   corsi: Corso[] = [];
   stats: DashboardStats | null = null;
+
+  // Stato del caricamento per ogni sezione
+  private loadedSections = {
+    users: false,
+    subscriptions: false,
+    accesses: false,
+    stats: false,
+    corsi: false
+  };
 
   // Stato dell'applicazione
   currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' = 'users';
@@ -90,34 +98,98 @@ export class DashboardComponent implements OnInit {
     descrizione: '',
     durata_mesi_default: 1
   };
-
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit() {
-    this.loadDashboardData();
+    // Carica solo le statistiche all'avvio per il riepilogo iniziale
+    this.loadStatsIfNeeded();
   }
 
-  private loadDashboardData() {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    // Carica tutti i dati in parallelo
-    Promise.all([
-      this.loadUsers(),
-      this.loadSubscriptions(),
-      this.loadAccesses(),
-      this.loadStats(),
-      this.loadCorsi()
-    ]).then(() => {
-      this.isLoading = false;
-    }).catch(error => {
-      console.error('Errore nel caricamento dei dati:', error);
-      this.errorMessage = 'Errore nel caricamento dei dati. Riprova più tardi.';
-      this.isLoading = false;
-    });
+  private async loadDashboardData() {
+    // Metodo deprecato - ora i dati vengono caricati on-demand
   }
 
-  private loadUsers(): Promise<void> {
+  // Caricamento lazy dei dati per sezione
+  private async loadUsersIfNeeded(): Promise<void> {
+    if (this.loadedSections.users) return;
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+      await this.loadUsers();
+      this.loadedSections.users = true;
+    } catch (error) {
+      console.error('Errore nel caricamento utenti:', error);
+      this.errorMessage = 'Errore nel caricamento utenti. Riprova più tardi.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async loadSubscriptionsIfNeeded(): Promise<void> {
+    if (this.loadedSections.subscriptions) return;
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+      await this.loadSubscriptions();
+      this.loadedSections.subscriptions = true;
+    } catch (error) {
+      console.error('Errore nel caricamento abbonamenti:', error);
+      this.errorMessage = 'Errore nel caricamento abbonamenti. Riprova più tardi.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async loadAccessesIfNeeded(): Promise<void> {
+    if (this.loadedSections.accesses) return;
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+      await this.loadAccesses();
+      this.loadedSections.accesses = true;
+    } catch (error) {
+      console.error('Errore nel caricamento accessi:', error);
+      this.errorMessage = 'Errore nel caricamento accessi. Riprova più tardi.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async loadStatsIfNeeded(): Promise<void> {
+    if (this.loadedSections.stats) return;
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+      await this.loadStats();
+      this.loadedSections.stats = true;
+    } catch (error) {
+      console.error('Errore nel caricamento statistiche:', error);
+      this.errorMessage = 'Errore nel caricamento statistiche. Riprova più tardi.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async loadCorsiIfNeeded(): Promise<void> {
+    if (this.loadedSections.corsi) return;
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+      await this.loadCorsi();
+      this.loadedSections.corsi = true;
+    } catch (error) {
+      console.error('Errore nel caricamento corsi:', error);
+      this.errorMessage = 'Errore nel caricamento corsi. Riprova più tardi.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+  private async loadUsers(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
@@ -135,7 +207,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private loadSubscriptions(): Promise<void> {
+  private async loadSubscriptions(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getSubscriptions().subscribe({
         next: (response) => {
@@ -153,7 +225,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private loadAccesses(): Promise<void> {
+  private async loadAccesses(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getAccesses().subscribe({
         next: (response) => {
@@ -171,7 +243,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private loadStats(): Promise<void> {
+  private async loadStats(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getDashboardStats().subscribe({
         next: (response) => {
@@ -189,7 +261,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private loadCorsi(): Promise<void> {
+  private async loadCorsi(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getCorsi().subscribe({
         next: (response) => {
@@ -206,14 +278,43 @@ export class DashboardComponent implements OnInit {
       });
     });
   }
-
   // Gestione delle viste
-  setView(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
+  async setView(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
     this.currentView = view;
-  }
 
+    // Carica i dati specifici per la vista selezionata
+    switch (view) {
+      case 'users':
+        await this.loadUsersIfNeeded();
+        break;
+      case 'subscriptions':
+        // Carica utenti e corsi se necessario per i dropdown
+        await Promise.all([
+          this.loadSubscriptionsIfNeeded(),
+          this.loadUsersIfNeeded(),
+          this.loadCorsiIfNeeded()
+        ]);
+        break;
+      case 'accesses':
+        // Carica utenti se necessario per i dropdown
+        await Promise.all([
+          this.loadAccessesIfNeeded(),
+          this.loadUsersIfNeeded()
+        ]);
+        break;
+      case 'stats':
+        await this.loadStatsIfNeeded();
+        break;
+      case 'corsi':
+        await this.loadCorsiIfNeeded();
+        break;
+    }
+  }
   // Gestione utenti
-  openUserModal(user?: PalestraUser) {
+  async openUserModal(user?: PalestraUser) {
+    // Assicurati che i corsi siano caricati per il dropdown
+    await this.loadCorsiIfNeeded();
+
     this.selectedUser = user || null;
     if (user) {
       this.userForm = {
@@ -246,60 +347,91 @@ export class DashboardComponent implements OnInit {
       codice_fiscale: ''
     };
   }
+  async saveUser() {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-  saveUser() {
-    if (this.selectedUser) {
-      // Aggiorna utente esistente
-      this.dashboardService.updateUser(this.selectedUser.id, this.userForm).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadUsers();
-            this.closeUserModal();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nell\'aggiornamento utente';
-        }
-      });
-    } else {
-      // Crea nuovo utente
-      this.dashboardService.createUser(this.userForm).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadUsers();
-            this.closeUserModal();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nella creazione utente';
-        }
-      });
+      if (this.selectedUser) {
+        // Aggiorna utente esistente
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.updateUser(this.selectedUser!.id, this.userForm).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      } else {
+        // Crea nuovo utente
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.createUser(this.userForm).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      }
+
+      // Ricarica i dati utenti
+      this.loadedSections.users = false;
+      await this.loadUsersIfNeeded();
+      this.closeUserModal();
+
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nell\'operazione utente';
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  deleteUser(user: PalestraUser) {
+  async deleteUser(user: PalestraUser) {
     if (confirm(`Sei sicuro di voler eliminare l'utente ${user.nome} ${user.cognome}?`)) {
-      this.dashboardService.deleteUser(user.id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadUsers();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nell\'eliminazione utente';
-        }
-      });
+      try {
+        this.isLoading = true;
+        this.errorMessage = '';
+
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.deleteUser(user.id).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+
+        // Ricarica i dati utenti
+        this.loadedSections.users = false;
+        await this.loadUsersIfNeeded();
+
+      } catch (error: any) {
+        this.errorMessage = error.message || 'Errore nell\'eliminazione utente';
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
-
   // Gestione abbonamenti
-  openSubscriptionModal(abbonamento?: Abbonamento) {
+  async openSubscriptionModal(abbonamento?: Abbonamento) {
+    // Assicurati che utenti e corsi siano caricati per i dropdown
+    await Promise.all([
+      this.loadUsersIfNeeded(),
+      this.loadCorsiIfNeeded()
+    ]);
+
     this.selectedAbbonamento = abbonamento || null;
     if (abbonamento) {
       this.subscriptionForm = {
@@ -330,60 +462,88 @@ export class DashboardComponent implements OnInit {
       durata_mesi: 1
     };
   }
+  async saveSubscription() {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-  saveSubscription() {
-    if (this.selectedAbbonamento) {
-      // Aggiorna abbonamento esistente
-      this.dashboardService.updateSubscription(this.selectedAbbonamento.id, this.subscriptionForm).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadSubscriptions();
-            this.closeSubscriptionModal();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nell\'aggiornamento abbonamento';
-        }
-      });
-    } else {
-      // Crea nuovo abbonamento
-      this.dashboardService.createSubscription(this.subscriptionForm).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadSubscriptions();
-            this.closeSubscriptionModal();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nella creazione abbonamento';
-        }
-      });
+      if (this.selectedAbbonamento) {
+        // Aggiorna abbonamento esistente
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.updateSubscription(this.selectedAbbonamento!.id, this.subscriptionForm).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      } else {
+        // Crea nuovo abbonamento
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.createSubscription(this.subscriptionForm).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+      }
+
+      // Ricarica i dati abbonamenti
+      this.loadedSections.subscriptions = false;
+      await this.loadSubscriptionsIfNeeded();
+      this.closeSubscriptionModal();
+
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nell\'operazione abbonamento';
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  deleteSubscription(abbonamento: Abbonamento) {
+  async deleteSubscription(abbonamento: Abbonamento) {
     if (confirm(`Sei sicuro di voler eliminare questo abbonamento?`)) {
-      this.dashboardService.deleteSubscription(abbonamento.id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadSubscriptions();
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.errorMessage = 'Errore nell\'eliminazione abbonamento';
-        }
-      });
+      try {
+        this.isLoading = true;
+        this.errorMessage = '';
+
+        await new Promise<void>((resolve, reject) => {
+          this.dashboardService.deleteSubscription(abbonamento.id).subscribe({
+            next: (response) => {
+              if (response.success) {
+                resolve();
+              } else {
+                reject(new Error(response.message));
+              }
+            },
+            error: reject
+          });
+        });
+
+        // Ricarica i dati abbonamenti
+        this.loadedSections.subscriptions = false;
+        await this.loadSubscriptionsIfNeeded();
+
+      } catch (error: any) {
+        this.errorMessage = error.message || 'Errore nell\'eliminazione abbonamento';
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
-
   // Gestione accessi
-  openAccessModal() {
+  async openAccessModal() {
+    // Assicurati che gli utenti siano caricati per il dropdown
+    await this.loadUsersIfNeeded();
+
     this.resetAccessForm();
     this.showAccessModal = true;
   }
@@ -399,22 +559,38 @@ export class DashboardComponent implements OnInit {
       data_ora: new Date().toISOString().slice(0, 16) // Formato datetime-local
     };
   }
+  async saveAccess() {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-  saveAccess() {
-    this.dashboardService.createAccess(this.accessForm).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.loadAccesses();
-          this.loadStats(); // Aggiorna le statistiche
-          this.closeAccessModal();
-        } else {
-          this.errorMessage = response.message;
-        }
-      },
-      error: (error) => {
-        this.errorMessage = 'Errore nella registrazione accesso';
-      }
-    });
+      await new Promise<void>((resolve, reject) => {
+        this.dashboardService.createAccess(this.accessForm).subscribe({
+          next: (response) => {
+            if (response.success) {
+              resolve();
+            } else {
+              reject(new Error(response.message));
+            }
+          },
+          error: reject
+        });
+      });
+
+      // Ricarica accessi e statistiche
+      this.loadedSections.accesses = false;
+      this.loadedSections.stats = false;
+      await Promise.all([
+        this.loadAccessesIfNeeded(),
+        this.loadStatsIfNeeded()
+      ]);
+      this.closeAccessModal();
+
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nella registrazione accesso';
+    } finally {
+      this.isLoading = false;
+    }
   }
   // Gestione corsi
   openCorsoModal(corso?: Corso) {
@@ -444,35 +620,59 @@ export class DashboardComponent implements OnInit {
       descrizione: '',
       durata_mesi_default: 1
     };
-  }
-  saveCorso() {
+  }  async saveCorso() {
     // Validazione client-side
     if (!this.corsoForm.nome_corso || this.corsoForm.nome_corso.trim() === '') {
       this.errorMessage = 'Il nome del corso è obbligatorio';
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.dashboardService.createCorso(this.corsoForm).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.loadCorsi();
-          this.closeCorsoModal();
-          // Opzionalmente mostra un messaggio di successo
-          console.log('Corso creato con successo:', response.message);
-        } else {
-          this.errorMessage = response.message || 'Errore sconosciuto';
-        }
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Errore nella creazione corso:', error);
-        this.errorMessage = error.message || 'Errore nella comunicazione con il server';
-      }
+      await new Promise<void>((resolve, reject) => {
+        this.dashboardService.createCorso(this.corsoForm).subscribe({
+          next: (response) => {
+            if (response.success) {
+              resolve();
+            } else {
+              reject(new Error(response.message || 'Errore sconosciuto'));
+            }
+          },
+          error: reject
+        });
+      });
+
+      // Ricarica i corsi
+      this.loadedSections.corsi = false;
+      await this.loadCorsiIfNeeded();
+      this.closeCorsoModal();
+
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nella comunicazione con il server';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // Metodi di utility per il refresh forzato dei dati
+  async refreshCurrentView(): Promise<void> {
+    // Reset del flag di caricamento per la vista corrente
+    this.loadedSections[this.currentView] = false;
+
+    // Ricarica i dati per la vista corrente
+    await this.setView(this.currentView);
+  }
+
+  async refreshAllData(): Promise<void> {
+    // Reset di tutti i flag di caricamento
+    Object.keys(this.loadedSections).forEach(key => {
+      this.loadedSections[key as keyof typeof this.loadedSections] = false;
     });
+
+    // Ricarica solo le statistiche iniziali
+    await this.loadStatsIfNeeded();
   }
 
   // Utility methods
