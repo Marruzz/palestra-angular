@@ -65,7 +65,7 @@ export interface DashboardStats {
 })
 export class DashboardService {
   private apiUrl = 'http://localhost:3000/api';
-  
+
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
@@ -119,7 +119,6 @@ export class DashboardService {
       })
     );
   }
-
   // Metodi per gestire i corsi
   getCorsi(): Observable<{ success: boolean; data: Corso[]; message?: string }> {
     return this.http.get<{ success: boolean; data: Corso[]; message?: string }>(
@@ -127,11 +126,17 @@ export class DashboardService {
       { headers: this.getHeaders() }
     ).pipe(
       catchError(error => {
-        return throwError(() => new Error('Backend non disponibile'));
+        console.error('Errore nella chiamata API getCorsi:', error);
+        if (error.status === 0) {
+          return throwError(() => new Error('Backend non disponibile'));
+        } else if (error.error && error.error.message) {
+          return throwError(() => new Error(error.error.message));
+        } else {
+          return throwError(() => new Error(`Errore del server: ${error.status} ${error.statusText}`));
+        }
       })
     );
   }
-
   createCorso(corso: Partial<Corso>): Observable<{ success: boolean; data?: Corso; message: string }> {
     return this.http.post<{ success: boolean; data?: Corso; message: string }>(
       `${this.apiUrl}/dashboard/corsi`,
@@ -139,7 +144,14 @@ export class DashboardService {
       { headers: this.getHeaders() }
     ).pipe(
       catchError(error => {
-        return throwError(() => new Error('Backend non disponibile'));
+        console.error('Errore nella chiamata API createCorso:', error);
+        if (error.status === 0) {
+          return throwError(() => new Error('Backend non disponibile'));
+        } else if (error.error && error.error.message) {
+          return throwError(() => new Error(error.error.message));
+        } else {
+          return throwError(() => new Error(`Errore del server: ${error.status} ${error.statusText}`));
+        }
       })
     );
   }
@@ -203,7 +215,7 @@ export class DashboardService {
     );
   }
 
-  createAccess(ingresso: { id_utente: number }): Observable<{ success: boolean; data?: Ingresso; message: string }> {
+  createAccess(ingresso: { id_utente: number; data_ora?: string }): Observable<{ success: boolean; data?: Ingresso; message: string }> {
     return this.http.post<{ success: boolean; data?: Ingresso; message: string }>(
       `${this.apiUrl}/dashboard/accesses`,
       ingresso,

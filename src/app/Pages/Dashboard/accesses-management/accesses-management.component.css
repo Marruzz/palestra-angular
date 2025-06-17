@@ -1,1 +1,24 @@
 /* Styles per accesses-management component */
+
+/* Ottimizzazioni specifiche per la gestione accessi */
+@media (max-width: 640px) {
+  .access-card {
+    padding: 0.75rem;
+  }
+
+  .access-time {
+    font-size: 0.75rem;
+    font-family: monospace;
+  }
+}
+
+/* Badge per il tipo di accesso più compatto */
+.access-type-badge {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Miglioramento per i timestamp */
+.timestamp-display {
+  font-variant-numeric: tabular-nums;
+}

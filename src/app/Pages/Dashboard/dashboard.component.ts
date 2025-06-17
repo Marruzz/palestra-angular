@@ -79,7 +79,8 @@ export class DashboardComponent implements OnInit {
 
   // Form data per accessi
   accessForm = {
-    id_utente: 0
+    id_utente: 0,
+    data_ora: new Date().toISOString().slice(0, 16) // Formato datetime-local
   };
 
   // Form data per corsi
@@ -394,7 +395,8 @@ export class DashboardComponent implements OnInit {
 
   private resetAccessForm() {
     this.accessForm = {
-      id_utente: 0
+      id_utente: 0,
+      data_ora: new Date().toISOString().slice(0, 16) // Formato datetime-local
     };
   }
 
@@ -414,9 +416,9 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-
   // Gestione corsi
   openCorsoModal(corso?: Corso) {
+    this.errorMessage = ''; // Pulisce eventuali errori precedenti
     if (corso) {
       this.corsoForm = {
         id: corso.id,
@@ -429,9 +431,9 @@ export class DashboardComponent implements OnInit {
     }
     this.showCorsoModal = true;
   }
-
   closeCorsoModal() {
     this.showCorsoModal = false;
+    this.errorMessage = '';
     this.resetCorsoForm();
   }
 
@@ -443,19 +445,32 @@ export class DashboardComponent implements OnInit {
       durata_mesi_default: 1
     };
   }
-
   saveCorso() {
+    // Validazione client-side
+    if (!this.corsoForm.nome_corso || this.corsoForm.nome_corso.trim() === '') {
+      this.errorMessage = 'Il nome del corso è obbligatorio';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.dashboardService.createCorso(this.corsoForm).subscribe({
       next: (response) => {
+        this.isLoading = false;
         if (response.success) {
           this.loadCorsi();
           this.closeCorsoModal();
+          // Opzionalmente mostra un messaggio di successo
+          console.log('Corso creato con successo:', response.message);
         } else {
-          this.errorMessage = response.message;
+          this.errorMessage = response.message || 'Errore sconosciuto';
         }
       },
       error: (error) => {
-        this.errorMessage = 'Errore nella creazione corso';
+        this.isLoading = false;
+        console.error('Errore nella creazione corso:', error);
+        this.errorMessage = error.message || 'Errore nella comunicazione con il server';
       }
     });
   }

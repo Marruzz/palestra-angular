@@ -1,2 +1,39 @@
 /* Styles per users-management component */
 /* Le classi CSS sono gestite direttamente nel template usando Tailwind CSS */
+
+/* Ottimizzazioni specifiche per la gestione utenti */
+@media (max-width: 640px) {
+  .user-card {
+    padding: 0.75rem;
+  }
+
+  .user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.875rem;
+  }
+
+  .user-actions {
+    gap: 0.25rem;
+  }
+}
+
+/* Assicura che le email lunghe non rompano il layout */
+.email-cell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .email-cell {
+    max-width: 200px;
+  }
+}
+
+/* Miglioramento per i codici fiscali */
+.cf-cell {
+  font-family: monospace;
+  font-size: 0.8em;
+}

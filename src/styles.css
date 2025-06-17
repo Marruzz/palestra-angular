@@ -1,1 +1,122 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Global styles for better responsiveness and readability */
+
+/* Ensure tables never overflow and are always readable */
+.table-responsive {
+  min-height: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text from breaking layout */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Better mobile card spacing */
+@media (max-width: 640px) {
+  .card-compact {
+    padding: 0.75rem;
+  }
+
+  /* Ensure buttons don't overlap */
+  .btn-mobile {
+    min-width: 60px;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Ensure modal content is always visible */
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Better spacing for very small screens */
+@media (max-width: 375px) {
+  .space-y-ultra-compact > * + * {
+    margin-top: 0.5rem;
+  }
+
+  .p-ultra-compact {
+    padding: 0.5rem;
+  }
+}
+
+/* Ensure action buttons always fit */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 80px;
+}
+
+@media (min-width: 1024px) {
+  .action-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* Table cell improvements */
+.table-cell-compact {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 1024px) {
+  .table-cell-compact {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Responsive text sizing */
+.text-responsive {
+  font-size: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .text-responsive {
+    font-size: 0.875rem;
+  }
+}
+
+/* Improve card layouts on small screens */
+.mobile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 1.5rem;
+}
+
+/* Ensure long text doesn't break layouts */
+.truncate-responsive {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+@media (min-width: 640px) {
+  .truncate-responsive {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .truncate-responsive {
+    max-width: none;
+    white-space: normal;
+  }
+}

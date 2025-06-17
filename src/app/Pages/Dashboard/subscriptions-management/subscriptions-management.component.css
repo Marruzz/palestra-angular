@@ -1,1 +1,25 @@
 /* Styles per subscriptions-management component */
+
+/* Ottimizzazioni specifiche per la gestione abbonamenti */
+@media (max-width: 640px) {
+  .subscription-card {
+    padding: 0.75rem;
+  }
+
+  .price-display {
+    font-weight: 600;
+    color: #059669;
+  }
+}
+
+/* Miglioramento per le date su mobile */
+.date-compact {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+/* Badge per stati abbonamenti più compatti */
+.status-badge-compact {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+}
