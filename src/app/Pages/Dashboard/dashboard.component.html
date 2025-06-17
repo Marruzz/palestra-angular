@@ -2,9 +2,9 @@
 <app-loading-spinner [isLoading]="isLoading" />
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-  <!-- Main Content -->
+
   <div *ngIf="!isLoading" class="container mx-auto px-4 py-8 max-w-7xl">
-    <!-- Welcome Section -->
+
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
       <div
         class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
@@ -81,12 +81,12 @@
         </div>
       </div>
     </div>
-    <!-- Stats Cards Summary (sempre visibili) -->
+
     <div class="mb-8">
-      <app-stats-cards-summary [stats]="stats" [isLoading]="isLoading" *ngIf="currentView !='stats'">
+      <app-stats-cards-summary [stats]="stats" [isLoading]="isLoading" *ngIf="currentView != 'stats'">
       </app-stats-cards-summary>
     </div>
-    <!-- Navigation Tabs -->
+
     <div class="mb-8">
       <app-navigation-tabs
         [currentView]="currentView"
@@ -95,7 +95,7 @@
       </app-navigation-tabs>
     </div>
 
-    <!-- Loading Indicator per sezioni specifiche -->
+
     <div *ngIf="isLoading" class="flex items-center justify-center py-12">
       <div class="flex items-center space-x-3">
         <div
@@ -106,9 +106,9 @@
         >
       </div>
     </div>
-    <!-- Content based on current view -->
+
     <div class="space-y-8" *ngIf="!isLoading">
-      <!-- Users Management -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="currentView === 'users'"
@@ -127,7 +127,7 @@
         </app-users-management>
       </div>
 
-      <!-- Subscriptions Management -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="currentView === 'subscriptions'"
@@ -146,7 +146,7 @@
         >
         </app-subscriptions-management>
       </div>
-      <!-- Accesses Management -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="currentView === 'accesses'"
@@ -163,7 +163,7 @@
         >
         </app-accesses-management>
       </div>
-      <!-- Corsi Management -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
         *ngIf="currentView === 'corsi'"
@@ -231,7 +231,7 @@
             *ngFor="let corso of corsi"
             class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group"
           >
-            <!-- ...existing corso card content... -->
+
             <div class="flex items-start justify-between mb-4">
               <div
                 class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200"
@@ -297,7 +297,7 @@
           </div>
         </div>
 
-        <!-- Template per quando non ci sono corsi -->
+
         <ng-template #noCorsi>
           <div class="text-center py-12">
             <svg
@@ -320,7 +320,7 @@
           </div>
         </ng-template>
 
-        <!-- Modal per Corso -->
+
         <div
           *ngIf="showCorsoModal"
           class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -354,7 +354,7 @@
               </button>
             </div>
 
-            <!-- Error Message -->
+
             <div
               *ngIf="errorMessage"
               class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-xl"
@@ -459,7 +459,7 @@
           </div>
         </div>
       </div>
-      <!-- Stats View -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
         *ngIf="currentView === 'stats'"
@@ -473,10 +473,10 @@
           </p>
         </div>
 
-        <!-- Utilizziamo il componente stats-cards per mostrare tutte le statistiche -->
+
         <app-stats-cards [stats]="stats" [isLoading]="isLoading"></app-stats-cards>
 
-        <!-- Sezione degli ultimi accessi -->
+
         <div class="mt-12">
           <h3 class="text-2xl font-bold text-gray-900 mb-6">Ultimi Accessi</h3>
           <div class="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-6">
@@ -520,7 +520,7 @@
         </div>
       </div>
 
-      <!-- Overview Section -->
+
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="!currentView"
@@ -536,7 +536,7 @@
     </div>
   </div>
 
-  <!-- Error Message -->
+
   <div *ngIf="errorMessage" class="fixed bottom-4 right-4 z-50">
     <div
       class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-lg max-w-sm"
