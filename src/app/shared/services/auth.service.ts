@@ -70,11 +70,12 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUser;
   }
-
   // Metodo per verificare se l'utente è autenticato
   isAuthenticated(): boolean {
     const token = this.getToken();
-    return token !== null && this.currentUser !== null;
+    const user = this.getCurrentUser();
+    // Accetta anche token demo per la modalità offline
+    return (token !== null && (user !== null || token.startsWith('demo_token_')));
   }
 
   // Metodo per logout

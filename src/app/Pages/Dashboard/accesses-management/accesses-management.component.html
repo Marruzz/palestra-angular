@@ -30,7 +30,7 @@
               <div class="flex items-center">
                 <div class="flex-shrink-0 h-10 w-10">
                   <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                    {{ access.userName.split(' ').map(n => n[0]).join('') }}
+                    {{ getUserInitials(access.userName) }}
                   </div>
                 </div>
                 <div class="ml-4">

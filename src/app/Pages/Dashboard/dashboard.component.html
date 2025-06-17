@@ -1,16 +1,12 @@
 <app-header />
 <app-loading-spinner [isLoading]="isLoading" />
-<div
-  class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mt-1 flex flex-col items-center w-full"
->
 
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mt-1 flex flex-col items-center w-full">
   <!-- Main Content -->
-  <div
-    *ngIf="!isLoading"
-    class="px-6 lg:px-8 space-y-8 w-full flex flex-col items-center"
-  >
+  <div *ngIf="!isLoading" class="px-6 lg:px-8 space-y-8 w-full flex flex-col items-center">
+
     <!-- Stats Cards -->
-    <app-stats-cards 
+    <app-stats-cards
       [totalUsers]="totalUsers"
       [activeUsers]="activeUsers"
       [totalSubscriptions]="totalSubscriptions"
@@ -30,15 +26,16 @@
     </app-panoramica-utenti-selection>
 
     <!-- Navigation Tabs -->
-    <app-navigation-tabs 
+    <app-navigation-tabs
       [currentView]="currentView"
       (viewChange)="onViewChange($event)">
     </app-navigation-tabs>
 
     <!-- Content based on current view -->
     <div class="w-full max-w-6xl">
+
       <!-- Users Management -->
-      <app-users-management 
+      <app-users-management
         *ngIf="currentView === 'users'"
         [users]="users"
         [showUserModal]="showUserModal"
@@ -52,13 +49,13 @@
       </app-users-management>
 
       <!-- Subscriptions Management -->
-      <app-subscriptions-management 
+      <app-subscriptions-management
         *ngIf="currentView === 'subscriptions'"
         [subscriptions]="subscriptions">
       </app-subscriptions-management>
 
       <!-- Accesses Management -->
-      <app-accesses-management 
+      <app-accesses-management
         *ngIf="currentView === 'accesses'"
         [accesses]="accesses"
         [users]="users"
@@ -69,31 +66,31 @@
         (accessRegister)="registerAccess()">
       </app-accesses-management>
 
-      <!-- Stats Overview -->
-      <app-stats-overview 
-        *ngIf="currentView === 'stats'"
-        [totalUsers]="totalUsers"
-        [activeUsers]="activeUsers"
-        [totalSubscriptions]="totalSubscriptions"
-        [todayAccesses]="todayAccesses"
-        [monthlyRevenue]="monthlyRevenue"
-        [subscriptions]="subscriptions">
-      </app-stats-overview>
-    </div>
-
-    <!-- Error Message -->
-    <div *ngIf="errorMessage" class="w-full max-w-6xl">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div class="flex">
-          <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <div>
-            <h3 class="text-sm font-medium text-red-800">Errore</h3>
-            <div class="text-sm text-red-700 mt-1">{{ errorMessage }}</div>
+      <!-- Stats View -->
+      <div *ngIf="currentView === 'stats'" class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Statistiche Dettagliate</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Statistiche avanzate qui -->
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Utenti Totali</h3>
+            <p class="text-3xl font-bold">{{ totalUsers }}</p>
+          </div>
+          <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Utenti Attivi</h3>
+            <p class="text-3xl font-bold">{{ activeUsers }}</p>
+          </div>
+          <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+            <h3 class="text-lg font-semibold mb-2">Ricavi Mensili</h3>
+            <p class="text-3xl font-bold">€{{ monthlyRevenue.toFixed(2) }}</p>
           </div>
         </div>
       </div>
+
     </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
+    {{ errorMessage }}
   </div>
 </div>

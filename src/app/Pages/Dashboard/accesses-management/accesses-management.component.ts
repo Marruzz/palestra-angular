@@ -71,4 +71,13 @@ export class AccessesManagementComponent {
   getTypeIcon(type: string): string {
     return type === 'entry' ? 'M11 16l-4-4m0 0l4-4m-4 4h14' : 'M13 8l4 4m0 0l-4 4m4-4H3';
   }
+
+  getUserInitials(name: string): string {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
 }

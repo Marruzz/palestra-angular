@@ -1,10 +1,15 @@
-import { StatsCards } from './stats-cards/stats-cards.component';
 import { Component, OnInit, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { LoadingSpinner } from "../../shared/loading-spinner/loading-spinner.component";
+import { StatsCards } from "./stats-cards/stats-cards.component";
+import { PanoramicaUtentiSelection } from "./panoramica-utenti-selection/panoramica-utenti-selection.component";
+import { NavigationTabs } from "./navigation-tabs/navigation-tabs.component";
+import { UsersManagementComponent } from "./users-management/users-management.component";
+import { SubscriptionsManagementComponent } from "./subscriptions-management/subscriptions-management.component";
+import { AccessesManagementComponent } from "./accesses-management/accesses-management.component";
 import {
   DashboardService,
   PalestraUser,
@@ -13,14 +18,7 @@ import {
   DashboardStats
 } from '../../shared/services/dashboard.service';
 import { AuthService } from '../../shared/services/auth.service';
-import { PanoramicaUtentiSelection } from "./panoramica-utenti-selection/panoramica-utenti-selection.component";
-import { NavigationTabs } from "./navigation-tabs/navigation-tabs.component";
-import { UsersManagementComponent } from "./users-management/users-management.component";
-import { SubscriptionsManagementComponent } from "./subscriptions-management/subscriptions-management.component";
-import { AccessesManagementComponent } from "./accesses-management/accesses-management.component";
-import { StatsOverviewComponent } from "./stats-overview/stats-overview.component";
 
-// Interfacce locali per compatibilità con il template esistente
 interface User {
   id: number;
   name: string;
@@ -52,17 +50,16 @@ interface Access {
 @Component({
   selector: 'app-dashboard',
   imports: [
-    CommonModule, 
-    FormsModule, 
-    HeaderComponent, 
-    LoadingSpinner, 
-    StatsCards, 
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    LoadingSpinner,
+    StatsCards,
     PanoramicaUtentiSelection,
     NavigationTabs,
     UsersManagementComponent,
     SubscriptionsManagementComponent,
-    AccessesManagementComponent,
-    StatsOverviewComponent
+    AccessesManagementComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
@@ -252,27 +249,15 @@ export class DashboardComponent implements OnInit {
   private formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('it-IT');
   }
+
   private formatDateTime(dateString: string): string {
     return new Date(dateString).toLocaleString('it-IT');
   }
 
-  // Metodi esistenti per gestire l'UI (mantenuti dal codice originale)
-
-  // Metodi per cambiare vista
+  // Metodi per gestire le viste
   onViewChange(view: 'users' | 'subscriptions' | 'accesses' | 'stats') {
     this.currentView = view;
   }
-
-  showUsers() { this.currentView = 'users'; }
-  showSubscriptions() { this.currentView = 'subscriptions'; }
-  showAccesses() { this.currentView = 'accesses'; }
-  showStats() { this.currentView = 'stats'; }
-
-  // Getter per le viste per risolvere problemi di tipo
-  get isUsersView() { return this.currentView === 'users'; }
-  get isSubscriptionsView() { return this.currentView === 'subscriptions'; }
-  get isAccessesView() { return this.currentView === 'accesses'; }
-  get isStatsView() { return this.currentView === 'stats'; }
 
   // Gestione utenti
   openUserModal(user?: User) {
@@ -291,6 +276,7 @@ export class DashboardComponent implements OnInit {
     this.resetUserForm();
     this.selectedUser = null;
   }
+
   saveUser() {
     if (!this.userForm.name || !this.userForm.email) {
       alert('Nome e email sono obbligatori');
@@ -427,8 +413,8 @@ export class DashboardComponent implements OnInit {
 
     const accessData = {
       user_id: this.accessForm.userId,
-      tipo: this.accessForm.type === 'entry' ? 'entrata' : 'uscita'
-    } as const;
+      tipo: this.accessForm.type === 'entry' ? 'entrata' as const : 'uscita' as const
+    };
 
     this.isLoading = true;
 
@@ -470,6 +456,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onLogout() {
+    this.authService.logout();
     this.logout.emit();
     this.router.navigate(['/login']);
   }
