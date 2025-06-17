@@ -28,18 +28,18 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Credenziali di fallback per demo quando il backend non è disponibile
+
     if (this.email === 'admin@palestra.com' && this.password === 'password') {
       this.isLoading = false;
 
-      // Simula un utente admin per la demo
+
       const mockUser = {
         id: 1,
         email: 'admin@palestra.com',
         nome: 'Amministratore',
       };
 
-      // Salva i dati utente nel localStorage per la demo
+
       localStorage.setItem('current_user', JSON.stringify(mockUser));
       localStorage.setItem('auth_token', 'demo_token_' + Date.now());
 
@@ -58,12 +58,12 @@ export class LoginComponent {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          // Salva il token se presente
+
           if (response.token) {
             this.authService.setToken(response.token);
           }
 
-          // Naviga alla dashboard
+
           this.router.navigate(['/dashboard']);
           this.loginSuccess.emit();
 
@@ -79,7 +79,7 @@ export class LoginComponent {
         if (error.status === 401) {
           this.errorMessage = 'Credenziali non valide';
         } else if (error.status === 0) {
-          // Backend non disponibile - usa credenziali demo
+
           if (
             this.email === 'admin@palestra.com' &&
             this.password === 'password'

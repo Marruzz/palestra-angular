@@ -3,8 +3,7 @@ const { pool } = require('../config/database');
 class DashboardController {
   // Ottieni tutti gli utenti della palestra
   static async getUsers(req, res) {
-    try {
-      const [users] = await pool.execute(`
+    try {      const [users] = await pool.execute(`
         SELECT
           u.id,
           u.nome,
@@ -14,13 +13,13 @@ class DashboardController {
           u.codice_fiscale,
           a.id as abbonamento_id,
           a.id_corso,
-          a.data_inizio as abbonamento_inizio,
-          a.data_fine as abbonamento_fine,
+          DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as abbonamento_inizio,
+          DATE_FORMAT(a.data_fine, '%Y-%m-%d') as abbonamento_fine,
           a.durata_mesi,
           c.nome_corso,
           c.descrizione as corso_descrizione
         FROM Utenti u
-        LEFT JOIN Abbonamenti a ON u.id = a.id_utente AND a.data_fine >= CURDATE()
+        LEFT JOIN Abbonamenti a ON u.id = a.id_utente
         LEFT JOIN Corsi c ON a.id_corso = c.id
         ORDER BY u.id DESC
       `);
@@ -271,7 +270,12 @@ class DashboardController {
   static async getSubscriptions(req, res) {
     try {      const [subscriptions] = await pool.execute(`
         SELECT
-          a.*,
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as data_inizio,
+          a.durata_mesi,
+          DATE_FORMAT(a.data_fine, '%Y-%m-%d') as data_fine,
           u.nome,
           u.cognome,
           u.email,
@@ -338,12 +342,15 @@ class DashboardController {
       const [result] = await pool.execute(
         'INSERT INTO Abbonamenti (id_utente, id_corso, data_inizio, durata_mesi) VALUES (?, ?, ?, ?)',
         [id_utente, id_corso, data_inizio, durata_mesi]
-      );
-
-      // Recupera l'abbonamento appena creato con i dettagli
+      );      // Recupera l'abbonamento appena creato con i dettagli
       const [newSubscription] = await pool.execute(`
         SELECT
-          a.*,
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as data_inizio,
+          a.durata_mesi,
+          DATE_FORMAT(a.data_fine, '%Y-%m-%d') as data_fine,
           u.nome,
           u.cognome,
           u.email,
@@ -444,12 +451,15 @@ class DashboardController {
           `UPDATE Abbonamenti SET ${updateFields.join(', ')} WHERE id = ?`,
           updateValues
         );
-      }
-
-      // Recupera l'abbonamento aggiornato
+      }      // Recupera l'abbonamento aggiornato
       const [updatedSubscription] = await pool.execute(`
         SELECT
-          a.*,
+          a.id,
+          a.id_utente,
+          a.id_corso,
+          DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as data_inizio,
+          a.durata_mesi,
+          DATE_FORMAT(a.data_fine, '%Y-%m-%d') as data_fine,
           u.nome,
           u.cognome,
           u.email,

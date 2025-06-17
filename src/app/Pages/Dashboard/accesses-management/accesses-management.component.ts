@@ -6,7 +6,7 @@ import {
   PalestraUser,
 } from '../../../shared/services/dashboard.service';
 
-// Interfacce
+
 interface Access {
   id: number;
   userId: number;
@@ -41,7 +41,7 @@ export class AccessesManagementComponent {
   @Input() accessForm: { id_utente: number } = {
     id_utente: 0,
   };
-  @Input() stats: any = null; // Aggiungiamo le statistiche dal dashboard
+  @Input() stats: any = null;
   @Output() accessModalOpen = new EventEmitter<void>();
   @Output() accessModalClose = new EventEmitter<void>();
   @Output() accessRegister = new EventEmitter<void>();
@@ -64,12 +64,12 @@ export class AccessesManagementComponent {
     try {
       const date = new Date(dateString);
 
-      // Verifica se la data è valida
+
       if (isNaN(date.getTime())) {
         return 'Data non valida';
       }
 
-      // Formatta con il fuso orario italiano
+
       return date.toLocaleString('it-IT', {
         timeZone: 'Europe/Rome',
         year: 'numeric',
@@ -109,7 +109,7 @@ export class AccessesManagementComponent {
       .substring(0, 2);
   }
 
-  // Metodi helper per informazioni specifiche utente (manteniamo questi per la visualizzazione dettagliata)
+
   getUserAccessesTodayCount(userId: number): number {
     const today = new Date();
     const todayStart = new Date(

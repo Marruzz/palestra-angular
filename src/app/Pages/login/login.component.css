@@ -1,7 +1,7 @@
-/* Tailwind CSS CDN */
+
 @import url("https://cdn.tailwindcss.com");
 
-/* Stili specifici per le pagine di autenticazione */
+
 :root {
   --primary: #f1f8ff;
   --secondary: #8acbff;
@@ -270,7 +270,7 @@
   font-size: 16px;
 }
 
-/* Animazione di shake quando appare un errore */
+
 .shake-animation {
   animation: shake 0.5s;
 }
@@ -319,7 +319,7 @@
   animation: spin 1s infinite linear;
 }
 
-/* Effetto pulse per il messaggio di registrazione avvenuta */
+
 .registration-success {
   background-color: rgba(16, 185, 129, 0.15);
   padding: 15px;

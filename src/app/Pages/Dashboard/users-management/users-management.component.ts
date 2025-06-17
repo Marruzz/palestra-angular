@@ -47,14 +47,14 @@ export class UsersManagementComponent implements OnChanges {
   @Output() userSave = new EventEmitter<any>();
   @Output() userDelete = new EventEmitter<PalestraUser>();
 
-  // Aggiunte per la user card
+
   showUserCard: boolean = false;
   selectedUserForCard: PalestraUser | null = null;
-  // Paginazione
+
   currentPage: number = 1;
   usersPerPage: number = 5;
 
-  // Computed properties per la paginazione
+
   get totalPages(): number {
     return Math.ceil(this.users.length / this.usersPerPage);
   }
@@ -78,7 +78,7 @@ export class UsersManagementComponent implements OnChanges {
     return Math.min(endIndex, this.users.length);
   }
 
-  // Metodi per la navigazione della paginazione
+
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -102,16 +102,16 @@ export class UsersManagementComponent implements OnChanges {
     const maxVisiblePages = 5;
 
     if (this.totalPages <= maxVisiblePages) {
-      // Se ci sono poche pagine, mostra tutte
+
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Logica per mostrare le pagine intorno a quella corrente
+
       let startPage = Math.max(1, this.currentPage - 2);
       let endPage = Math.min(this.totalPages, this.currentPage + 2);
 
-      // Aggiusta se siamo troppo vicini all'inizio o alla fine
+
       if (endPage - startPage < maxVisiblePages - 1) {
         if (startPage === 1) {
           endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
@@ -144,7 +144,7 @@ export class UsersManagementComponent implements OnChanges {
     this.userDelete.emit(user);
   }
 
-  // Nuovi metodi per gestire la user card
+
   onShowUserCard(user: PalestraUser) {
     this.selectedUserForCard = user;
     this.showUserCard = true;
@@ -170,7 +170,7 @@ export class UsersManagementComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    // Reset della paginazione se la pagina corrente non è più valida
+
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = 1;
     }

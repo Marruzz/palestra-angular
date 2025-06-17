@@ -33,10 +33,22 @@ export class UserCardComponent {
     if (!this.user) return '';
     return `${this.user.nome[0] || ''}${this.user.cognome[0] || ''}`;
   }
-
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT');
+    if (!dateString) return 'N/A';
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data non valida';
+      }
+      return date.toLocaleDateString('it-IT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Data non valida';
+    }
   }
 
   getCorsoName(idCorso: number): string {
@@ -106,7 +118,7 @@ export class UserCardComponent {
     return age;
   }
 
-  // Metodi per contare gli abbonamenti per stato
+  
   getActiveAbbonamentiCount(): number {
     if (!this.user?.abbonamenti) return 0;
     return this.user.abbonamenti.filter(

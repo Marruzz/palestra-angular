@@ -7,7 +7,7 @@ import {
   Corso,
 } from '../../../shared/services/dashboard.service';
 
-// Interfacce
+
 interface Subscription {
   id: number;
   type: 'monthly' | 'quarterly' | 'yearly';
@@ -39,7 +39,7 @@ export class SubscriptionsManagementComponent {
   getActiveSubscriptionsByType(
     type: 'monthly' | 'semester' | 'yearly'
   ): number {
-    // Map durata_mesi to subscription type
+
     const monthsMap = { monthly: 1, semester: 6, yearly: 12 };
     const targetMonths = monthsMap[type];
     return this.subscriptions.filter((s) => s.durata_mesi === targetMonths)
@@ -98,14 +98,26 @@ export class SubscriptionsManagementComponent {
     if (months === 12) return 'Annuale';
     return `${months} mesi`;
   }
-
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT');
+    if (!dateString) return 'N/A';
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Data non valida';
+      }
+      return date.toLocaleDateString('it-IT', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Data non valida';
+    }
   }
 
   calculatePrice(months: number): string {
-    // Base price calculation - you can adjust these prices
+
     const monthlyPrice = 50;
     const totalPrice = monthlyPrice * months;
     return totalPrice.toFixed(2);

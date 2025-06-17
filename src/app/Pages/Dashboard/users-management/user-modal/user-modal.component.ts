@@ -126,7 +126,7 @@ export class UserModalComponent implements OnInit {
       this.newAbbonamento.data_fine
     ) {
       const nuovoAbbonamento: Abbonamento = {
-        id: 0, // Sarà assegnato dal backend
+        id: 0, 
         id_utente: this.userForm.id,
         id_corso: this.newAbbonamento.id_corso,
         data_inizio: this.newAbbonamento.data_inizio,

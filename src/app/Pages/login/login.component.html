@@ -1,7 +1,7 @@
 <div
   class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4"
 >
-  <!-- Background decoration -->
+
   <div class="absolute inset-0 overflow-hidden">
     <div
       class="absolute -top-1/2 -right-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"
@@ -11,12 +11,12 @@
     ></div>
   </div>
 
-  <!-- Login Card -->
+
   <div class="relative w-full max-w-md">
     <div
       class="bg-white/80 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/20 transform transition-all duration-300 hover:scale-105"
     >
-      <!-- Logo/Icon -->
+
       <div class="text-center mb-8">
         <div
           class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg"
@@ -44,7 +44,7 @@
       </div>
 
       <form (ngSubmit)="onSubmit()" class="space-y-6">
-        <!-- Error Message -->
+
         <div
           *ngIf="errorMessage"
           class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg animate-pulse"
@@ -61,7 +61,7 @@
           </div>
         </div>
 
-        <!-- Email Field -->
+
         <div class="group">
           <label
             for="email"
@@ -100,7 +100,7 @@
           </div>
         </div>
 
-        <!-- Password Field -->
+
         <div class="group">
           <label
             for="password"
@@ -138,7 +138,7 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
+
         <button
           type="submit"
           [disabled]="isLoading"
@@ -186,7 +186,7 @@
         </button>
       </form>
 
-      <!-- Demo Credentials -->
+
       <div class="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
         <div class="flex items-center">
           <svg

@@ -190,13 +190,13 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
-  }
-  private async loadUsers(): Promise<void> {
+  }  private async loadUsers(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
           if (response.success) {
             this.users = response.data;
+            console.log('Utenti caricati:', this.users);
             resolve();
           } else {
             reject(

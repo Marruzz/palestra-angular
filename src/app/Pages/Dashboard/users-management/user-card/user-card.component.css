@@ -1,4 +1,4 @@
-/* User Card Component Styles */
+
 
 .user-card-overlay {
   backdrop-filter: blur(4px);
@@ -19,7 +19,7 @@
   }
 }
 
-/* Custom scrollbar for better UX */
+
 .user-card-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -38,7 +38,7 @@
   background: #a8a8a8;
 }
 
-/* Responsive improvements */
+
 @media (max-width: 768px) {
   .user-card-content {
     margin: 1rem;
@@ -46,7 +46,7 @@
   }
 }
 
-/* Status badge animations */
+
 .status-badge {
   transition: all 0.2s ease-in-out;
 }
@@ -56,7 +56,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover effects for sections */
+
 .info-section {
   transition: background-color 0.2s ease;
 }
@@ -65,7 +65,7 @@
   background-color: #f9fafb;
 }
 
-/* Grid responsive improvements */
+
 @media (max-width: 640px) {
   .grid-responsive {
     grid-template-columns: 1fr;

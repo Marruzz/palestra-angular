@@ -4,20 +4,20 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Prevent text from breaking layout */
+
 .text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Better mobile card spacing */
+
 @media (max-width: 640px) {
   .card-compact {
     padding: 0.75rem;
   }
 
-  /* Ensure buttons don't overlap */
+
   .btn-mobile {
     min-width: 60px;
     font-size: 0.75rem;
@@ -25,13 +25,13 @@
   }
 }
 
-/* Ensure modal content is always visible */
+
 .modal-content {
   max-height: 90vh;
   overflow-y: auto;
 }
 
-/* Better spacing for very small screens */
+
 @media (max-width: 375px) {
   .space-y-ultra-compact > * + * {
     margin-top: 0.5rem;
@@ -42,7 +42,7 @@
   }
 }
 
-/* Ensure action buttons always fit */
+
 .action-buttons {
   display: flex;
   flex-direction: column;
@@ -57,7 +57,7 @@
   }
 }
 
-/* Table cell improvements */
+
 .table-cell-compact {
   padding: 0.5rem;
   font-size: 0.875rem;
@@ -70,7 +70,7 @@
   }
 }
 
-/* Responsive text sizing */
+
 .text-responsive {
   font-size: 0.75rem;
 }
@@ -81,7 +81,7 @@
   }
 }
 
-/* Improve card layouts on small screens */
+
 .mobile-card {
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@
   min-height: 1.5rem;
 }
 
-/* Ensure long text doesn't break layouts */
+
 .truncate-responsive {
   overflow: hidden;
   text-overflow: ellipsis;
