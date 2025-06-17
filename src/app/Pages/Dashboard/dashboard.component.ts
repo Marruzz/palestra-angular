@@ -376,14 +376,22 @@ export class DashboardComponent implements OnInit {
             },
             error: reject
           });
-        });
-      } else {
+        });      } else {
         // Crea nuovo utente
+        let newUserId: number;
         await new Promise<void>((resolve, reject) => {
           this.dashboardService.createUser(this.userForm).subscribe({
             next: (response) => {
-              if (response.success) {
-                resolve();
+              if (response.success && response.data) {
+                newUserId = response.data.id;
+                // Se ci sono abbonamenti da creare per il nuovo utente
+                if (userFormData && userFormData.abbonamenti && userFormData.abbonamenti.length > 0) {
+                  this.updateUserAbbonamenti(newUserId, userFormData.abbonamenti).then(() => {
+                    resolve();
+                  }).catch(reject);
+                } else {
+                  resolve();
+                }
               } else {
                 reject(new Error(response.message));
               }
