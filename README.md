@@ -26,9 +26,31 @@
 
 ## 📷 Screenshots
 
-*(Inserisci qui uno screenshot della tua applicazione)*
+<details>
+  <summary>Clicca per vedere gli screenshot dell'applicazione</summary>
+  
+  **Pagina di Login**
+  ![Login](./public/screen/login.png)
 
-![Dashboard Screenshot](link/al/tuo/screenshot.png)
+  **Dashboard Principale**
+  ![Dashboard](./public/screen/top.png)
+
+  **Gestione Abbonamenti**
+  ![Gestione Abbonamenti](./public/screen/gestione_abbonamenti.png)
+
+  **Gestione Utenti**
+  ![Gestione Utenti](./public/screen/gestione_utenti.png)
+
+  **Gestione Corsi**
+  ![Gestione Corsi](./public/screen/gestione_corsi.png)
+
+  **Statistiche**
+  ![Statistiche](./public/screen/statistiche.png)
+
+  **Gestione Accessi**
+  ![Gestione Accessi](./public/screen/gestione_accessi.png)
+
+</details>
 
 ## 🛠️ Stack Tecnologico
 
