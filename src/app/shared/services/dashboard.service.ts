@@ -161,7 +161,7 @@ export class DashboardService {
         })
       );
   }
-  
+
 
   deleteUser(id: number): Observable<{ success: boolean; message: string }> {
     return this.http
@@ -327,9 +327,22 @@ export class DashboardService {
       .pipe(
         catchError((error) => {
           return throwError(() => new Error('Backend non disponibile'));
+        })      );
+  }
+
+  deleteAccess(accessId: number): Observable<{ success: boolean; message: string }> {
+    return this.http
+      .delete<{ success: boolean; message: string }>(
+        `${this.apiUrl}/dashboard/accesses/${accessId}`,
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        catchError((error) => {
+          return throwError(() => new Error('Backend non disponibile'));
         })
       );
   }
+
   // Metodi per le statistiche - ora utilizza StatsService
   getDashboardStats(): Observable<{
     success: boolean;

@@ -25,6 +25,7 @@ router.get('/subscriptions/integrity-check', DashboardController.checkSubscripti
 
 router.get('/accesses', DashboardController.getAccesses);
 router.post('/accesses', DashboardController.createAccess);
+router.delete('/accesses/:id', DashboardController.deleteAccess);
 
 
 router.get('/stats', DashboardController.getStats);

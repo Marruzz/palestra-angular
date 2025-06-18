@@ -22,11 +22,11 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
   @Input() accessForm: { id_utente: number } = {
     id_utente: 0,
   };
-  @Input() stats: any = null;
-  @Output() accessModalOpen = new EventEmitter<void>();
+  @Input() stats: any = null;  @Output() accessModalOpen = new EventEmitter<void>();
   @Output() accessModalClose = new EventEmitter<void>();
   @Output() accessRegister = new EventEmitter<void>();
   @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
+  @Output() accessDelete = new EventEmitter<number>();
 
 
   currentPage: number = 1;
@@ -126,10 +126,15 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
 
   onRegisterAccess() {
     this.accessRegister.emit();
-  }
-  onAccessFormChange() {
+  }  onAccessFormChange() {
     this.accessFormChange.emit(this.accessForm);
-  }  formatDateTime(dateString: string): string {
+  }
+
+  onDeleteAccess(accessId: number) {
+    if (confirm('Sei sicuro di voler eliminare questo ingresso?')) {
+      this.accessDelete.emit(accessId);
+    }
+  }formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
 

@@ -43,8 +43,8 @@ const { faker, fa } = require('@faker-js/faker');
     // Scegli un corso casuale
     const corsoRandom = faker.helpers.arrayElement(corsiDb);
 
-    // Scegli una durata casuale (1-12 mesi)
-    const durataMesi = faker.number.int({ min: 1, max: 12 });
+    // Scegli una durata casuale (1, 6 o 12 mesi)
+    const durataMesi = faker.helpers.arrayElement([1, 6, 12]);
 
     let dataInizio;
 

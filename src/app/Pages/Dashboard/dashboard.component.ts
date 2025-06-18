@@ -691,9 +691,34 @@ export class DashboardComponent implements OnInit {
 
       await this.refreshAccessesAndStats();
       this.closeAccessModal();
-    } catch (error: any) {
+    } catch (error: any) {      this.errorMessage = error.message || 'Errore nella registrazione accesso';
+    } finally {
+      this.isLoading = false;
+    }
+  }
 
-      this.errorMessage = error.message || 'Errore nella registrazione accesso';
+  async deleteAccess(accessId: number) {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      await new Promise<void>((resolve, reject) => {
+        this.dashboardService.deleteAccess(accessId).subscribe({
+          next: (response) => {
+            if (response.success) {
+              resolve();
+            } else {
+              reject(new Error(response.message));
+            }
+          },
+          error: reject,
+        });
+      });
+
+      // Ricarica gli accessi e le statistiche dopo l'eliminazione
+      await this.refreshAccessesAndStats();
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nell\'eliminazione accesso';
     } finally {
       this.isLoading = false;
     }

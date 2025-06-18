@@ -1046,7 +1046,43 @@ class DashboardController {
       console.error("Errore nella creazione corso:", error);
       res.status(500).json({
         success: false,
-        message: "Errore interno del server",
+        message: "Errore interno del server",      });
+    }
+  }
+
+  static async deleteAccess(req, res) {
+    try {
+      const { id } = req.params;
+
+      // Verifica che l'accesso esista
+      const [existingAccess] = await pool.execute(
+        'SELECT id FROM Ingressi WHERE id = ?',
+        [id]
+      );
+
+      if (existingAccess.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Accesso non trovato'
+        });
+      }
+
+      // Elimina l'accesso
+      await pool.execute(
+        'DELETE FROM Ingressi WHERE id = ?',
+        [id]
+      );
+
+      res.json({
+        success: true,
+        message: 'Accesso eliminato con successo'
+      });
+
+    } catch (error) {
+      console.error('Errore nell\'eliminazione accesso:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Errore interno del server'
       });
     }
   }
