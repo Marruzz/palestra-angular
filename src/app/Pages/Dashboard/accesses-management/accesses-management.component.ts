@@ -1,32 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import {
   Ingresso,
   PalestraUser,
 } from '../../../shared/services/dashboard.service';
 
 
-interface Access {
-  id: number;
-  userId: number;
-  userName: string;
-  timestamp: string;
-  type: 'entry' | 'exit';
-}
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  isActive: boolean;
-}
-
-interface AccessForm {
-  userId: number;
-  type: 'entry' | 'exit';
-}
 
 @Component({
   selector: 'app-accesses-management',

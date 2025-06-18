@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { StatsCards } from '../stats-cards/stats-cards.component';
 import { CalculatedStats } from '../../../shared/services/stats.service';
 

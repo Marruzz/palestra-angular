@@ -1,16 +1,8 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnChanges,
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  PalestraUser,
-  Corso,
-} from '../../../shared/services/dashboard.service';
+
+import { PalestraUser, Corso } from '../../../shared/services/dashboard.service';
 import { UserModalComponent } from './user-modal/user-modal.component';
 import { UserCardComponent } from './user-card/user-card.component';
 

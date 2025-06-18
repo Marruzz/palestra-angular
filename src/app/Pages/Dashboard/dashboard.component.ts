@@ -2,6 +2,8 @@ import { Component, OnInit, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
+
 import { HeaderComponent } from '../../shared/header/header.component';
 import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
 import { StatsCardsSummaryComponent } from './stats-cards-summary/stats-cards-summary.component';
@@ -12,18 +14,12 @@ import { SubscriptionsManagementComponent } from './subscriptions-management/sub
 import { AccessesManagementComponent } from './accesses-management/accesses-management.component';
 import { CorsiManagementComponent } from './corsi-management/corsi-management.component';
 import { StatsPageComponent } from './stats-page/stats-page.component';
-import {
-  DashboardService,
-  PalestraUser,
-  Abbonamento,
-  Ingresso,
-  Corso,
-  DashboardStats,
-} from '../../shared/services/dashboard.service';
+import { DashboardService, PalestraUser, Abbonamento, Ingresso, Corso } from '../../shared/services/dashboard.service';
 import { StatsService, CalculatedStats } from '../../shared/services/stats.service';
 
 @Component({
-  selector: 'app-dashboard',  imports: [
+  selector: 'app-dashboard',
+  imports: [
     CommonModule,
     FormsModule,
     HeaderComponent,
@@ -64,7 +60,9 @@ export class DashboardComponent implements OnInit {
   showUserModal = false;
   showAccessModal = false;
   showSubscriptionModal = false;
-  showCorsoModal = false;  selectedUser: PalestraUser | null = null;
+  showCorsoModal = false;
+
+  selectedUser: PalestraUser | null = null;
   selectedAbbonamento: Abbonamento | null = null;
   selectedCorso: Corso | null = null;
   errorMessage = '';
@@ -191,17 +189,23 @@ export class DashboardComponent implements OnInit {
       await this.loadCorsi();
       this.loadedSections.corsi = true;
     } catch (error) {
-
       this.errorMessage = 'Errore nel caricamento corsi. Riprova più tardi.';
     } finally {
       this.isLoading = false;
     }
-  }  private async loadUsers(): Promise<void> {
+  }
+
+  private async loadUsers(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
-          if (response.success) {
-            this.users = response.data;
+          if (response.success && response.data) {
+            // Transform User[] to PalestraUser[] by adding abbonamenti property and handling optional email
+            this.users = response.data.map(user => ({
+              ...user,
+              email: user.email || '', // Provide default empty string for undefined email
+              abbonamenti: []
+            }));
             resolve();
           } else {
             reject(
@@ -220,7 +224,7 @@ export class DashboardComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.dashboardService.getSubscriptions().subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response.success && response.data) {
             this.abbonamenti = response.data;
             resolve();
           } else {
@@ -242,7 +246,7 @@ export class DashboardComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.dashboardService.getAccesses().subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response.success && response.data) {
             this.ingressi = response.data;
             resolve();
           } else {
@@ -256,7 +260,9 @@ export class DashboardComponent implements OnInit {
         },
       });
     });
-  }  private async loadStats(): Promise<void> {
+  }
+
+  private async loadStats(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.statsService.calculateStats().subscribe({
         next: (stats) => {
@@ -264,7 +270,6 @@ export class DashboardComponent implements OnInit {
           resolve();
         },
         error: (error) => {
-
           reject(error);
         },
       });
@@ -275,7 +280,7 @@ export class DashboardComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.dashboardService.getCorsi().subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response.success && response.data) {
             this.corsi = response.data;
             resolve();
           } else {
@@ -289,9 +294,11 @@ export class DashboardComponent implements OnInit {
         },
       });
     });
-  }  // Gestione delle viste
+  }
+
+  // Gestione delle viste
   async setView(
-    view: 'users' | 'subscriptions'  | 'accesses' | 'stats' | 'corsi'
+    view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'
   ) {
     this.currentView = view;
 
@@ -607,6 +614,7 @@ export class DashboardComponent implements OnInit {
     this.showAccessModal = false;
     this.resetAccessForm();
   }
+
   private resetAccessForm() {
     const now = new Date();
     // Formatta per input datetime-local (YYYY-MM-DDTHH:MM)
@@ -660,6 +668,7 @@ export class DashboardComponent implements OnInit {
     }
     this.showCorsoModal = true;
   }
+
   closeCorsoModal() {
     this.showCorsoModal = false;
     this.errorMessage = '';
@@ -760,6 +769,7 @@ export class DashboardComponent implements OnInit {
       return 'Data non valida';
     }
   }
+
   formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
@@ -779,7 +789,6 @@ export class DashboardComponent implements OnInit {
         second: '2-digit',
       });
     } catch (error) {
-
       return 'Data non valida';
     }
   }
@@ -802,21 +811,21 @@ export class DashboardComponent implements OnInit {
     userId: number,
     abbonamenti: any[]
   ): Promise<void> {
-    // Prima elimina tutti gli abbonamenti esistenti dell'utente
-    // (questo è un approccio semplificato - in produzione potresti voler fare un merge più sofisticato)
+    if (!abbonamenti || abbonamenti.length === 0) {
+      return;
+    }
 
-    // Poi crea i nuovi abbonamenti
     for (const abbonamento of abbonamenti) {
       if (abbonamento.id === 0) {
         // Nuovo abbonamento
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .createSubscription({
+              id: 0,
               id_utente: userId,
               id_corso: abbonamento.id_corso,
               data_inizio: abbonamento.data_inizio,
               durata_mesi: abbonamento.durata_mesi,
-              data_fine: abbonamento.data_fine,
             })
             .subscribe({
               next: (response) => {
@@ -834,10 +843,11 @@ export class DashboardComponent implements OnInit {
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateSubscription(abbonamento.id, {
+              id: abbonamento.id,
+              id_utente: userId,
               id_corso: abbonamento.id_corso,
               data_inizio: abbonamento.data_inizio,
               durata_mesi: abbonamento.durata_mesi,
-              data_fine: abbonamento.data_fine,
             })
             .subscribe({
               next: (response) => {
@@ -896,7 +906,10 @@ export class DashboardComponent implements OnInit {
   }
 
   async cancelSubscription(abbonamento: Abbonamento) {
-    if (confirm(`Sei sicuro di voler annullare l'abbonamento di ${abbonamento.nome} ${abbonamento.cognome}?`)) {
+    const user = this.getUserById(abbonamento.id_utente);
+    const userName = user ? `${user.nome} ${user.cognome}` : 'questo utente';
+
+    if (confirm(`Sei sicuro di voler annullare l'abbonamento di ${userName}?`)) {
       try {
         this.isLoading = true;
         this.errorMessage = '';
@@ -909,7 +922,8 @@ export class DashboardComponent implements OnInit {
         });
 
         if (response.success) {
-          await this.loadSubscriptions();
+          this.loadedSections.subscriptions = false;
+          await this.loadSubscriptionsIfNeeded();
           this.errorMessage = '';
         } else {
           this.errorMessage = response.message || 'Errore durante l\'annullamento dell\'abbonamento';
@@ -931,6 +945,7 @@ export class DashboardComponent implements OnInit {
       year: 'numeric'
     });
   }
+
   getSubscriptionStatusBadge(abbonamento: Abbonamento): { class: string; text: string } {
     if (this.isSubscriptionExpired(abbonamento)) {
       return { class: 'bg-red-100 text-red-800 border-red-200', text: 'Scaduto' };

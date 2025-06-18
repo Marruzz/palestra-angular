@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { StatsService, CalculatedStats } from './stats.service';
+import { StateService } from './state.service';
+
+import {
+  User,
+  Corso as ICorso,
+  ApiResponse,
+} from '../models';
 
 // Interfacce aggiornate per il nuovo database schema
 export interface PalestraUser {
@@ -80,28 +87,33 @@ export class DashboardService {
 
   constructor(
     private http: HttpClient,
-    private statsService: StatsService
+    private statsService: StatsService,
+    private stateService: StateService
   ) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
     });
-  }
-  // Metodi per gestire gli utenti della palestra
-  getUsers(): Observable<{
-    success: boolean;
-    data: PalestraUser[];
-    message?: string;
-  }> {
+  }  // Metodi per gestire gli utenti della palestra
+  getUsers(): Observable<ApiResponse<User[]>> {
+    this.stateService.setLoading(true);
     return this.http
-      .get<{ success: boolean; data: PalestraUser[]; message?: string }>(
+      .get<ApiResponse<User[]>>(
         `${this.apiUrl}/dashboard/users`,
         { headers: this.getHeaders() }
       )
       .pipe(
+        tap(response => {
+          if (response.success && response.data) {
+            this.stateService.setUsers(response.data);
+          }
+          this.stateService.setLoading(false);
+        }),
         catchError((error) => {
-          return throwError(() => new Error('Backend non disponibile'));
+          this.stateService.setLoading(false);
+          this.stateService.setError('Errore nel caricamento degli utenti');
+          return throwError(() => error);
         })
       );
   }
