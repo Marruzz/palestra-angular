@@ -117,7 +117,6 @@ export class DashboardService {
         })
       );
   }
-
   createUser(
     user: Partial<PalestraUser>
   ): Observable<{ success: boolean; data?: PalestraUser; message: string }> {
@@ -128,6 +127,12 @@ export class DashboardService {
         { headers: this.getHeaders() }
       )
       .pipe(
+        tap(response => {
+          if (response.success) {
+            // Trigger refresh automatico degli utenti
+            this.stateService.triggerUsersRefresh();
+          }
+        }),
         catchError((error) => {
           return throwError(() => new Error('Backend non disponibile'));
         })
@@ -145,10 +150,17 @@ export class DashboardService {
         { headers: this.getHeaders() }
       )
       .pipe(
+        tap(response => {
+          if (response.success) {
+            // Trigger refresh automatico degli utenti
+            this.stateService.triggerUsersRefresh();
+          }
+        }),
         catchError((error) => {
           return throwError(() => new Error('Backend non disponibile'));
         })
       );
+  }
   }
 
   deleteUser(id: number): Observable<{ success: boolean; message: string }> {
