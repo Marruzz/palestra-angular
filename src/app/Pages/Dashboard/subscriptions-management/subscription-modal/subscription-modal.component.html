@@ -115,7 +115,7 @@
             >
               <option value="">Seleziona un corso</option>
               <option *ngFor="let corso of corsi" [value]="corso.id">
-                {{ corso.nome_corso }}
+                {{ corso.nome_corso + ' - ' + corso.durata_mesi_default + ' mesi'}}
               </option>
             </select>
           </div>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { User, Subscription, Access, Corso } from '../models';
 
 export interface AppState {
@@ -27,6 +27,12 @@ const initialState: AppState = {
 })
 export class StateService {
   private state$ = new BehaviorSubject<AppState>(initialState);
+  
+  // Subject per notificare quando servono refresh automatici
+  private refreshTrigger$ = new Subject<'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'>();
+  
+  // Observable pubblico per i refresh
+  public readonly refreshTrigger: Observable<'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'> = this.refreshTrigger$.asObservable();
 
   // Public state observables
   public readonly selectedUser$: Observable<User | null> = this.state$.pipe(
@@ -133,9 +139,34 @@ export class StateService {
   setError(error: string | null): void {
     this.updateState({ error });
   }
-
   clearError(): void {
     this.updateState({ error: null });
+  }
+
+  // Metodi per il refresh automatico
+  triggerRefresh(type: 'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'): void {
+    this.refreshTrigger$.next(type);
+  }
+
+  // Trigger specifici per ogni entità
+  triggerUsersRefresh(): void {
+    this.triggerRefresh('users');
+  }
+
+  triggerSubscriptionsRefresh(): void {
+    this.triggerRefresh('subscriptions');
+  }
+
+  triggerAccessesRefresh(): void {
+    this.triggerRefresh('accesses');
+  }
+
+  triggerCorsiRefresh(): void {
+    this.triggerRefresh('corsi');
+  }
+
+  triggerFullRefresh(): void {
+    this.triggerRefresh('all');
   }
 
   // Reset state
