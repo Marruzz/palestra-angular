@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
-  <!-- Header Section with Enhanced Styling -->
+
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div class="flex items-center space-x-4">
@@ -40,91 +40,110 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-    *ngIf="corsi.length > 0; else noCorsi"
-  >
-    <div
-      *ngFor="let corso of corsi"
-      class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group"
-    >
-      <div class="flex items-start justify-between mb-4">
-        <div
-          class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200"
-        >
-          <svg
-            class="w-6 h-6 text-blue-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-            ></path>
-          </svg>
-        </div>
-        <button
-          (click)="openCorsoModal(corso)"
-          class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-          [disabled]="isLoading"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            ></path>
-          </svg>
-        </button>
-      </div>
-      <div class="space-y-3">
-        <h3 class="text-xl font-semibold text-gray-900">
-          {{ corso.nome_corso }}
-        </h3>
-        <p class="text-gray-600 text-sm" *ngIf="corso.descrizione">
-          {{ corso.descrizione }}
-        </p>
-        <div class="flex items-center text-sm text-gray-500">
-          <svg
-            class="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          {{ corso.durata_mesi_default }} mesi
-        </div>
-        <div class=" flex items-center text-sm text-gray-500 ">
-        <svg
-          class="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-          ></path>
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div class="relative max-w-md">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-          {{ corso.abbonamenti_attivi }} abbonamenti attivi
-        </div>
       </div>
+      <input
+        type="text"
+        [(ngModel)]="corsoSearchTerm"
+        (input)="onCorsoSearch($event)"
+        placeholder="Cerca corsi per nome o descrizione..."
+        class="w-full pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
+      />
+    </div>
+  </div>  <!-- Griglia responsive 3x4 per raggruppare corsi simili -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="getGroupedCorsi().length > 0; else noCorsi">
+    <div
+      *ngFor="let corsiGroup of getGroupedCorsi(); let groupIndex = index"
+      class="space-y-4"
+    >
+
+
+      <!-- Corsi della colonna -->
+      <div
+        *ngFor="let corso of corsiGroup; let corsoIndex = index"
+        class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden cursor-pointer"
+        (click)="openCorsoModal(corso)"
+        [class.opacity-75]="corsoIndex >= 4"
+      >
+
+      <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
+
+      <div class="relative z-10">
+
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <button
+            (click)="openCorsoModal(corso); $event.stopPropagation()"
+            class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+            [disabled]="isLoading"
+            title="Modifica corso"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </button>
+        </div>
+
+
+        <div class="mb-4">
+          <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide">Corso</p>
+          <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
+            {{ corso.nome_corso }}
+          </h3>
+        </div>
+
+
+        <div class="mb-4" *ngIf="corso.descrizione">
+          <p class="text-sm text-gray-600 line-clamp-3">
+            {{ corso.descrizione }}
+          </p>
+        </div>
+
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+
+          <div class="text-center">
+            <div class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1">
+              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>Durata</span>
+            </div>
+            <p class="font-bold text-2xl text-gray-800">{{ corso.durata_mesi_default }}</p>
+            <p class="text-xs text-gray-500">{{ corso.durata_mesi_default === 1 ? 'mese' : 'mesi' }}</p>
+          </div>
+
+
+          <div class="text-center">
+            <div class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1">
+              <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span>Attivi</span>
+            </div>
+            <p class="font-bold text-2xl text-gray-800">{{ corso.abbonamenti_attivi || 0 }}</p>
+            <p class="text-xs text-gray-500">abbonamenti</p>
+          </div>
+        </div>        <div class="mt-4 flex items-center">
+          <div class="flex-1 bg-blue-100 rounded-full h-2">
+            <div
+              class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+              [style.width.%]="getProgressPercentage(corso)"
+            ></div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Popolarità del corso</p>
+      </div>
+    </div>
     </div>
   </div>
 
@@ -150,7 +169,7 @@
     </div>
   </ng-template>
 
-  <!-- Modal Corso -->
+
   <div
     *ngIf="showCorsoModal"
     class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
