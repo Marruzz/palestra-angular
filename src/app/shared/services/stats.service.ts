@@ -49,10 +49,11 @@ export interface CalculatedStats {
   accessi_settimana: number;
   accessi_mese: number;
   accessi_anno: number;
-  accessi_sempre: number;
-  corsi_attivi: number;
+  accessi_sempre: number;  corsi_attivi: number;
   corso_top: string;
   corso_bottom: string;
+  durata_corso_top: number;
+  durata_corso_bottom: number;
   totale_abbonamenti: number;
   eta_media_utenti: number;
   tempo_medio_entrata: string;
@@ -72,7 +73,6 @@ export class StatsService {
   private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
-
   private getRawData(): Observable<{
     users: RawUser[];
     accessi: RawAccesso[];
@@ -90,13 +90,32 @@ export class StatsService {
         .get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/Abbonamenti`)
         .pipe(catchError(() => of([]))),
       corsi: this.http
-        .get<RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`)
-        .pipe(catchError(() => of([]))),
+        .get<{success: boolean, data: RawCorso[]} | RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`)
+        .pipe(
+          map(response => {
+            // Se la risposta ha il formato {success: true, data: Array}, estraiamo solo i dati
+            if (response && typeof response === 'object' && 'data' in response && Array.isArray(response.data)) {
+              return response.data;
+            }
+            // Se è già un array, lo restituiamo così com'è
+            if (Array.isArray(response)) {
+              return response;
+            }
+            // Fallback se il formato è inaspettato
+            return [];
+          }),
+          catchError(() => of([]))
+        ),
     });
-  }
-  calculateStats(): Observable<CalculatedStats> {
+  }calculateStats(): Observable<CalculatedStats> {
     return this.getRawData().pipe(
       map(({ users, accessi, abbonamenti, corsi }) => {
+        console.log('Raw data received:');
+        console.log('Users:', users?.length);
+        console.log('Accessi:', accessi?.length);
+        console.log('Abbonamenti:', abbonamenti?.length);
+        console.log('Corsi:', corsi?.length);
+
         // Validazione dei dati di input
         const validUsers = Array.isArray(users) ? users : [];
         const validAccessi = Array.isArray(accessi) ? accessi : [];
@@ -176,7 +195,6 @@ export class StatsService {
           validAbbonamenti,
           validCorsi
         );
-        console.log('Corso stats:', corsoStats, validCorsi, validAbbonamenti);
         const corso_top = corsoStats.mostPopular;
         const corso_bottom = corsoStats.leastPopular;
 
@@ -221,9 +239,6 @@ export class StatsService {
     );
   }
 
-  /**
-   * Calcola l'età media degli utenti
-   */
   private calculateAverageAge(users: RawUser[]): number {
     if (users.length === 0) return 0;
 
@@ -244,18 +259,25 @@ export class StatsService {
     }, 0);
 
     return Math.round(totalAge / users.length);
-  }
-
-  private calculateCourseStats(
+  }  private calculateCourseStats(
     abbonamenti: RawAbbonamento[],
     corsi: RawCorso[]
   ): {
     mostPopular: string;
     leastPopular: string;
+    mostPopularDuration: number;
+    leastPopularDuration: number;
   } {
+    console.log('calculateCourseStats - corsi:', corsi);
+    console.log('calculateCourseStats - abbonamenti:', abbonamenti);
+
     // Verifica che corsi sia un array e non sia vuoto
     if (!Array.isArray(corsi) || corsi.length === 0) {
-      console.log('Corsi non è un array valido o è vuoto:', corsi);
+      console.log('Nessun corso trovato');
+      return {
+        mostPopular: 'N/A',
+        leastPopular: 'N/A'
+      };
     }
 
     // Conta il numero di persone iscritte (abbonamenti attivi) per ogni corso
@@ -266,12 +288,15 @@ export class StatsService {
 
     // Conta solo gli abbonamenti attivi
     const abbonamentiAttivi = abbonamenti.filter((a) => Boolean(a.attivo));
+    console.log('Abbonamenti attivi trovati:', abbonamentiAttivi.length);
 
     abbonamentiAttivi.forEach((abbonamento) => {
-      const currentCount =
-        courseSubscriptionCount.get(abbonamento.id_corso) || 0;
+      const currentCount = courseSubscriptionCount.get(abbonamento.id_corso) || 0;
       courseSubscriptionCount.set(abbonamento.id_corso, currentCount + 1);
     });
+
+    console.log('Course subscription count:', courseSubscriptionCount);
+
     // Trova il corso più e meno popolare
     let maxCount = -1;
     let minCount = Infinity;
@@ -289,24 +314,22 @@ export class StatsService {
       }
     });
 
-    const mostPopularCourse = corsi.find((c) => c.id === mostPopularId);
-    const leastPopularCourse = corsi.find((c) => c.id === leastPopularId);
+    console.log('Most popular course ID:', mostPopularId, 'with count:', maxCount);
+    console.log('Least popular course ID:', leastPopularId, 'with count:', minCount);
 
-    const result = {
-      mostPopular: mostPopularCourse
-        ? `${mostPopularCourse.nome_corso} (${maxCount} iscritti)`
-        : 'N/A',
-      leastPopular: leastPopularCourse
-        ? `${leastPopularCourse.nome_corso} (${minCount} iscritti)`
-        : 'N/A',
+    // Trova i nomi dei corsi dopo aver determinato gli ID
+    const mostPopularCourseName = corsi.find((c) => c.id === mostPopularId)?.nome_corso || 'Corso non trovato';
+    const leastPopularCourseName = corsi.find((c) => c.id === leastPopularId)?.nome_corso || 'Corso non trovato';
+
+    console.log('Most popular course name:', mostPopularCourseName);
+    console.log('Least popular course name:', leastPopularCourseName);
+
+    return {
+      mostPopular: mostPopularCourseName,
+      leastPopular: leastPopularCourseName,
     };
-
-    return result;
   }
 
-  /**
-   * Calcola l'orario medio di entrata
-   */
   private calculateAverageEntryTime(accessi: RawAccesso[]): string {
     if (accessi.length === 0) return 'N/A';
 
