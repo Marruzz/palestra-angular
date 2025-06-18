@@ -56,7 +56,7 @@ class AuthController {
       console.error('UAUAUAUAUAAU ERRORE DI LOGIN', error);
       res.status(500).json({
         success: false,
-        message: 'POLIZIA MUNICIPALE, ERRORE INTERNO DEL SERVER'
+        message: 'POLIZIA MUNICIPALE, ERRORE INTERNO DEL SERVERb'
       });
     }
   }

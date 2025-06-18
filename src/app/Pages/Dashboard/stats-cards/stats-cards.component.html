@@ -246,6 +246,7 @@
     <div class="space-y-2">
       <h3 class="text-sm font-medium text-gray-700">Corso più frequentato</h3>
       <p class="text-lg font-bold text-fuchsia-600 truncate">{{ stats?.corso_top || 'N/A' }}</p>
+      <p class="text-sm font-medium text-fuchsia-600">{{ (stats?.durata_corso_top ? (stats!.durata_corso_top > 1 ? stats!.durata_corso_top + ' mesi' : stats!.durata_corso_top + ' mese') : 'N/A') }}</p>
       <p class="text-xs text-gray-500">Corso più popolare</p>
     </div>
   </div>
@@ -266,7 +267,8 @@
     </div>
     <div class="space-y-2">
       <h3 class="text-sm font-medium text-gray-700">Corso meno frequentato</h3>
-      <p class="text-lg font-bold text-pink-600 truncate">{{ stats?.corso_bottom|| 'N/A' }}</p>
+      <p class="text-lg font-bold text-pink-600 truncate">{{ stats?.corso_bottom || 'N/A' }}</p>
+      <p class="text-sm font-medium text-fuchsia-600">{{ (stats?.durata_corso_bottom ? (stats!.durata_corso_bottom > 1 ? stats!.durata_corso_bottom + ' mesi' : stats!.durata_corso_bottom + ' mese') : 'N/A') }}</p>
       <p class="text-xs text-gray-500">Corso meno richiesto</p>
     </div>
   </div>
@@ -308,8 +310,8 @@
     </div>
     <div class="space-y-2">
       <h3 class="text-sm font-medium text-gray-700">Durata Media</h3>
-      <p class="text-2xl font-bold text-slate-600">{{ stats?.durata_media_corso || 0 }} <span class="text-sm">min</span></p>
-      <p class="text-xs text-gray-500">Tempo medio sessione</p>
+      <p class="text-2xl font-bold text-slate-600">{{ stats?.durata_media_corso || 0 }} <span class="text-sm">giorni</span></p>
+      <p class="text-xs text-gray-500">Durata media di un corso</p>
     </div>
   </div>
 </div>

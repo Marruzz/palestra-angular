@@ -49,7 +49,8 @@ export interface CalculatedStats {
   accessi_settimana: number;
   accessi_mese: number;
   accessi_anno: number;
-  accessi_sempre: number;  corsi_attivi: number;
+  accessi_sempre: number;
+  corsi_attivi: number;
   corso_top: string;
   corso_bottom: string;
   durata_corso_top: number;
@@ -90,11 +91,18 @@ export class StatsService {
         .get<RawAbbonamento[]>(`${this.apiUrl}/dashboard/Abbonamenti`)
         .pipe(catchError(() => of([]))),
       corsi: this.http
-        .get<{success: boolean, data: RawCorso[]} | RawCorso[]>(`${this.apiUrl}/dashboard/Corsi`)
+        .get<{ success: boolean; data: RawCorso[] } | RawCorso[]>(
+          `${this.apiUrl}/dashboard/Corsi`
+        )
         .pipe(
-          map(response => {
+          map((response) => {
             // Se la risposta ha il formato {success: true, data: Array}, estraiamo solo i dati
-            if (response && typeof response === 'object' && 'data' in response && Array.isArray(response.data)) {
+            if (
+              response &&
+              typeof response === 'object' &&
+              'data' in response &&
+              Array.isArray(response.data)
+            ) {
               return response.data;
             }
             // Se è già un array, lo restituiamo così com'è
@@ -107,15 +115,10 @@ export class StatsService {
           catchError(() => of([]))
         ),
     });
-  }calculateStats(): Observable<CalculatedStats> {
+  }
+  calculateStats(): Observable<CalculatedStats> {
     return this.getRawData().pipe(
       map(({ users, accessi, abbonamenti, corsi }) => {
-        console.log('Raw data received:');
-        console.log('Users:', users?.length);
-        console.log('Accessi:', accessi?.length);
-        console.log('Abbonamenti:', abbonamenti?.length);
-        console.log('Corsi:', corsi?.length);
-
         // Validazione dei dati di input
         const validUsers = Array.isArray(users) ? users : [];
         const validAccessi = Array.isArray(accessi) ? accessi : [];
@@ -138,65 +141,64 @@ export class StatsService {
           today.getFullYear() - 1,
           today.getMonth(),
           today.getDate()
-        );
+        ); // 1. Totale utenti
+        const totale_utenti = validUsers.length; // 2. Utenti entrati oggi
+        // Calcola la data di oggi in formato locale (non UTC)
+        const todayString = `${now.getFullYear()}-${String(
+          now.getMonth() + 1
+        ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-        // 1. Totale utenti
-        const totale_utenti = users.length;
-
-        // 2. Utenti entrati oggi
-        const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        const accessiOggi = accessi.filter((a) => {
+        const accessiOggi = validAccessi.filter((a) => {
           return a.data_accesso === todayString;
         });
 
         const utentiUniciOggi = new Set(accessiOggi.map((a) => a.id_utente));
-        const utenti_entrati_oggi = utentiUniciOggi.size;
-        // 3. Abbonamenti attivi - utilizza il campo 'attivo' dal database
-        const abbonamenti_attivi = abbonamenti.filter((a) =>
+        const utenti_entrati_oggi = utentiUniciOggi.size; // 3. Abbonamenti attivi - utilizza il campo 'attivo' dal database
+        const abbonamenti_attivi = validAbbonamenti.filter((a) =>
           Boolean(a.attivo)
         ).length;
 
         // 4. Accessi oggi
-        const accessi_oggi = accessiOggi.length;
+        const accessi_oggi = accessiOggi.length; // 5. Accessi settimana
+        const oneWeekAgoString = `${oneWeekAgo.getFullYear()}-${String(
+          oneWeekAgo.getMonth() + 1
+        ).padStart(2, '0')}-${String(oneWeekAgo.getDate()).padStart(2, '0')}`;
 
-        // 5. Accessi settimana
-        const oneWeekAgoString = oneWeekAgo.toISOString().split('T')[0];
-        const accessi_settimana = accessi.filter((a) => {
+        const accessi_settimana = validAccessi.filter((a) => {
           return a.data_accesso >= oneWeekAgoString;
         }).length;
 
         // 6. Accessi mese
-        const oneMonthAgoString = oneMonthAgo.toISOString().split('T')[0];
-        const accessi_mese = accessi.filter((a) => {
+        const oneMonthAgoString = `${oneMonthAgo.getFullYear()}-${String(
+          oneMonthAgo.getMonth() + 1
+        ).padStart(2, '0')}-${String(oneMonthAgo.getDate()).padStart(2, '0')}`;
+        const accessi_mese = validAccessi.filter((a) => {
           return a.data_accesso >= oneMonthAgoString;
         }).length;
 
         // 7. Accessi anno
-        const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
-        const accessi_anno = accessi.filter((a) => {
+        const oneYearAgoString = `${oneYearAgo.getFullYear()}-${String(
+          oneYearAgo.getMonth() + 1
+        ).padStart(2, '0')}-${String(oneYearAgo.getDate()).padStart(2, '0')}`;
+        const accessi_anno = validAccessi.filter((a) => {
           return a.data_accesso >= oneYearAgoString;
         }).length; // 8. Accessi sempre (totale)
         const accessi_sempre = validAccessi.length;
 
-        // 9. Corsi attivi (corsi con almeno un abbonamento attivo)
-        const corsiConAbbonamenti = new Set(
-          validAbbonamenti
-            .filter((a) => Boolean(a.attivo))
-            .map((a) => a.id_corso)
-        );
-        const corsi_attivi = corsiConAbbonamenti.size;
+        // 9. Corsi attivi (tutti i corsi nel database sono considerati attivi)
+        const corsi_attivi = validCorsi.length;
 
         // 10. Totale abbonamenti
         const totale_abbonamenti = validAbbonamenti.length; // 11. Età media utenti
-        const eta_media_utenti = this.calculateAverageAge(validUsers);
-
-        // 12 & 13. Corso più e meno frequentato
+        const eta_media_utenti = this.calculateAverageAge(validUsers); // 12 & 13. Corso più e meno frequentato con relative durate
         const corsoStats = this.calculateCourseStats(
           validAbbonamenti,
           validCorsi
         );
         const corso_top = corsoStats.mostPopular;
         const corso_bottom = corsoStats.leastPopular;
+        const durata_corso_top = corsoStats.mostPopularDuration;
+        const durata_corso_bottom = corsoStats.leastPopularDuration;
 
         // 14. Tempo medio di entrata
         const tempo_medio_entrata =
@@ -222,18 +224,17 @@ export class StatsService {
           totale_abbonamenti,
           eta_media_utenti,
           corso_top,
+          durata_corso_top,
           corso_bottom,
+          durata_corso_bottom,
           tempo_medio_entrata,
           durata_media_corso,
           ultimi_accessi,
         };
 
-        console.log('Calculated stats:', calculatedStats);
-
         return calculatedStats;
       }),
       catchError((error) => {
-        console.error('Errore nel calcolo delle statistiche:', error);
         return of(this.getDefaultStats());
       })
     );
@@ -259,7 +260,8 @@ export class StatsService {
     }, 0);
 
     return Math.round(totalAge / users.length);
-  }  private calculateCourseStats(
+  }
+  private calculateCourseStats(
     abbonamenti: RawAbbonamento[],
     corsi: RawCorso[]
   ): {
@@ -268,15 +270,13 @@ export class StatsService {
     mostPopularDuration: number;
     leastPopularDuration: number;
   } {
-    console.log('calculateCourseStats - corsi:', corsi);
-    console.log('calculateCourseStats - abbonamenti:', abbonamenti);
-
     // Verifica che corsi sia un array e non sia vuoto
     if (!Array.isArray(corsi) || corsi.length === 0) {
-      console.log('Nessun corso trovato');
       return {
         mostPopular: 'N/A',
-        leastPopular: 'N/A'
+        leastPopular: 'N/A',
+        mostPopularDuration: 0,
+        leastPopularDuration: 0,
       };
     }
 
@@ -288,14 +288,12 @@ export class StatsService {
 
     // Conta solo gli abbonamenti attivi
     const abbonamentiAttivi = abbonamenti.filter((a) => Boolean(a.attivo));
-    console.log('Abbonamenti attivi trovati:', abbonamentiAttivi.length);
 
     abbonamentiAttivi.forEach((abbonamento) => {
-      const currentCount = courseSubscriptionCount.get(abbonamento.id_corso) || 0;
+      const currentCount =
+        courseSubscriptionCount.get(abbonamento.id_corso) || 0;
       courseSubscriptionCount.set(abbonamento.id_corso, currentCount + 1);
     });
-
-    console.log('Course subscription count:', courseSubscriptionCount);
 
     // Trova il corso più e meno popolare
     let maxCount = -1;
@@ -314,19 +312,23 @@ export class StatsService {
       }
     });
 
-    console.log('Most popular course ID:', mostPopularId, 'with count:', maxCount);
-    console.log('Least popular course ID:', leastPopularId, 'with count:', minCount);
+    const mostPopularCourse = corsi.find((c) => c.id === mostPopularId);
+    const leastPopularCourse = corsi.find((c) => c.id === leastPopularId);
 
-    // Trova i nomi dei corsi dopo aver determinato gli ID
-    const mostPopularCourseName = corsi.find((c) => c.id === mostPopularId)?.nome_corso || 'Corso non trovato';
-    const leastPopularCourseName = corsi.find((c) => c.id === leastPopularId)?.nome_corso || 'Corso non trovato';
+    const mostPopularCourseName =
+      mostPopularCourse?.nome_corso || 'Corso non trovato';
+    const leastPopularCourseName =
+      leastPopularCourse?.nome_corso || 'Corso non trovato';
 
-    console.log('Most popular course name:', mostPopularCourseName);
-    console.log('Least popular course name:', leastPopularCourseName);
+    // Durata in giorni (convertendo da mesi a giorni, 30 giorni per mese)
+    const mostPopularDuration = mostPopularCourse?.durata_mesi_default || 0;
+    const leastPopularDuration = leastPopularCourse?.durata_mesi_default || 0;
 
     return {
       mostPopular: mostPopularCourseName,
       leastPopular: leastPopularCourseName,
+      mostPopularDuration: mostPopularDuration,
+      leastPopularDuration: leastPopularDuration,
     };
   }
 
@@ -377,7 +379,9 @@ export class StatsService {
     totale_accessi_oggi: number;
   }[] {
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     // Raggruppa gli accessi per utente
     const userAccesses = new Map<number, RawAccesso[]>();
@@ -452,7 +456,9 @@ export class StatsService {
       totale_abbonamenti: 0,
       eta_media_utenti: 0,
       corso_top: 'N/A',
+      durata_corso_top: 0,
       corso_bottom: 'N/A',
+      durata_corso_bottom: 0,
       tempo_medio_entrata: 'N/A',
       durata_media_corso: 0,
       ultimi_accessi: [],

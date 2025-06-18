@@ -164,7 +164,6 @@ export class DashboardService {
       )
       .pipe(
         catchError((error) => {
-          console.error('Errore nella chiamata API getCorsi:', error);
           if (error.status === 0) {
             return throwError(() => new Error('Backend non disponibile'));
           } else if (error.error && error.error.message) {
@@ -191,7 +190,6 @@ export class DashboardService {
       )
       .pipe(
         catchError((error) => {
-          console.error('Errore nella chiamata API createCorso:', error);
           if (error.status === 0) {
             return throwError(() => new Error('Backend non disponibile'));
           } else if (error.error && error.error.message) {
@@ -320,7 +318,6 @@ export class DashboardService {
         message: 'Statistiche calcolate con successo'
       })),
       catchError((error) => {
-        console.error('Errore nel calcolo delle statistiche:', error);
         return of({
           success: false,
           data: this.getEmptyStats(),

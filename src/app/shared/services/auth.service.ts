@@ -96,10 +96,6 @@ export class AuthService {
       try {
         this.currentUser = JSON.parse(userData);
       } catch (error) {
-        console.error(
-          'Errore nel parsing dei dati utente dal localStorage:',
-          error
-        );
         localStorage.removeItem('current_user');
       }
     }

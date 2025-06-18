@@ -125,7 +125,7 @@ export class DashboardComponent implements OnInit {
       await this.loadUsers();
       this.loadedSections.users = true;
     } catch (error) {
-      console.error('Errore nel caricamento utenti:', error);
+
       this.errorMessage = 'Errore nel caricamento utenti. Riprova più tardi.';
     } finally {
       this.isLoading = false;
@@ -141,7 +141,7 @@ export class DashboardComponent implements OnInit {
       await this.loadSubscriptions();
       this.loadedSections.subscriptions = true;
     } catch (error) {
-      console.error('Errore nel caricamento abbonamenti:', error);
+
       this.errorMessage =
         'Errore nel caricamento abbonamenti. Riprova più tardi.';
     } finally {
@@ -158,7 +158,7 @@ export class DashboardComponent implements OnInit {
       await this.loadAccesses();
       this.loadedSections.accesses = true;
     } catch (error) {
-      console.error('Errore nel caricamento accessi:', error);
+
       this.errorMessage = 'Errore nel caricamento accessi. Riprova più tardi.';
     } finally {
       this.isLoading = false;
@@ -174,7 +174,7 @@ export class DashboardComponent implements OnInit {
       await this.loadStats();
       this.loadedSections.stats = true;
     } catch (error) {
-      console.error('Errore nel caricamento statistiche:', error);
+
       this.errorMessage =
         'Errore nel caricamento statistiche. Riprova più tardi.';
     } finally {
@@ -191,7 +191,7 @@ export class DashboardComponent implements OnInit {
       await this.loadCorsi();
       this.loadedSections.corsi = true;
     } catch (error) {
-      console.error('Errore nel caricamento corsi:', error);
+
       this.errorMessage = 'Errore nel caricamento corsi. Riprova più tardi.';
     } finally {
       this.isLoading = false;
@@ -264,7 +264,7 @@ export class DashboardComponent implements OnInit {
           resolve();
         },
         error: (error) => {
-          console.error('Error loading stats:', error);
+          
           reject(error);
         },
       });
@@ -640,7 +640,7 @@ export class DashboardComponent implements OnInit {
       await this.refreshAccessesAndStats();
       this.closeAccessModal();
     } catch (error: any) {
-      console.error('Errore nella registrazione accesso:', error);
+
       this.errorMessage = error.message || 'Errore nella registrazione accesso';
     } finally {
       this.isLoading = false;
@@ -775,7 +775,7 @@ export class DashboardComponent implements OnInit {
         second: '2-digit',
       });
     } catch (error) {
-      console.error('Errore nel formato data:', error);
+
       return 'Data non valida';
     }
   }

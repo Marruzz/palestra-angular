@@ -68,8 +68,8 @@ export class UserModalComponent implements OnInit {
   ngOnInit() {
     this.selectedUser = this.user;
     if (this.user) {
-      console.log('User modal - dati utente ricevuti:', this.user);
-      console.log('User modal - abbonamenti ricevuti:', this.user.abbonamenti);
+
+
 
       this.userForm = {
         id: this.user.id,
@@ -92,7 +92,7 @@ export class UserModalComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Errore nel caricamento corsi:', error);
+        
       },
     });
   }

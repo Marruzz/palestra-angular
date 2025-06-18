@@ -80,7 +80,7 @@ export class AccessesManagementComponent {
         second: '2-digit',
       });
     } catch (error) {
-      console.error('Errore nel formato data:', error);
+
       return 'Data non valida';
     }
   }
