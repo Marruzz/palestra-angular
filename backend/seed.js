@@ -1,8 +1,8 @@
 const mysql = require('mysql2/promise');
-const { faker } = require('@faker-js/faker');
+const { faker, fa } = require('@faker-js/faker');
 
-const NUM_UTENTI = 1;
-const MAX_INGRESSI_PER_UTENTE = 60;
+const NUM_UTENTI = faker.number.int({ min: 50, max: 500 });
+const MAX_INGRESSI_PER_UTENTE = faker.number.int({ min: 0, max: 25 });
 
 (async () => {
   const conn = await mysql.createConnection({

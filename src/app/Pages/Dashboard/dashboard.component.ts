@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
-import { StatsCards } from './stats-cards/stats-cards.component';
 import { StatsCardsSummaryComponent } from './stats-cards-summary/stats-cards-summary.component';
 import { PanoramicaUtentiSelection } from './panoramica-utenti-selection/panoramica-utenti-selection.component';
 import { NavigationTabs } from './navigation-tabs/navigation-tabs.component';
@@ -30,7 +29,6 @@ import { StatsService, CalculatedStats } from '../../shared/services/stats.servi
     FormsModule,
     HeaderComponent,
     LoadingSpinner,
-    StatsCards,
     StatsCardsSummaryComponent,
     PanoramicaUtentiSelection,
     NavigationTabs,
@@ -68,9 +66,9 @@ export class DashboardComponent implements OnInit {
   showUserModal = false;
   showAccessModal = false;
   showSubscriptionModal = false;
-  showCorsoModal = false;
-  selectedUser: PalestraUser | null = null;
+  showCorsoModal = false;  selectedUser: PalestraUser | null = null;
   selectedAbbonamento: Abbonamento | null = null;
+  selectedCorso: Corso | null = null;
   errorMessage = '';
 
   // Form data per utenti
@@ -489,7 +487,7 @@ export class DashboardComponent implements OnInit {
     }
   }
   // Gestione abbonamenti
-  async openSubscriptionModal(abbonamento?: Abbonamento) {
+  async openSubscriptionModal(abbonamento?: Abbonamento | null) {
     // Assicurati che utenti e corsi siano caricati per i dropdown
     await Promise.all([this.loadUsersIfNeeded(), this.loadCorsiIfNeeded()]);
 
@@ -658,7 +656,7 @@ export class DashboardComponent implements OnInit {
     }
   }
   // Gestione corsi
-  openCorsoModal(corso?: Corso) {
+  openCorsoModal(corso?: Corso | null) {
     this.errorMessage = ''; // Pulisce eventuali errori precedenti
     if (corso) {
       this.corsoForm = {
@@ -720,6 +718,11 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+  async deleteCorso(corso: Corso) {
+    // TODO: Implementare il metodo deleteCorso nel DashboardService
+    console.warn('Metodo deleteCorso non ancora implementato nel service');
+    alert('Funzionalità di eliminazione corso non ancora disponibile');
   }
 
   // Metodi di utility per il refresh forzato dei dati
