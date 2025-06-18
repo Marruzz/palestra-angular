@@ -336,10 +336,18 @@ export class SubscriptionsManagementComponent {
     return pages;
   }
 
-  getMinValue(a: number, b: number): number {
-    return Math.min(a, b);
+  get totalSubscriptions(): number {
+    return this.getFilteredSubscriptionsCount();
   }
 
+  get startSubscriptionIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endSubscriptionIndex(): number {
+    const endIndex = this.currentPage * this.itemsPerPage;
+    return Math.min(endIndex, this.getFilteredSubscriptionsCount());
+  }
   // Reset pagination when filters change
   onSearch(): void {
     this.currentPage = 1;

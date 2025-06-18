@@ -181,8 +181,7 @@ Questo progetto è distribuito sotto licenza MIT. Vedi il file `LICENSE` per mag
 ## 📞 Supporto
 
 Per supporto e domande:
-- 📧 Email: [tua-email@esempio.com](mailto:tua-email@esempio.com)
-- 🐛 Issues: [GitHub Issues](https://github.com/tuousername/palestra-angular/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/marruzz/palestra-angular/issues)
 
 ---
 
