@@ -557,4 +557,159 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Abbonamenti -->
+  <div
+    *ngIf="showSubscriptionModal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+    >
+      <div
+        class="flex items-center justify-between p-6 border-b border-gray-200"
+      >
+        <h3 class="text-2xl font-bold text-gray-900">
+          {{ selectedAbbonamento ? "Modifica" : "Nuovo" }} Abbonamento
+        </h3>
+        <button
+          (click)="closeSubscriptionModal()"
+          class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveSubscription()" class="p-6 space-y-6">
+        <div *ngIf="errorMessage" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Selezione Utente -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Utente
+            </label>
+            <select
+              [(ngModel)]="subscriptionForm.id_utente"
+              name="id_utente"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            >
+              <option value="0">Seleziona un utente</option>
+              <option *ngFor="let user of users" [value]="user.id">
+                {{ user.nome }} {{ user.cognome }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selezione Corso -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Corso
+            </label>
+            <select
+              [(ngModel)]="subscriptionForm.id_corso"
+              name="id_corso"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            >
+              <option value="0">Seleziona un corso</option>
+              <option *ngFor="let corso of corsi" [value]="corso.id">
+                {{ corso.nome_corso }} ({{ corso.durata_mesi_default }} {{ corso.durata_mesi_default === 1 ? 'mese' : 'mesi' }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Data Inizio -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Data Inizio
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="subscriptionForm.data_inizio"
+              name="data_inizio"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
+
+          <!-- Durata -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Durata (mesi)
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="subscriptionForm.durata_mesi"
+              name="durata_mesi"
+              min="1"
+              max="24"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            (click)="closeSubscriptionModal()"
+            class="px-6 py-3 text-gray-700 font-medium rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+            [disabled]="isLoading"
+          >
+            Annulla
+          </button>
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="
+              isLoading ||
+              !subscriptionForm.id_utente ||
+              !subscriptionForm.id_corso ||
+              !subscriptionForm.data_inizio ||
+              !subscriptionForm.durata_mesi
+            "
+          >
+            <svg
+              *ngIf="isLoading"
+              class="animate-spin w-4 h-4 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            {{ isLoading ? "Salvando..." : (selectedAbbonamento ? "Aggiorna" : "Crea") }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
