@@ -51,11 +51,11 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
   getGroupedCorsi(): Corso[][] {
     const grouped: Corso[][] = [];
     const itemsPerGroup = 3; // Number of items per row/group
-    
+
     for (let i = 0; i < this.filteredCorsi.length; i += itemsPerGroup) {
       grouped.push(this.filteredCorsi.slice(i, i + itemsPerGroup));
     }
-    
+
     return grouped;
   }
   getProgressPercentage(corso: Corso): number {
@@ -66,7 +66,7 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
       const maxCapacity = 30;
       return Math.min(Math.round((corso.abbonamenti_attivi / maxCapacity) * 100), 100);
     }
-    
+
     return 0;
   }
 
