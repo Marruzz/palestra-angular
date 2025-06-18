@@ -897,8 +897,8 @@ class DashboardController {
 
       res.json(users);
     } catch (error) {
-      console.error('GLI UTENTI HANNO FUCKUPPATO TUTTO', error);
-      res.status(500).json({ message: 'POLIZIA MULICIPALE, ERRORE INTERNO AL SERVER' });
+      console.error('Errore nella lettura degli utenti', error);
+      res.status(500).json({ message: 'Errore interno del server' });
     }
   }
 

@@ -19,11 +19,11 @@ const pool = mysql.createPool(dbConfig);
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log("Essiamo qua");
+    console.log("Siamo connessi al database MySQL!");
     connection.release();
     return true;
   } catch (error) {
-    console.error("Capitano abbandonare la nave, ", error.message);
+    console.error("Errore ", error.message);
     return false;
   }
 }
@@ -141,7 +141,7 @@ async function initializeTables() {
       );
 
       console.log(
-        "Capo, per stavolta logga con \n admin@palestra.com \n password"
+        "Usare admin@palestra.com e password come credenziali di accesso iniziali."
       );
     }
 
@@ -149,7 +149,7 @@ async function initializeTables() {
     connection.release();
   } catch (error) {
     console.error(
-      "WAIT! TABLES DON'T LOVE YOU LIKE YOU LOVE THEM!",
+      "Problema durante l'inizializzazione delle tabelle: ",
       error.message
     );
   }
