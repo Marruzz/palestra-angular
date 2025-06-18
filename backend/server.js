@@ -47,7 +47,7 @@ async function startServer() {
     }
     await initializeTables();
     app.listen(PORT, () => {
-      console.log('SIGNORE MIO PROGRAMMATORE, \n se vuole loggarsi all\' interno del suo Immenso sito, \n Le consiglio di farlo con \n admin@palestra.com \n password');
+      console.log('admin@palestra.com \n password');
 
     });
 
