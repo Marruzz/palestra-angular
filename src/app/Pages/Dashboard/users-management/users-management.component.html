@@ -79,11 +79,11 @@
                   <div class="text-xs text-gray-500">ID: {{ user.id }}</div>
                 </div>
               </div>
-            </td>
-            <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
+            </td>            <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
               <div
-                class="text-xs lg:text-sm text-gray-900 email-cell"
+                class="text-xs lg:text-sm text-gray-900 email-cell break-all max-w-[200px]"
                 *ngIf="user.email"
+                title="{{ user.email }}"
               >
                 {{ user.email }}
               </div>
@@ -201,12 +201,12 @@
         </div>
       </div>
 
-      <div class="space-y-1">
-        <div class="flex justify-between text-xs">
+      <div class="space-y-1">        <div class="flex justify-between text-xs">
           <span class="text-gray-500">Email:</span>
           <span
-            class="text-gray-900 truncate ml-2 email-cell"
+            class="text-gray-900 break-all ml-2 email-cell text-right max-w-[60%]"
             *ngIf="user.email"
+            title="{{ user.email }}"
             >{{ user.email }}</span
           >
           <span class="text-gray-400" *ngIf="!user.email">Nessuna email</span>

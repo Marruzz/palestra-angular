@@ -11,6 +11,9 @@ import { NavigationTabs } from './navigation-tabs/navigation-tabs.component';
 import { UsersManagementComponent } from './users-management/users-management.component';
 import { SubscriptionsManagementComponent } from './subscriptions-management/subscriptions-management.component';
 import { AccessesManagementComponent } from './accesses-management/accesses-management.component';
+import { CorsiManagementComponent } from './corsi-management/corsi-management.component';
+import { StatsPageComponent } from './stats-page/stats-page.component';
+import { ActiveSubscriptionsComponent } from './active-subscriptions/active-subscriptions.component';
 import {
   DashboardService,
   PalestraUser,
@@ -22,8 +25,7 @@ import {
 import { StatsService, CalculatedStats } from '../../shared/services/stats.service';
 
 @Component({
-  selector: 'app-dashboard',
-  imports: [
+  selector: 'app-dashboard',  imports: [
     CommonModule,
     FormsModule,
     HeaderComponent,
@@ -35,6 +37,9 @@ import { StatsService, CalculatedStats } from '../../shared/services/stats.servi
     UsersManagementComponent,
     SubscriptionsManagementComponent,
     AccessesManagementComponent,
+    CorsiManagementComponent,
+    StatsPageComponent,
+    ActiveSubscriptionsComponent,
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -47,18 +52,17 @@ export class DashboardComponent implements OnInit {
   ingressi: Ingresso[] = [];
   corsi: Corso[] = [];
   stats: CalculatedStats | null = null;
-
   // Stato del caricamento per ogni sezione
   private loadedSections = {
     users: false,
     subscriptions: false,
+    'active-subscriptions': false,
     accesses: false,
     stats: false,
     corsi: false,
   };
-
   // Stato dell'applicazione
-  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' =
+  currentView: 'users' | 'subscriptions' | 'active-subscriptions' | 'accesses' | 'stats' | 'corsi' =
     'users';
   isLoading = false;
   showUserModal = false;
@@ -264,7 +268,7 @@ export class DashboardComponent implements OnInit {
           resolve();
         },
         error: (error) => {
-          
+
           reject(error);
         },
       });
@@ -289,10 +293,9 @@ export class DashboardComponent implements OnInit {
         },
       });
     });
-  }
-  // Gestione delle viste
+  }  // Gestione delle viste
   async setView(
-    view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'
+    view: 'users' | 'subscriptions' | 'active-subscriptions' | 'accesses' | 'stats' | 'corsi'
   ) {
     this.currentView = view;
 
@@ -303,6 +306,14 @@ export class DashboardComponent implements OnInit {
         break;
       case 'subscriptions':
         // Carica utenti e corsi se necessario per i dropdown
+        await Promise.all([
+          this.loadSubscriptionsIfNeeded(),
+          this.loadUsersIfNeeded(),
+          this.loadCorsiIfNeeded(),
+        ]);
+        break;
+      case 'active-subscriptions':
+        // Carica abbonamenti attivi, utenti e corsi
         await Promise.all([
           this.loadSubscriptionsIfNeeded(),
           this.loadUsersIfNeeded(),
@@ -848,5 +859,97 @@ export class DashboardComponent implements OnInit {
         });
       }
     }
+  }
+
+  // Metodi helper per abbonamenti attivi
+  getActiveSubscriptions(): Abbonamento[] {
+    const today = new Date();
+    return this.abbonamenti.filter(abbonamento => {
+      const dataFine = new Date(abbonamento.data_fine);
+      return dataFine >= today;
+    });
+  }
+
+  isSubscriptionExpired(abbonamento: Abbonamento): boolean {
+    const today = new Date();
+    const dataFine = new Date(abbonamento.data_fine);
+    return dataFine < today;
+  }
+
+  isSubscriptionExpiringSoon(abbonamento: Abbonamento): boolean {
+    const today = new Date();
+    const dataFine = new Date(abbonamento.data_fine);
+    const daysUntilExpiry = Math.ceil((dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
+  }
+
+  getDaysUntilExpiry(abbonamento: Abbonamento): number {
+    const today = new Date();
+    const dataFine = new Date(abbonamento.data_fine);
+    return Math.ceil((dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  }
+  renewSubscription(abbonamento: Abbonamento) {
+    // Apre il modal per modificare l'abbonamento esistente
+    this.selectedAbbonamento = abbonamento;
+    this.subscriptionForm = {
+      id: abbonamento.id,
+      id_utente: abbonamento.id_utente,
+      id_corso: abbonamento.id_corso,
+      data_inizio: abbonamento.data_inizio,
+      durata_mesi: abbonamento.durata_mesi,
+    };
+    this.showSubscriptionModal = true;
+    this.errorMessage = '';
+  }
+
+  async cancelSubscription(abbonamento: Abbonamento) {
+    if (confirm(`Sei sicuro di voler annullare l'abbonamento di ${abbonamento.nome} ${abbonamento.cognome}?`)) {
+      try {
+        this.isLoading = true;
+        this.errorMessage = '';
+
+        const response = await new Promise<any>((resolve, reject) => {
+          this.dashboardService.deleteSubscription(abbonamento.id).subscribe({
+            next: (result) => resolve(result),
+            error: (error) => reject(error)
+          });
+        });
+
+        if (response.success) {
+          await this.loadSubscriptions();
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = response.message || 'Errore durante l\'annullamento dell\'abbonamento';
+        }
+      } catch (error) {
+        console.error('Errore durante l\'annullamento:', error);
+        this.errorMessage = 'Errore durante l\'annullamento dell\'abbonamento. Riprova più tardi.';
+      } finally {
+        this.isLoading = false;
+      }
+    }
+  }
+
+  formatDateItalian(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+  getSubscriptionStatusBadge(abbonamento: Abbonamento): { class: string; text: string } {
+    if (this.isSubscriptionExpired(abbonamento)) {
+      return { class: 'bg-red-100 text-red-800 border-red-200', text: 'Scaduto' };
+    } else if (this.isSubscriptionExpiringSoon(abbonamento)) {
+      return { class: 'bg-yellow-100 text-yellow-800 border-yellow-200', text: 'In scadenza' };
+    } else {
+      return { class: 'bg-green-100 text-green-800 border-green-200', text: 'Attivo' };
+    }
+  }
+
+  // Helper per il template
+  getExpiringSoonCount(): number {
+    return this.getActiveSubscriptions().filter(sub => this.isSubscriptionExpiringSoon(sub)).length;
   }
 }

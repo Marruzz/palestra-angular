@@ -1,0 +1,289 @@
+<div class="p-8">
+  <div
+    class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8"
+  >
+    <div class="flex-1">
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">
+        Gestione Corsi
+      </h2>
+      <p class="text-lg text-gray-600">
+        Gestisci i corsi della tua palestra
+      </p>
+    </div>
+    <div class="flex items-center gap-4">
+      <button
+        (click)="refreshData()"
+        class="inline-flex items-center justify-center px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+        [disabled]="isLoading"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          ></path>
+        </svg>
+        Aggiorna
+      </button>
+      <button
+        (click)="openCorsoModal()"
+        class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        [disabled]="isLoading"
+      >
+        <svg
+          class="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
+        </svg>
+        Nuovo Corso
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    *ngIf="corsi.length > 0; else noCorsi"
+  >
+    <div
+      *ngFor="let corso of corsi"
+      class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div
+          class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200"
+        >
+          <svg
+            class="w-6 h-6 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
+          </svg>
+        </div>
+        <button
+          (click)="openCorsoModal(corso)"
+          class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+          [disabled]="isLoading"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <h3 class="text-xl font-semibold text-gray-900">
+          {{ corso.nome_corso }}
+        </h3>
+        <p class="text-gray-600 text-sm" *ngIf="corso.descrizione">
+          {{ corso.descrizione }}
+        </p>
+        <div class="flex items-center text-sm text-gray-500">
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          {{ corso.durata_mesi_default }} mesi
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noCorsi>
+    <div class="text-center py-12">
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+        ></path>
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-gray-900">
+        Nessun corso trovato
+      </h3>
+      <p class="mt-2 text-gray-500">Inizia creando il tuo primo corso.</p>
+    </div>
+  </ng-template>
+
+  <!-- Modal Corso -->
+  <div
+    *ngIf="showCorsoModal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+    >
+      <div
+        class="flex items-center justify-between p-6 border-b border-gray-200"
+      >
+        <h3 class="text-2xl font-bold text-gray-900">
+          {{ corsoForm.id ? "Modifica" : "Nuovo" }} Corso
+        </h3>
+        <button
+          (click)="closeCorsoModal()"
+          class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <div
+        *ngIf="errorMessage"
+        class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+      >
+        <div class="flex items-center">
+          <svg
+            class="w-5 h-5 text-red-500 mr-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span class="text-red-700 font-medium">{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Nome Corso *</label
+          >
+          <input
+            [(ngModel)]="corsoForm.nome_corso"
+            type="text"
+            required
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            placeholder="Inserisci il nome del corso"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Descrizione</label
+          >
+          <textarea
+            [(ngModel)]="corsoForm.descrizione"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+            rows="3"
+            placeholder="Descrizione opzionale del corso"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Durata Mesi Default</label
+          >
+          <input
+            [(ngModel)]="corsoForm.durata_mesi_default"
+            type="number"
+            min="1"
+            max="24"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+          />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-4 p-6 border-t border-gray-200">
+        <button
+          (click)="closeCorsoModal()"
+          class="px-6 py-3 text-gray-700 font-medium rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+          [disabled]="isLoading"
+        >
+          Annulla
+        </button>
+        <button
+          (click)="saveCorso()"
+          class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="
+            isLoading ||
+            !corsoForm.nome_corso ||
+            !corsoForm.nome_corso.trim()
+          "
+        >
+          <svg
+            *ngIf="isLoading"
+            class="animate-spin w-4 h-4 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          {{ isLoading ? "Salvando..." : "Salva" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
