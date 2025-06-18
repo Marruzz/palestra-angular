@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -15,7 +15,7 @@ import {
   templateUrl: './accesses-management.component.html',
   styleUrl: './accesses-management.component.css',
 })
-export class AccessesManagementComponent {
+export class AccessesManagementComponent implements OnInit, OnChanges {
   @Input() accesses: Ingresso[] = [];
   @Input() users: PalestraUser[] = [];
   @Input() showAccessModal: boolean = false;
@@ -27,6 +27,96 @@ export class AccessesManagementComponent {
   @Output() accessModalClose = new EventEmitter<void>();
   @Output() accessRegister = new EventEmitter<void>();
   @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
+
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 7;
+  totalPages: number = 0;
+  paginatedAccesses: Ingresso[] = [];
+
+  ngOnInit() {
+    this.updatePagination();
+  }
+
+  ngOnChanges() {
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.accesses.length / this.itemsPerPage);
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedAccesses = this.accesses.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5; // Maximum number of page buttons to show
+    
+    if (this.totalPages <= maxVisiblePages) {
+      // If total pages is less than max, show all pages
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Calculate start and end page numbers
+      let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+      
+      // Adjust start page if we're near the end
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      // Always show first page
+      if (startPage > 1) {
+        pages.push(1);
+        if (startPage > 2) {
+          pages.push(-1); // -1 represents ellipsis
+        }
+      }
+      
+      // Add middle pages
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+      
+      // Always show last page
+      if (endPage < this.totalPages) {
+        if (endPage < this.totalPages - 1) {
+          pages.push(-1); // -1 represents ellipsis
+        }
+        pages.push(this.totalPages);
+      }
+    }
+    
+    return pages;
+  }
+
+  getDisplayedToIndex(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.accesses.length);
+  }
+
   onOpenAccessModal() {
     this.accessModalOpen.emit();
   }
