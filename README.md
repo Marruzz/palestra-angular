@@ -30,6 +30,7 @@
   <summary>Clicca per vedere gli screenshot dell'applicazione</summary>
   
   **Pagina di Login**
+  <br/>
   ![Login](./public/screen/login.png)
 
   **Dashboard Principale**
