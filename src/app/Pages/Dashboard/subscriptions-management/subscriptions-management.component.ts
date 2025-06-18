@@ -6,6 +6,7 @@ import {
   PalestraUser,
   Corso,
 } from '../../../shared/services/dashboard.service';
+import { SubscriptionModalComponent } from './subscription-modal/subscription-modal.component';
 
 
 interface Subscription {
@@ -19,7 +20,7 @@ interface Subscription {
 
 @Component({
   selector: 'app-subscriptions-management',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SubscriptionModalComponent],
   templateUrl: './subscriptions-management.component.html',
   styleUrl: './subscriptions-management.component.css',
 })
@@ -40,6 +41,12 @@ export class SubscriptionsManagementComponent {
   // Search functionality
   subscriptionSearchTerm: string = '';
   filteredSubscriptions: Abbonamento[] = [];
+
+  // Advanced filter functionality
+  statusFilter: string = 'all'; // 'all', 'active', 'expired'
+  typeFilter: string = 'all'; // 'all', 'monthly', 'semester', 'yearly'
+  courseFilter: string = 'all'; // 'all' or specific course ID
+  showFilters: boolean = false;
 
   getActiveSubscriptionsByType(
     type: 'monthly' | 'semester' | 'yearly'
@@ -99,7 +106,7 @@ export class SubscriptionsManagementComponent {
 
   getDurationLabel(months: number): string {
     if (months === 1) return 'Mensile';
-    if (months === 3) return 'Trimestrale';
+    if (months === 6) return 'Semestrale';
     if (months === 12) return 'Annuale';
     return `${months} mesi`;
   }
@@ -141,33 +148,84 @@ export class SubscriptionsManagementComponent {
   getSubscriptionStatusText(subscription: Abbonamento): string {
     return this.isSubscriptionActive(subscription) ? 'Attivo' : 'Scaduto';
   }
-
   getSubscriptionStatusClass(subscription: Abbonamento): string {
     return this.isSubscriptionActive(subscription)
       ? 'bg-green-100 text-green-800'
       : 'bg-red-100 text-red-800';
   }
 
-  onSubscriptionSearch(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.subscriptionSearchTerm = target.value.toLowerCase();
+  get displayedSubscriptions(): Abbonamento[] {
+    let filtered = this.subscriptions;
 
-    if (this.subscriptionSearchTerm.trim() === '') {
-      this.filteredSubscriptions = [];
-    } else {
-      this.filteredSubscriptions = this.subscriptions.filter(subscription => {
+    // Apply search filter
+    if (this.subscriptionSearchTerm.trim() !== '') {
+      filtered = filtered.filter(subscription => {
         const userName = `${subscription.nome} ${subscription.cognome}`.toLowerCase();
         const courseName = (subscription.nome_corso || '').toLowerCase();
         const email = (subscription.email || '').toLowerCase();
 
-        return userName.includes(this.subscriptionSearchTerm) ||
-               courseName.includes(this.subscriptionSearchTerm) ||
-               email.includes(this.subscriptionSearchTerm);
+        return userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+               courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+               email.includes(this.subscriptionSearchTerm.toLowerCase());
       });
     }
+
+    // Apply status filter
+    if (this.statusFilter !== 'all') {
+      filtered = filtered.filter(subscription => {
+        const isActive = this.isSubscriptionActive(subscription);
+        return this.statusFilter === 'active' ? isActive : !isActive;
+      });
+    }
+
+    // Apply type filter
+    if (this.typeFilter !== 'all') {
+      const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
+      const targetMonths = monthsMap[this.typeFilter as keyof typeof monthsMap];
+      filtered = filtered.filter(subscription => subscription.durata_mesi === targetMonths);
+    }    // Apply course filter
+    if (this.courseFilter !== 'all') {
+      filtered = filtered.filter(subscription => subscription.id_corso?.toString() === this.courseFilter);
+    }
+
+    return filtered;
   }
 
-  get displayedSubscriptions(): Abbonamento[] {
-    return this.subscriptionSearchTerm ? this.filteredSubscriptions : this.subscriptions;
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  onStatusFilterChange(status: string): void {
+    this.statusFilter = status;
+  }
+
+  onTypeFilterChange(type: string): void {
+    this.typeFilter = type;
+  }
+
+  onCourseFilterChange(courseId: string): void {
+    this.courseFilter = courseId;
+  }
+
+  clearAllFilters(): void {
+    this.statusFilter = 'all';
+    this.typeFilter = 'all';
+    this.courseFilter = 'all';
+    this.subscriptionSearchTerm = '';
+  }
+
+  getActiveFiltersCount(): number {
+    let count = 0;
+    if (this.statusFilter !== 'all') count++;
+    if (this.typeFilter !== 'all') count++;
+    if (this.courseFilter !== 'all') count++;
+    if (this.subscriptionSearchTerm.trim() !== '') count++;
+    return count;
+  }
+
+  get uniqueCourses(): Corso[] {
+    return this.corsi.filter((corso, index, self) =>
+      index === self.findIndex(c => c.id === corso.id)
+    );
   }
 }

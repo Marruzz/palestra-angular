@@ -161,7 +161,8 @@
           (accessRegister)="saveAccess()"
         >
         </app-accesses-management>
-      </div>      <div
+      </div>
+      <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="currentView === 'corsi'"
       >
@@ -179,14 +180,12 @@
           (refreshView)="refreshCurrentView()"
         >
         </app-corsi-management>
-      </div>      <div
+      </div>
+      <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100"
         *ngIf="currentView === 'stats'"
       >
-        <app-stats-page
-          [stats]="stats"
-          [isLoading]="isLoading"
-        >
+        <app-stats-page [stats]="stats" [isLoading]="isLoading">
         </app-stats-page>
       </div>
 
@@ -200,30 +199,7 @@
           (userEdit)="openUserModal($event)"
           (userDelete)="deleteUser($event)"
         >
-        </app-panoramica-utenti-selection>      </div>
-
-      <!-- Sezione Abbonamenti Attivi -->
-      <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100"
-        *ngIf="currentView === 'active-subscriptions'"
-      >
-        <app-active-subscriptions
-          [abbonamenti]="abbonamenti"
-          [users]="users"
-          [corsi]="corsi"
-          [showSubscriptionModal]="showSubscriptionModal"
-          [subscriptionForm]="subscriptionForm"
-          [selectedAbbonamento]="selectedAbbonamento"
-          [isLoading]="isLoading"
-          [errorMessage]="errorMessage"
-          (subscriptionModalOpen)="openSubscriptionModal($event)"
-          (subscriptionModalClose)="closeSubscriptionModal()"
-          (subscriptionSave)="saveSubscription()"
-          (subscriptionRenew)="renewSubscription($event)"
-          (subscriptionCancel)="cancelSubscription($event)"
-          (refreshView)="refreshCurrentView()"
-        >
-        </app-active-subscriptions>
+        </app-panoramica-utenti-selection>
       </div>
     </div>
   </div>

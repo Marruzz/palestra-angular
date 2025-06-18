@@ -25,30 +25,117 @@
       Nuovo Abbonamento
     </button>
   </div>
-
   <!-- Search bar for subscriptions -->
-  <div class="mb-6">
-    <div class="relative max-w-md">
-      <svg
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        ></path>
-      </svg>
-      <input
-        type="text"
-        [(ngModel)]="subscriptionSearchTerm"
-        (input)="onSubscriptionSearch($event)"
-        placeholder="Cerca abbonamenti per utente o corso..."
-        class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
-      />
+  <div class="mb-4">
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="relative flex-1 max-w-md">
+        <svg
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>        <input
+          type="text"
+          [(ngModel)]="subscriptionSearchTerm"
+          placeholder="Cerca abbonamenti per utente o corso..."
+          class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
+        />
+      </div>
+
+      <!-- Filter toggle button -->
+      <div class="flex items-center gap-2">
+        <button
+          (click)="toggleFilters()"
+          class="relative flex items-center px-4 py-3 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-colors"
+        >
+          <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+          </svg>
+          Filtri
+          <span *ngIf="getActiveFiltersCount() > 0" class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+            {{ getActiveFiltersCount() }}
+          </span>
+        </button>
+
+        <button
+          *ngIf="getActiveFiltersCount() > 0"
+          (click)="clearAllFilters()"
+          class="px-3 py-3 text-sm text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+          title="Pulisci tutti i filtri"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  <div *ngIf="showFilters" class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Status Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Stato Abbonamento</label>
+        <select
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onStatusFilterChange($event)"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        >
+          <option value="all">Tutti gli stati</option>
+          <option value="active">Solo attivi</option>
+          <option value="expired">Solo scaduti</option>
+        </select>
+      </div>
+
+      <!-- Type Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo Abbonamento</label>
+        <select
+          [(ngModel)]="typeFilter"
+          (ngModelChange)="onTypeFilterChange($event)"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        >
+          <option value="all">Tutti i tipi</option>
+          <option value="monthly">Mensile</option>
+          <option value="semester">Semestrale</option>
+          <option value="yearly">Annuale</option>
+        </select>
+      </div>
+
+      <!-- Course Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Corso</label>
+        <select
+          [(ngModel)]="courseFilter"
+          (ngModelChange)="onCourseFilterChange($event)"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        >
+          <option value="all">Tutti i corsi</option>
+          <option *ngFor="let corso of uniqueCourses" [value]="corso.id">
+            {{ corso.nome_corso + (corso.durata_mesi_default ? ' (' + corso.durata_mesi_default + ' mesi)' : '') }}
+          </option>
+        </select>
+      </div>
+    </div>  </div>
+
+  <!-- Results counter -->
+  <div class="mb-4 flex justify-between items-center">
+    <p class="text-sm text-gray-600">
+      Visualizzati <span class="font-semibold">{{ displayedSubscriptions.length }}</span>
+      di <span class="font-semibold">{{ subscriptions.length }}</span> abbonamenti
+    </p>
+    <div *ngIf="getActiveFiltersCount() > 0" class="text-sm text-blue-600">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100">
+        {{ getActiveFiltersCount() }} filtro{{ getActiveFiltersCount() > 1 ? 'i' : '' }} attivo{{ getActiveFiltersCount() > 1 ? 'i' : '' }}
+      </span>
     </div>
   </div>
 
@@ -331,8 +418,6 @@
         </div>
       </div>
     </div>
-
-
     <div *ngIf="displayedSubscriptions.length === 0" class="text-center py-12">
       <svg
         class="mx-auto h-12 w-12 text-gray-400"
@@ -354,3 +439,16 @@
     </div>
   </div>
 </div>
+
+<!-- Subscription Modal -->
+<app-subscription-modal
+  *ngIf="showSubscriptionModal"
+  [selectedAbbonamento]="selectedAbbonamento"
+  [subscriptionForm]="subscriptionForm"
+  [users]="users"
+  [corsi]="corsi"
+  (subscriptionModalClose)="onCloseSubscriptionModal()"
+  (subscriptionSave)="onSaveSubscription()"
+  (subscriptionFormChange)="onFormChange()"
+>
+</app-subscription-modal>

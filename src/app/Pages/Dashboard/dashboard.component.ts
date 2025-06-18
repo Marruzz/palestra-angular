@@ -12,7 +12,6 @@ import { SubscriptionsManagementComponent } from './subscriptions-management/sub
 import { AccessesManagementComponent } from './accesses-management/accesses-management.component';
 import { CorsiManagementComponent } from './corsi-management/corsi-management.component';
 import { StatsPageComponent } from './stats-page/stats-page.component';
-import { ActiveSubscriptionsComponent } from './active-subscriptions/active-subscriptions.component';
 import {
   DashboardService,
   PalestraUser,
@@ -36,8 +35,7 @@ import { StatsService, CalculatedStats } from '../../shared/services/stats.servi
     SubscriptionsManagementComponent,
     AccessesManagementComponent,
     CorsiManagementComponent,
-    StatsPageComponent,
-    ActiveSubscriptionsComponent,
+    StatsPageComponent
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -60,7 +58,7 @@ export class DashboardComponent implements OnInit {
     corsi: false,
   };
   // Stato dell'applicazione
-  currentView: 'users' | 'subscriptions' | 'active-subscriptions' | 'accesses' | 'stats' | 'corsi' =
+  currentView: 'users' | 'subscriptions'  | 'accesses' | 'stats' | 'corsi' =
     'users';
   isLoading = false;
   showUserModal = false;
@@ -293,7 +291,7 @@ export class DashboardComponent implements OnInit {
     });
   }  // Gestione delle viste
   async setView(
-    view: 'users' | 'subscriptions' | 'active-subscriptions' | 'accesses' | 'stats' | 'corsi'
+    view: 'users' | 'subscriptions'  | 'accesses' | 'stats' | 'corsi'
   ) {
     this.currentView = view;
 
@@ -304,14 +302,6 @@ export class DashboardComponent implements OnInit {
         break;
       case 'subscriptions':
         // Carica utenti e corsi se necessario per i dropdown
-        await Promise.all([
-          this.loadSubscriptionsIfNeeded(),
-          this.loadUsersIfNeeded(),
-          this.loadCorsiIfNeeded(),
-        ]);
-        break;
-      case 'active-subscriptions':
-        // Carica abbonamenti attivi, utenti e corsi
         await Promise.all([
           this.loadSubscriptionsIfNeeded(),
           this.loadUsersIfNeeded(),
