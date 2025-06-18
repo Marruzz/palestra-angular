@@ -14,7 +14,7 @@ const MAX_INGRESSI_PER_UTENTE = faker.number.int({ min: 0, max: 25 });
 
 
   let utentiIds = [];
-  for (let i = 0; i < NUM_UTENTI; i++) {
+  /* for (let i = 0; i < NUM_UTENTI; i++) {
     const nome = faker.person.firstName();
     const cognome = faker.person.lastName();
     const email = faker.internet.email({ firstName: nome, lastName: cognome });
@@ -29,7 +29,7 @@ const MAX_INGRESSI_PER_UTENTE = faker.number.int({ min: 0, max: 25 });
 
     utentiIds.push(res.insertId);
     console.log(`Utente ${i + 1}/${NUM_UTENTI} creato: ${nome} ${cognome}`);
-  }
+  } */
 
 
 
@@ -37,7 +37,7 @@ const MAX_INGRESSI_PER_UTENTE = faker.number.int({ min: 0, max: 25 });
 
   const [corsiDb] = await conn.query(`SELECT id FROM Corsi`);
 
-  for (const uid of utentiIds) {
+  /* for (const uid of utentiIds) {
     const n = faker.number.int({ min: 1, max: 2 });
     const corsiScelti = faker.helpers.shuffle(corsiDb).slice(0, n);
     for (const corso of corsiScelti) {
@@ -50,7 +50,7 @@ const MAX_INGRESSI_PER_UTENTE = faker.number.int({ min: 0, max: 25 });
       );
       console.log(`Abbonamento creato per utente ${uid} al corso ${corso.id}`);
     }
-  }
+  } */
 
 
   for (const uid of utentiIds) {
