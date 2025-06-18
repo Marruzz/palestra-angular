@@ -1054,7 +1054,7 @@ class DashboardController {
     try {
       const { id } = req.params;
 
-      // Verifica che l'accesso esista
+
       const [existingAccess] = await pool.execute(
         'SELECT id FROM Ingressi WHERE id = ?',
         [id]
@@ -1067,7 +1067,7 @@ class DashboardController {
         });
       }
 
-      // Elimina l'accesso
+
       await pool.execute(
         'DELETE FROM Ingressi WHERE id = ?',
         [id]

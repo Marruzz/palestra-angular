@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-
 import { HeaderComponent } from '../../shared/header/header.component';
 import { LoadingSpinner } from '../../shared/loading-spinner/loading-spinner.component';
 import { StatsCardsSummaryComponent } from './stats-cards-summary/stats-cards-summary.component';
@@ -14,8 +13,17 @@ import { SubscriptionsManagementComponent } from './subscriptions-management/sub
 import { AccessesManagementComponent } from './accesses-management/accesses-management.component';
 import { CorsiManagementComponent } from './corsi-management/corsi-management.component';
 import { StatsPageComponent } from './stats-page/stats-page.component';
-import { DashboardService, PalestraUser, Abbonamento, Ingresso, Corso } from '../../shared/services/dashboard.service';
-import { StatsService, CalculatedStats } from '../../shared/services/stats.service';
+import {
+  DashboardService,
+  PalestraUser,
+  Abbonamento,
+  Ingresso,
+  Corso,
+} from '../../shared/services/dashboard.service';
+import {
+  StatsService,
+  CalculatedStats,
+} from '../../shared/services/stats.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +39,7 @@ import { StatsService, CalculatedStats } from '../../shared/services/stats.servi
     SubscriptionsManagementComponent,
     AccessesManagementComponent,
     CorsiManagementComponent,
-    StatsPageComponent
+    StatsPageComponent,
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -54,7 +62,7 @@ export class DashboardComponent implements OnInit {
     corsi: false,
   };
 
-  currentView: 'users' | 'subscriptions'  | 'accesses' | 'stats' | 'corsi' =
+  currentView: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' =
     'users';
   isLoading = false;
   showUserModal = false;
@@ -100,20 +108,15 @@ export class DashboardComponent implements OnInit {
     private statsService: StatsService
   ) {}
   ngOnInit() {
-
     this.loadStatsIfNeeded();
-
 
     const savedView = this.getSavedView();
     if (savedView) {
       this.currentView = savedView;
     }
 
-
     this.setView(this.currentView);
   }
-
-
 
   private async loadUsersIfNeeded(): Promise<void> {
     if (this.loadedSections.users) return;
@@ -124,7 +127,6 @@ export class DashboardComponent implements OnInit {
       await this.loadUsers();
       this.loadedSections.users = true;
     } catch (error) {
-
       this.errorMessage = 'Errore nel caricamento utenti. Riprova più tardi.';
     } finally {
       this.isLoading = false;
@@ -140,7 +142,6 @@ export class DashboardComponent implements OnInit {
       await this.loadSubscriptions();
       this.loadedSections.subscriptions = true;
     } catch (error) {
-
       this.errorMessage =
         'Errore nel caricamento abbonamenti. Riprova più tardi.';
     } finally {
@@ -157,7 +158,6 @@ export class DashboardComponent implements OnInit {
       await this.loadAccesses();
       this.loadedSections.accesses = true;
     } catch (error) {
-
       this.errorMessage = 'Errore nel caricamento accessi. Riprova più tardi.';
     } finally {
       this.isLoading = false;
@@ -173,7 +173,6 @@ export class DashboardComponent implements OnInit {
       await this.loadStats();
       this.loadedSections.stats = true;
     } catch (error) {
-
       this.errorMessage =
         'Errore nel caricamento statistiche. Riprova più tardi.';
     } finally {
@@ -201,11 +200,10 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
           if (response.success && response.data) {
-
-            this.users = response.data.map(user => ({
+            this.users = response.data.map((user) => ({
               ...user,
               email: user.email || '', // Provide default empty string for undefined email
-              abbonamenti: []
+              abbonamenti: [],
             }));
             resolve();
           } else {
@@ -302,16 +300,13 @@ export class DashboardComponent implements OnInit {
   ) {
     this.currentView = view;
 
-
     this.saveViewToLocalStorage(view);
-
 
     switch (view) {
       case 'users':
         await this.loadUsersIfNeeded();
         break;
       case 'subscriptions':
-
         await Promise.all([
           this.loadSubscriptionsIfNeeded(),
           this.loadUsersIfNeeded(),
@@ -319,7 +314,6 @@ export class DashboardComponent implements OnInit {
         ]);
         break;
       case 'accesses':
-
         await Promise.all([
           this.loadAccessesIfNeeded(),
           this.loadUsersIfNeeded(),
@@ -334,11 +328,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-
   private saveViewToLocalStorage(view: string): void {
     const viewData = {
       view: view,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
     try {
       localStorage.setItem('dashboard_current_view', JSON.stringify(viewData));
@@ -347,7 +340,13 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private getSavedView(): 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' | null {
+  private getSavedView():
+    | 'users'
+    | 'subscriptions'
+    | 'accesses'
+    | 'stats'
+    | 'corsi'
+    | null {
     try {
       const savedData = localStorage.getItem('dashboard_current_view');
       if (!savedData) return null;
@@ -356,14 +355,18 @@ export class DashboardComponent implements OnInit {
       const now = Date.now();
       const maxAge = 300 * 1000; // 300 secondi in millisecondi
 
-
       if (now - parsedData.timestamp > maxAge) {
         localStorage.removeItem('dashboard_current_view');
         return null;
       }
 
-
-      const validViews = ['users', 'subscriptions', 'accesses', 'stats', 'corsi'];
+      const validViews = [
+        'users',
+        'subscriptions',
+        'accesses',
+        'stats',
+        'corsi',
+      ];
       if (validViews.includes(parsedData.view)) {
         return parsedData.view;
       }
@@ -377,7 +380,6 @@ export class DashboardComponent implements OnInit {
   }
 
   async openUserModal(user?: PalestraUser) {
-
     await this.loadCorsiIfNeeded();
 
     this.selectedUser = user || null;
@@ -417,20 +419,17 @@ export class DashboardComponent implements OnInit {
       this.isLoading = true;
       this.errorMessage = '';
 
-
       if (userFormData) {
         this.userForm = { ...userFormData };
       }
 
       if (this.selectedUser) {
-
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateUser(this.selectedUser!.id, this.userForm)
             .subscribe({
               next: (response) => {
                 if (response.success) {
-
                   if (userFormData && userFormData.abbonamenti) {
                     this.updateUserAbbonamenti(
                       this.selectedUser!.id,
@@ -451,7 +450,6 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-
         let newUserId: number;
         await new Promise<void>((resolve, reject) => {
           this.dashboardService.createUser(this.userForm).subscribe({
@@ -483,7 +481,6 @@ export class DashboardComponent implements OnInit {
           });
         });
       }
-
 
       this.loadedSections.users = false;
       await this.loadUsersIfNeeded();
@@ -518,7 +515,6 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-
         this.loadedSections.users = false;
         await this.loadUsersIfNeeded();
       } catch (error: any) {
@@ -530,7 +526,6 @@ export class DashboardComponent implements OnInit {
   }
 
   async openSubscriptionModal(abbonamento?: Abbonamento | null) {
-
     await Promise.all([this.loadUsersIfNeeded(), this.loadCorsiIfNeeded()]);
 
     this.selectedAbbonamento = abbonamento || null;
@@ -569,7 +564,6 @@ export class DashboardComponent implements OnInit {
       this.errorMessage = '';
 
       if (this.selectedAbbonamento) {
-
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateSubscription(
@@ -588,7 +582,6 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .createSubscription(this.subscriptionForm)
@@ -604,7 +597,6 @@ export class DashboardComponent implements OnInit {
             });
         });
       }
-
 
       this.loadedSections.subscriptions = false;
       await this.loadSubscriptionsIfNeeded();
@@ -635,7 +627,6 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-
         this.loadedSections.subscriptions = false;
         await this.loadSubscriptionsIfNeeded();
       } catch (error: any) {
@@ -648,7 +639,6 @@ export class DashboardComponent implements OnInit {
   }
 
   async openAccessModal() {
-
     await this.loadUsersIfNeeded();
 
     this.resetAccessForm();
@@ -688,10 +678,10 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-
       await this.refreshAccessesAndStats();
       this.closeAccessModal();
-    } catch (error: any) {      this.errorMessage = error.message || 'Errore nella registrazione accesso';
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nella registrazione accesso';
     } finally {
       this.isLoading = false;
     }
@@ -715,10 +705,9 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-      // Ricarica gli accessi e le statistiche dopo l'eliminazione
       await this.refreshAccessesAndStats();
     } catch (error: any) {
-      this.errorMessage = error.message || 'Errore nell\'eliminazione accesso';
+      this.errorMessage = error.message || "Errore nell'eliminazione accesso";
     } finally {
       this.isLoading = false;
     }
@@ -754,7 +743,6 @@ export class DashboardComponent implements OnInit {
     };
   }
   async saveCorso() {
-
     if (!this.corsoForm.nome_corso || this.corsoForm.nome_corso.trim() === '') {
       this.errorMessage = 'Il nome del corso è obbligatorio';
       return;
@@ -777,7 +765,6 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-
       this.loadedSections.corsi = false;
       await this.loadCorsiIfNeeded();
       this.closeCorsoModal();
@@ -789,30 +776,23 @@ export class DashboardComponent implements OnInit {
     }
   }
   async deleteCorso(corso: Corso) {
-
     console.warn('Metodo deleteCorso non ancora implementato nel service');
     alert('Funzionalità di eliminazione corso non ancora disponibile');
   }
 
-
   async refreshCurrentView(): Promise<void> {
-
     this.loadedSections[this.currentView] = false;
-
 
     await this.setView(this.currentView);
   }
 
   async refreshAllData(): Promise<void> {
-
     Object.keys(this.loadedSections).forEach((key) => {
       this.loadedSections[key as keyof typeof this.loadedSections] = false;
     });
 
-
     await this.loadStatsIfNeeded();
   }
-
 
   async refreshAccessesAndStats(): Promise<void> {
     this.loadedSections.accesses = false;
@@ -820,7 +800,6 @@ export class DashboardComponent implements OnInit {
 
     await Promise.all([this.loadAccessesIfNeeded(), this.loadStatsIfNeeded()]);
   }
-
 
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
@@ -833,7 +812,7 @@ export class DashboardComponent implements OnInit {
       return date.toLocaleDateString('it-IT', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     } catch (error) {
       return 'Data non valida';
@@ -847,7 +826,6 @@ export class DashboardComponent implements OnInit {
       if (isNaN(date.getTime())) {
         return 'Data non valida';
       }
-
 
       return date.toLocaleString('it-IT', {
         timeZone: 'Europe/Rome',
@@ -871,7 +849,6 @@ export class DashboardComponent implements OnInit {
     return this.corsi.find((corso) => corso.id === id);
   }
 
-
   onLogout() {
     this.logout.emit();
     this.router.navigate(['/login']);
@@ -887,7 +864,6 @@ export class DashboardComponent implements OnInit {
 
     for (const abbonamento of abbonamenti) {
       if (abbonamento.id === 0) {
-
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .createSubscription({
@@ -909,7 +885,6 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateSubscription(abbonamento.id, {
@@ -934,10 +909,9 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-
   getActiveSubscriptions(): Abbonamento[] {
     const today = new Date();
-    return this.abbonamenti.filter(abbonamento => {
+    return this.abbonamenti.filter((abbonamento) => {
       const dataFine = new Date(abbonamento.data_fine);
       return dataFine >= today;
     });
@@ -952,17 +926,20 @@ export class DashboardComponent implements OnInit {
   isSubscriptionExpiringSoon(abbonamento: Abbonamento): boolean {
     const today = new Date();
     const dataFine = new Date(abbonamento.data_fine);
-    const daysUntilExpiry = Math.ceil((dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntilExpiry = Math.ceil(
+      (dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
   }
 
   getDaysUntilExpiry(abbonamento: Abbonamento): number {
     const today = new Date();
     const dataFine = new Date(abbonamento.data_fine);
-    return Math.ceil((dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.ceil(
+      (dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
   }
   renewSubscription(abbonamento: Abbonamento) {
-
     this.selectedAbbonamento = abbonamento;
     this.subscriptionForm = {
       id: abbonamento.id,
@@ -979,7 +956,9 @@ export class DashboardComponent implements OnInit {
     const user = this.getUserById(abbonamento.id_utente);
     const userName = user ? `${user.nome} ${user.cognome}` : 'questo utente';
 
-    if (confirm(`Sei sicuro di voler annullare l'abbonamento di ${userName}?`)) {
+    if (
+      confirm(`Sei sicuro di voler annullare l'abbonamento di ${userName}?`)
+    ) {
       try {
         this.isLoading = true;
         this.errorMessage = '';
@@ -987,7 +966,7 @@ export class DashboardComponent implements OnInit {
         const response = await new Promise<any>((resolve, reject) => {
           this.dashboardService.deleteSubscription(abbonamento.id).subscribe({
             next: (result) => resolve(result),
-            error: (error) => reject(error)
+            error: (error) => reject(error),
           });
         });
 
@@ -996,11 +975,14 @@ export class DashboardComponent implements OnInit {
           await this.loadSubscriptionsIfNeeded();
           this.errorMessage = '';
         } else {
-          this.errorMessage = response.message || 'Errore durante l\'annullamento dell\'abbonamento';
+          this.errorMessage =
+            response.message ||
+            "Errore durante l'annullamento dell'abbonamento";
         }
       } catch (error) {
-        console.error('Errore durante l\'annullamento:', error);
-        this.errorMessage = 'Errore durante l\'annullamento dell\'abbonamento. Riprova più tardi.';
+        console.error("Errore durante l'annullamento:", error);
+        this.errorMessage =
+          "Errore durante l'annullamento dell'abbonamento. Riprova più tardi.";
       } finally {
         this.isLoading = false;
       }
@@ -1012,22 +994,35 @@ export class DashboardComponent implements OnInit {
     return date.toLocaleDateString('it-IT', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   }
 
-  getSubscriptionStatusBadge(abbonamento: Abbonamento): { class: string; text: string } {
+  getSubscriptionStatusBadge(abbonamento: Abbonamento): {
+    class: string;
+    text: string;
+  } {
     if (this.isSubscriptionExpired(abbonamento)) {
-      return { class: 'bg-red-100 text-red-800 border-red-200', text: 'Scaduto' };
+      return {
+        class: 'bg-red-100 text-red-800 border-red-200',
+        text: 'Scaduto',
+      };
     } else if (this.isSubscriptionExpiringSoon(abbonamento)) {
-      return { class: 'bg-yellow-100 text-yellow-800 border-yellow-200', text: 'In scadenza' };
+      return {
+        class: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        text: 'In scadenza',
+      };
     } else {
-      return { class: 'bg-green-100 text-green-800 border-green-200', text: 'Attivo' };
+      return {
+        class: 'bg-green-100 text-green-800 border-green-200',
+        text: 'Attivo',
+      };
     }
   }
 
-
   getExpiringSoonCount(): number {
-    return this.getActiveSubscriptions().filter(sub => this.isSubscriptionExpiringSoon(sub)).length;
+    return this.getActiveSubscriptions().filter((sub) =>
+      this.isSubscriptionExpiringSoon(sub)
+    ).length;
   }
 }

@@ -69,9 +69,6 @@ export class UserModalComponent implements OnInit {
   ngOnInit() {
     this.selectedUser = this.user;
     if (this.user) {
-
-
-
       this.userForm = {
         id: this.user.id,
         nome: this.user.nome,
@@ -92,9 +89,7 @@ export class UserModalComponent implements OnInit {
           this.availableCorsi = response.data;
         }
       },
-      error: (error) => {
-
-      },
+      error: (error) => {},
     });
   }
 

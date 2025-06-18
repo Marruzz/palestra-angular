@@ -9,7 +9,6 @@ import {
 } from '../../../shared/services/dashboard.service';
 import { SubscriptionModalComponent } from './subscription-modal/subscription-modal.component';
 
-
 interface Subscription {
   id: number;
   type: 'monthly' | 'quarterly' | 'yearly';
@@ -39,17 +38,14 @@ export class SubscriptionsManagementComponent {
   @Output() subscriptionDelete = new EventEmitter<Abbonamento>();
   @Output() subscriptionFormChange = new EventEmitter<any>();
 
-  // Search functionality
   subscriptionSearchTerm: string = '';
   filteredSubscriptions: Abbonamento[] = [];
 
-  // Advanced filter functionality
   statusFilter: string = 'all'; // 'all', 'active', 'expired'
   typeFilter: string = 'all'; // 'all', 'monthly', 'semester', 'yearly'
   courseFilter: string = 'all'; // 'all' or specific course ID
   showFilters: boolean = false;
 
-  // Pagination functionality
   currentPage: number = 1;
   itemsPerPage: number = 7;
   totalPages: number = 0;
@@ -57,7 +53,6 @@ export class SubscriptionsManagementComponent {
   getActiveSubscriptionsByType(
     type: 'monthly' | 'semester' | 'yearly'
   ): number {
-
     const monthsMap = { monthly: 1, semester: 6, yearly: 12 };
     const targetMonths = monthsMap[type];
     return this.subscriptions.filter((s) => s.durata_mesi === targetMonths)
@@ -127,7 +122,7 @@ export class SubscriptionsManagementComponent {
       return date.toLocaleDateString('it-IT', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     } catch (error) {
       return 'Data non valida';
@@ -135,7 +130,6 @@ export class SubscriptionsManagementComponent {
   }
 
   calculatePrice(months: number): string {
-
     const monthlyPrice = 50;
     const totalPrice = monthlyPrice * months;
     return totalPrice.toFixed(2);
@@ -162,43 +156,45 @@ export class SubscriptionsManagementComponent {
   get displayedSubscriptions(): Abbonamento[] {
     let filtered = this.subscriptions;
 
-    // Apply search filter
     if (this.subscriptionSearchTerm.trim() !== '') {
-      filtered = filtered.filter(subscription => {
-        const userName = `${subscription.nome} ${subscription.cognome}`.toLowerCase();
+      filtered = filtered.filter((subscription) => {
+        const userName =
+          `${subscription.nome} ${subscription.cognome}`.toLowerCase();
         const courseName = (subscription.nome_corso || '').toLowerCase();
         const email = (subscription.email || '').toLowerCase();
 
-        return userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
-               courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
-               email.includes(this.subscriptionSearchTerm.toLowerCase());
+        return (
+          userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+          courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+          email.includes(this.subscriptionSearchTerm.toLowerCase())
+        );
       });
     }
 
-    // Apply status filter
     if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(subscription => {
+      filtered = filtered.filter((subscription) => {
         const isActive = this.isSubscriptionActive(subscription);
         return this.statusFilter === 'active' ? isActive : !isActive;
       });
     }
 
-    // Apply type filter
     if (this.typeFilter !== 'all') {
-      const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
+      const monthsMap = { monthly: 1, semester: 6, yearly: 12 };
       const targetMonths = monthsMap[this.typeFilter as keyof typeof monthsMap];
-      filtered = filtered.filter(subscription => subscription.durata_mesi === targetMonths);
+      filtered = filtered.filter(
+        (subscription) => subscription.durata_mesi === targetMonths
+      );
     }
 
-    // Apply course filter
     if (this.courseFilter !== 'all') {
-      filtered = filtered.filter(subscription => subscription.id_corso?.toString() === this.courseFilter);
+      filtered = filtered.filter(
+        (subscription) =>
+          subscription.id_corso?.toString() === this.courseFilter
+      );
     }
 
-    // Calculate total pages
     this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
 
-    // Apply pagination
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
 
@@ -241,16 +237,18 @@ export class SubscriptionsManagementComponent {
   }
 
   get uniqueCourses(): Corso[] {
-    return this.corsi.filter((corso, index, self) =>
-      index === self.findIndex(c => c.id === corso.id)
+    return this.corsi.filter(
+      (corso, index, self) => index === self.findIndex((c) => c.id === corso.id)
     );
   }
 
-  // Pagination methods
   get paginationInfo(): string {
     const filteredTotal = this.getFilteredSubscriptionsCount();
     const startIndex = (this.currentPage - 1) * this.itemsPerPage + 1;
-    const endIndex = Math.min(this.currentPage * this.itemsPerPage, filteredTotal);
+    const endIndex = Math.min(
+      this.currentPage * this.itemsPerPage,
+      filteredTotal
+    );
     return `${startIndex}-${endIndex} di ${filteredTotal}`;
   }
 
@@ -258,31 +256,39 @@ export class SubscriptionsManagementComponent {
     let filtered = this.subscriptions;
 
     if (this.subscriptionSearchTerm.trim() !== '') {
-      filtered = filtered.filter(subscription => {
-        const userName = `${subscription.nome} ${subscription.cognome}`.toLowerCase();
+      filtered = filtered.filter((subscription) => {
+        const userName =
+          `${subscription.nome} ${subscription.cognome}`.toLowerCase();
         const courseName = (subscription.nome_corso || '').toLowerCase();
         const email = (subscription.email || '').toLowerCase();
-        return userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
-               courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
-               email.includes(this.subscriptionSearchTerm.toLowerCase());
+        return (
+          userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+          courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+          email.includes(this.subscriptionSearchTerm.toLowerCase())
+        );
       });
     }
 
     if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(subscription => {
+      filtered = filtered.filter((subscription) => {
         const isActive = this.isSubscriptionActive(subscription);
         return this.statusFilter === 'active' ? isActive : !isActive;
       });
     }
 
     if (this.typeFilter !== 'all') {
-      const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
+      const monthsMap = { monthly: 1, semester: 6, yearly: 12 };
       const targetMonths = monthsMap[this.typeFilter as keyof typeof monthsMap];
-      filtered = filtered.filter(subscription => subscription.durata_mesi === targetMonths);
+      filtered = filtered.filter(
+        (subscription) => subscription.durata_mesi === targetMonths
+      );
     }
 
     if (this.courseFilter !== 'all') {
-      filtered = filtered.filter(subscription => subscription.id_corso?.toString() === this.courseFilter);
+      filtered = filtered.filter(
+        (subscription) =>
+          subscription.id_corso?.toString() === this.courseFilter
+      );
     }
 
     return filtered.length;
@@ -310,16 +316,13 @@ export class SubscriptionsManagementComponent {
     const maxVisiblePages = 5;
 
     if (this.totalPages <= maxVisiblePages) {
-      // If total pages is less than max visible, show all pages
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Show pages around current page
       let startPage = Math.max(1, this.currentPage - 2);
       let endPage = Math.min(this.totalPages, this.currentPage + 2);
 
-      // Adjust range if we don't have enough pages
       if (endPage - startPage < maxVisiblePages - 1) {
         if (startPage === 1) {
           endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
@@ -348,7 +351,7 @@ export class SubscriptionsManagementComponent {
     const endIndex = this.currentPage * this.itemsPerPage;
     return Math.min(endIndex, this.getFilteredSubscriptionsCount());
   }
-  // Reset pagination when filters change
+
   onSearch(): void {
     this.currentPage = 1;
   }

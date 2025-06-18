@@ -1,18 +1,37 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
-
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8"
+>
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4"
+    >
       <div class="flex items-center space-x-4">
-        <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        <div
+          class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl"
+        >
+          <svg
+            class="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
           </svg>
         </div>
         <div>
-          <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <h2
+            class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
+          >
             Gestione Corsi
           </h2>
-          <p class="text-gray-500 text-sm mt-1">Gestisci i corsi della tua palestra</p>
+          <p class="text-gray-500 text-sm mt-1">
+            Gestisci i corsi della tua palestra
+          </p>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -21,8 +40,18 @@
           class="px-4 py-3 text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 flex items-center"
           [disabled]="isLoading"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
           </svg>
           Aggiorna
         </button>
@@ -31,8 +60,21 @@
           class="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center"
           [disabled]="isLoading"
         >
-          <div class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"></div>          <svg class="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          <div
+            class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"
+          ></div>
+          <svg
+            class="w-5 h-5 mr-2 relative z-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
           </svg>
           <span class="relative z-10">Nuovo Corso</span>
         </button>
@@ -42,9 +84,21 @@
 
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="relative max-w-md">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
         </svg>
       </div>
       <input
@@ -55,26 +109,39 @@
         class="w-full pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
       />
     </div>
-  </div>  <!-- Griglia responsive per i corsi -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="filteredCorsi.length > 0; else noCorsi">
+  </div>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    *ngIf="filteredCorsi.length > 0; else noCorsi"
+  >
     <div
       *ngFor="let corso of filteredCorsi"
       class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden cursor-pointer"
       (click)="openCorsoModal(corso)"
-    >      <!-- Elemento decorativo di sfondo -->
+    >
       <div
         class="absolute top-0 right-0 w-24 h-24 rounded-full -translate-y-8 translate-x-8 opacity-10 bg-gradient-to-br"
-        [ngClass]="getCourseColors(corso).bg">
-      </div>
+        [ngClass]="getCourseColors(corso).bg"
+      ></div>
 
       <div class="relative z-10">
-        <!-- Header del corso con icona e bottone modifica -->
         <div class="flex items-center justify-between mb-4">
           <div
             class="p-3 rounded-xl shadow-lg bg-gradient-to-br"
-            [ngClass]="getCourseColors(corso).icon">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            [ngClass]="getCourseColors(corso).icon"
+          >
+            <svg
+              class="w-7 h-7 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              ></path>
             </svg>
           </div>
           <button
@@ -83,58 +150,101 @@
             [disabled]="isLoading"
             title="Modifica corso"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              ></path>
             </svg>
           </button>
-        </div>        <!-- Nome del corso e tipo -->
+        </div>
         <div class="mb-4">
           <div class="flex items-center justify-between mb-2">
-            <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide">Corso</p>
+            <p
+              class="text-sm font-semibold text-blue-600 uppercase tracking-wide"
+            >
+              Corso
+            </p>
             <span
               class="px-2 py-1 rounded-full text-xs font-semibold border"
-              [ngClass]="getCourseColors(corso).badge">
+              [ngClass]="getCourseColors(corso).badge"
+            >
               {{ getCourseType(corso) }}
             </span>
           </div>
-          <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
+          <h3
+            class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate"
+          >
             {{ corso.nome_corso }}
           </h3>
         </div>
 
-        <!-- Descrizione del corso -->
         <div class="mb-4" *ngIf="corso.descrizione">
           <p class="text-sm text-gray-600 line-clamp-3">
             {{ corso.descrizione }}
           </p>
         </div>
 
-        <!-- Statistiche del corso -->
         <div class="grid grid-cols-2 gap-4 mb-4">
-          <!-- Durata -->
           <div class="text-center">
-            <div class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1">
-              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div
+              class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1"
+            >
+              <svg
+                class="w-4 h-4 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
               </svg>
               <span>Durata</span>
             </div>
-            <p class="font-bold text-2xl text-gray-800">{{ corso.durata_mesi_default || 0 }}</p>
-            <p class="text-xs text-gray-500">{{ (corso.durata_mesi_default || 0) === 1 ? 'mese' : 'mesi' }}</p>
+            <p class="font-bold text-2xl text-gray-800">
+              {{ corso.durata_mesi_default || 0 }}
+            </p>
+            <p class="text-xs text-gray-500">
+              {{ (corso.durata_mesi_default || 0) === 1 ? "mese" : "mesi" }}
+            </p>
           </div>
 
-          <!-- Abbonamenti attivi -->
           <div class="text-center">
-            <div class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1">
-              <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            <div
+              class="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-1"
+            >
+              <svg
+                class="w-4 h-4 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
               </svg>
               <span>Attivi</span>
             </div>
-            <p class="font-bold text-2xl text-gray-800">{{ corso.abbonamenti_attivi || 0 }}</p>
+            <p class="font-bold text-2xl text-gray-800">
+              {{ corso.abbonamenti_attivi || 0 }}
+            </p>
             <p class="text-xs text-gray-500">abbonamenti</p>
           </div>
-        </div>        <!-- Barra di progresso popolarità -->
+        </div>
         <div class="mt-4 flex items-center">
           <div class="flex-1 bg-gray-200 rounded-full h-2">
             <div
@@ -170,7 +280,6 @@
       <p class="mt-2 text-gray-500">Inizia creando il tuo primo corso.</p>
     </div>
   </ng-template>
-
 
   <div
     *ngIf="showCorsoModal"
@@ -277,9 +386,7 @@
           (click)="saveCorso()"
           class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           [disabled]="
-            isLoading ||
-            !corsoForm.nome_corso ||
-            !corsoForm.nome_corso.trim()
+            isLoading || !corsoForm.nome_corso || !corsoForm.nome_corso.trim()
           "
         >
           <svg

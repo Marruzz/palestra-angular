@@ -1,39 +1,81 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
-
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8"
+>
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4"
+    >
       <div class="flex items-center space-x-4">
-        <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+        <div
+          class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl"
+        >
+          <svg
+            class="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+            ></path>
           </svg>
         </div>
         <div>
-          <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <h2
+            class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
+          >
             Gestione Utenti
           </h2>
-          <p class="text-gray-500 text-sm mt-1">Gestisci e monitora tutti gli utenti della palestra</p>
+          <p class="text-gray-500 text-sm mt-1">
+            Gestisci e monitora tutti gli utenti della palestra
+          </p>
         </div>
       </div>
       <button
         (click)="onOpenUserModal()"
         class="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center sm:justify-start"
       >
-        <div class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"></div>
-        <svg class="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        <div
+          class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"
+        ></div>
+        <svg
+          class="w-5 h-5 mr-2 relative z-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
         </svg>
         <span class="relative z-10">Nuovo Utente</span>
       </button>
     </div>
   </div>
 
-
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="relative max-w-md">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      <div
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
         </svg>
       </div>
       <input
@@ -100,7 +142,8 @@
                   <div class="text-xs text-gray-500">ID: {{ user.id }}</div>
                 </div>
               </div>
-            </td>            <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
+            </td>
+            <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
               <div
                 class="text-xs lg:text-sm text-gray-900 email-cell break-all max-w-[200px]"
                 *ngIf="user.email"
@@ -222,7 +265,8 @@
         </div>
       </div>
 
-      <div class="space-y-1">        <div class="flex justify-between text-xs">
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs">
           <span class="text-gray-500">Email:</span>
           <span
             class="text-gray-900 break-all ml-2 email-cell text-right max-w-[60%]"
@@ -289,12 +333,10 @@
     </div>
   </div>
 
-
   <div
     *ngIf="users.length > usersPerPage"
     class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4"
   >
-
     <div class="flex-1 flex justify-between sm:hidden">
       <button
         (click)="goToPreviousPage()"
@@ -316,7 +358,6 @@
       </button>
     </div>
 
-
     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
       <div>
         <p class="text-sm text-gray-700">
@@ -334,7 +375,6 @@
           class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
           aria-label="Pagination"
         >
-
           <button
             (click)="goToPreviousPage()"
             [disabled]="currentPage === 1"
@@ -352,7 +392,6 @@
             </svg>
           </button>
 
-
           <button
             *ngIf="getPageNumbers()[0] > 1"
             (click)="goToPage(1)"
@@ -361,14 +400,12 @@
             1
           </button>
 
-
           <span
             *ngIf="getPageNumbers()[0] > 2"
             class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
           >
             ...
           </span>
-
 
           <button
             *ngFor="let page of getPageNumbers()"
@@ -383,7 +420,6 @@
             {{ page }}
           </button>
 
-
           <span
             *ngIf="
               getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1
@@ -393,7 +429,6 @@
             ...
           </span>
 
-
           <button
             *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages"
             (click)="goToPage(totalPages)"
@@ -401,7 +436,6 @@
           >
             {{ totalPages }}
           </button>
-
 
           <button
             (click)="goToNextPage()"
@@ -425,14 +459,12 @@
   </div>
 </div>
 
-
 <app-user-modal
   *ngIf="showUserModal"
   [user]="selectedUser"
   (close)="onCloseUserModal()"
   (save)="onSaveUser($event)"
 />
-
 
 <app-user-card
   [user]="selectedUserForCard"

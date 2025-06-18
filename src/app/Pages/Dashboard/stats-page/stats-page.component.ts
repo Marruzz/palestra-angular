@@ -9,7 +9,6 @@ import { CalculatedStats } from '../../../shared/services/stats.service';
   standalone: true,
   imports: [CommonModule, StatsCards],
   templateUrl: './stats-page.component.html',
-  styleUrls: ['./stats-page.component.css']
 })
 export class StatsPageComponent {
   @Input() stats: CalculatedStats | null = null;

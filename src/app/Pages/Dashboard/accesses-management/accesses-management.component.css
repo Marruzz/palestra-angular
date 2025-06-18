@@ -9,12 +9,10 @@
   }
 }
 
-
 .access-type-badge {
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 
 .timestamp-display {
   font-variant-numeric: tabular-nums;

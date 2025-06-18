@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -6,8 +13,6 @@ import {
   Ingresso,
   PalestraUser,
 } from '../../../shared/services/dashboard.service';
-
-
 
 @Component({
   selector: 'app-accesses-management',
@@ -22,12 +27,12 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
   @Input() accessForm: { id_utente: number } = {
     id_utente: 0,
   };
-  @Input() stats: any = null;  @Output() accessModalOpen = new EventEmitter<void>();
+  @Input() stats: any = null;
+  @Output() accessModalOpen = new EventEmitter<void>();
   @Output() accessModalClose = new EventEmitter<void>();
   @Output() accessRegister = new EventEmitter<void>();
   @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
   @Output() accessDelete = new EventEmitter<number>();
-
 
   currentPage: number = 1;
   itemsPerPage: number = 7;
@@ -68,25 +73,25 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
       this.currentPage++;
       this.updatePagination();
     }
-  }  getPageNumbers(): (number | string)[] {
+  }
+  getPageNumbers(): (number | string)[] {
     const pages: (number | string)[] = [];
     const maxVisiblePages = 5; // Maximum number of page buttons to show
 
     if (this.totalPages <= maxVisiblePages) {
-
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-
-      let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+      let startPage = Math.max(
+        1,
+        this.currentPage - Math.floor(maxVisiblePages / 2)
+      );
       let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
-
 
       if (endPage - startPage < maxVisiblePages - 1) {
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
       }
-
 
       if (startPage > 1) {
         pages.push(1);
@@ -95,11 +100,9 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
         }
       }
 
-
       for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
-
 
       if (endPage < this.totalPages) {
         if (endPage < this.totalPages - 1) {
@@ -126,7 +129,8 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
 
   onRegisterAccess() {
     this.accessRegister.emit();
-  }  onAccessFormChange() {
+  }
+  onAccessFormChange() {
     this.accessFormChange.emit(this.accessForm);
   }
 
@@ -134,7 +138,8 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
     if (confirm('Sei sicuro di voler eliminare questo ingresso?')) {
       this.accessDelete.emit(accessId);
     }
-  }formatDateTime(dateString: string): string {
+  }
+  formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
 
@@ -142,7 +147,6 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
         return 'Data non valida';
       }
 
-      // Ora JavaScript controlla completamente la visualizzazione dell'orario
       return date.toLocaleString('it-IT', {
         year: 'numeric',
         month: '2-digit',
@@ -151,7 +155,6 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
         minute: '2-digit',
       });
     } catch (error) {
-
       return 'Data non valida';
     }
   }
@@ -179,7 +182,6 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
       .toUpperCase()
       .substring(0, 2);
   }
-
 
   getUserAccessesTodayCount(userId: number): number {
     const today = new Date();

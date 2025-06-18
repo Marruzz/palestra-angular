@@ -31,7 +31,6 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
   @Output() corsoDelete = new EventEmitter<Corso>();
   @Output() refreshView = new EventEmitter<void>();
 
-
   corsoSearchTerm: string = '';
   filteredCorsi: Corso[] = [];
 
@@ -60,7 +59,6 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
   }
 
   getProgressPercentage(corso: Corso): number {
-
     if (corso.abbonamenti_attivi !== undefined) {
       const maxCapacity = 50;
       return Math.min(
@@ -133,7 +131,7 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
           progress: 'from-green-500 to-emerald-600',
           badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
         };
-      case  'MMA':
+      case 'MMA':
         return {
           bg: 'from-yellow-500 to-green-600',
           icon: 'from-yellow-500 to-green-600',

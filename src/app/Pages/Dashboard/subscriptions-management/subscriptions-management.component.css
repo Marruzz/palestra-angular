@@ -1,17 +1,16 @@
-/* Enhanced Subscription Management Styles */
-
-/* Improved Mobile Cards */
 @media (max-width: 640px) {
   .subscription-card {
     padding: 1rem;
     border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
   }
 
   .subscription-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .price-display {
@@ -21,14 +20,12 @@
   }
 }
 
-/* Date formatting for mobile */
 .date-compact {
   font-size: 0.75rem;
   line-height: 1.2;
   font-weight: 500;
 }
 
-/* Enhanced status badges */
 .status-badge-compact {
   padding: 0.25rem 0.75rem;
   font-size: 0.6875rem;
@@ -37,9 +34,9 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* Gradient animations */
 @keyframes gradient-x {
-  0%, 100% {
+  0%,
+  100% {
     background-size: 200% 200%;
     background-position: left center;
   }
@@ -49,20 +46,24 @@
   }
 }
 
-/* Hover effects for cards */
 .subscription-card {
   position: relative;
   overflow: hidden;
 }
 
 .subscription-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -70,7 +71,6 @@
   left: 100%;
 }
 
-/* Enhanced button styles */
 .enhanced-btn {
   position: relative;
   overflow: hidden;
@@ -78,13 +78,18 @@
 }
 
 .enhanced-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -92,11 +97,11 @@
   left: 100%;
 }
 
-/* Improved table styles */
 .enhanced-table {
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .enhanced-table tbody tr {
@@ -108,7 +113,6 @@
   z-index: 1;
 }
 
-/* Progress bars for stats */
 .progress-bar {
   position: relative;
   background: linear-gradient(90deg, #e5e7eb, #f3f4f6);
@@ -124,7 +128,7 @@
 }
 
 .progress-fill::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -153,7 +157,6 @@
   }
 }
 
-/* Loading states */
 .loading-shimmer {
   animation: shimmer 2s infinite linear;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -169,14 +172,12 @@
   }
 }
 
-/* Responsive improvements */
 @media (min-width: 768px) {
   .subscription-card {
     border-radius: 1.5rem;
   }
 }
 
-/* Enhanced focus states */
 input:focus,
 select:focus,
 button:focus {
@@ -184,9 +185,10 @@ button:focus {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
-/* Smooth transitions for all interactive elements */
 * {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }

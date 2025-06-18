@@ -6,14 +6,15 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './navigation-tabs.component.html',
 })
-export class NavigationTabs {  @Input() currentView:
+export class NavigationTabs {
+  @Input() currentView:
     | 'users'
     | 'subscriptions'
     | 'accesses'
     | 'stats'
     | 'corsi' = 'users';
   @Output() viewChange = new EventEmitter<
-    'users' | 'subscriptions' |  'accesses' | 'stats' | 'corsi'
+    'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'
   >();
 
   onTabClick(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {

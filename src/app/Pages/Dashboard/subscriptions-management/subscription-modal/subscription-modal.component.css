@@ -1,5 +1,3 @@
-/* Subscription Modal Component Styles */
-
 .modal-backdrop {
   backdrop-filter: blur(2px);
 }
@@ -25,19 +23,24 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Animation for form validation */
 .invalid-field {
   animation: shake 0.5s ease-in-out;
   border-color: #ef4444 !important;
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 
-/* Custom scrollbar for modal content */
 .modal-content::-webkit-scrollbar {
   width: 6px;
 }

@@ -29,8 +29,6 @@
     </div>
 
     <form (ngSubmit)="onSaveSubscription()" class="space-y-6">
-
-      <!-- Sezione Dati Abbonamento di sola visualizzazione (solo in modifica) -->
       <div *ngIf="selectedAbbonamento" class="bg-blue-50 p-4 rounded-lg mb-6">
         <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <svg
@@ -51,44 +49,68 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">ID Abbonamento</label>
-            <p class="text-gray-900 font-medium">#{{ selectedAbbonamento.id }}</p>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >ID Abbonamento</label
+            >
+            <p class="text-gray-900 font-medium">
+              #{{ selectedAbbonamento.id }}
+            </p>
           </div>
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Utente</label>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Utente</label
+            >
             <p class="text-gray-900 font-medium">
               {{ selectedAbbonamento.nome }} {{ selectedAbbonamento.cognome }}
             </p>
           </div>
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Corso</label>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Corso</label
+            >
             <p class="text-gray-900">{{ selectedAbbonamento.nome_corso }}</p>
           </div>
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Data Inizio</label>
-            <p class="text-gray-900">{{ formatDate(selectedAbbonamento.data_inizio) }}</p>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Data Inizio</label
+            >
+            <p class="text-gray-900">
+              {{ formatDate(selectedAbbonamento.data_inizio) }}
+            </p>
           </div>
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Data Fine</label>
-            <p class="text-gray-900">{{ formatDate(selectedAbbonamento.data_fine) }}</p>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Data Fine</label
+            >
+            <p class="text-gray-900">
+              {{ formatDate(selectedAbbonamento.data_fine) }}
+            </p>
           </div>
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Durata</label>
-            <p class="text-gray-900">{{ getDurationLabel(selectedAbbonamento.durata_mesi) }}</p>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Durata</label
+            >
+            <p class="text-gray-900">
+              {{ getDurationLabel(selectedAbbonamento.durata_mesi) }}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Form per nuovo/modifica abbonamento -->
       <div class="bg-gray-50 p-4 rounded-lg">
         <h4 class="text-md font-medium text-gray-900 mb-4">
-          {{ selectedAbbonamento ? 'Modifica Dati Abbonamento' : 'Dati Abbonamento' }}
+          {{
+            selectedAbbonamento
+              ? "Modifica Dati Abbonamento"
+              : "Dati Abbonamento"
+          }}
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <!-- Selezione Utente -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Utente *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Utente *</label
+            >
             <select
               [(ngModel)]="subscriptionForm.id_utente"
               (ngModelChange)="onFormChange()"
@@ -103,9 +125,10 @@
             </select>
           </div>
 
-          <!-- Selezione Corso -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Corso *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Corso *</label
+            >
             <select
               [(ngModel)]="subscriptionForm.id_corso"
               (ngModelChange)="onFormChange()"
@@ -115,15 +138,19 @@
             >
               <option value="">Seleziona un corso</option>
               <option *ngFor="let corso of corsi" [value]="corso.id">
-                {{ corso.nome_corso + ' - ' + corso.durata_mesi_default + ' mesi'}}
+                {{
+                  corso.nome_corso + " - " + corso.durata_mesi_default + " mesi"
+                }}
               </option>
             </select>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Data Inizio -->          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Data Inizio *</label>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Data Inizio *</label
+            >
             <input
               type="date"
               [(ngModel)]="subscriptionForm.data_inizio"
@@ -135,15 +162,17 @@
             />
           </div>
 
-          <!-- Durata -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Durata *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Durata *</label
+            >
             <select
               [(ngModel)]="subscriptionForm.durata_mesi"
               (ngModelChange)="onFormChange()"
               name="durata_mesi"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"            >
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            >
               <option value="">Seleziona durata</option>
               <option value="1">1 mese (Mensile)</option>
               <option value="6">6 mesi (Semestrale)</option>
@@ -153,9 +182,10 @@
         </div>
       </div>
 
-      <!-- Anteprima calcoli -->
-      <div *ngIf="subscriptionForm.data_inizio && subscriptionForm.durata_mesi"
-           class="bg-green-50 p-4 rounded-lg">
+      <div
+        *ngIf="subscriptionForm.data_inizio && subscriptionForm.durata_mesi"
+        class="bg-green-50 p-4 rounded-lg"
+      >
         <h4 class="text-md font-medium text-gray-900 mb-3 flex items-center">
           <svg
             class="w-5 h-5 mr-2 text-green-500"
@@ -175,16 +205,24 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Data Fine Calcolata</label>
-            <p class="text-gray-900 font-medium">{{ formatDate(currentEndDate) }}</p>
-          </div>          <div class="bg-white p-3 rounded-lg">
-            <label class="block text-sm font-medium text-gray-500 mb-1">Durata</label>
-            <p class="text-gray-900 font-medium">{{ getDurationLabel(+subscriptionForm.durata_mesi) }}</p>
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Data Fine Calcolata</label
+            >
+            <p class="text-gray-900 font-medium">
+              {{ formatDate(currentEndDate) }}
+            </p>
+          </div>
+          <div class="bg-white p-3 rounded-lg">
+            <label class="block text-sm font-medium text-gray-500 mb-1"
+              >Durata</label
+            >
+            <p class="text-gray-900 font-medium">
+              {{ getDurationLabel(+subscriptionForm.durata_mesi) }}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Pulsanti di azione -->
       <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
         <button
           type="button"
@@ -195,10 +233,17 @@
         </button>
         <button
           type="submit"
-          [disabled]="!subscriptionForm.id_utente || !subscriptionForm.id_corso || !subscriptionForm.data_inizio || !subscriptionForm.durata_mesi"
+          [disabled]="
+            !subscriptionForm.id_utente ||
+            !subscriptionForm.id_corso ||
+            !subscriptionForm.data_inizio ||
+            !subscriptionForm.durata_mesi
+          "
           class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {{ selectedAbbonamento ? 'Aggiorna Abbonamento' : 'Crea Abbonamento' }}
+          {{
+            selectedAbbonamento ? "Aggiorna Abbonamento" : "Crea Abbonamento"
+          }}
         </button>
       </div>
     </form>
