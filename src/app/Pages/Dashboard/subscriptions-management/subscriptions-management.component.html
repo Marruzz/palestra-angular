@@ -221,8 +221,7 @@
       </h3>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200">        <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Utente</th>
@@ -230,7 +229,6 @@
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tipo</th>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Data Inizio</th>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Data Fine</th>
-            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Prezzo</th>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">Status</th>
             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Azioni</th>
           </tr>
@@ -260,12 +258,8 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
               {{ formatDate(subscription.data_inizio) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
+            </td>            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 hidden lg:table-cell">
               {{ formatDate(subscription.data_fine) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600">
-              €{{ calculatePrice(subscription.durata_mesi) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
               <span [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ' + getSubscriptionStatusClass(subscription)">
@@ -332,9 +326,7 @@
             </span>
           </div>
         </div>
-      </div>
-
-      <!-- Date and Price Info -->
+      </div>      <!-- Date Info -->
       <div class="grid grid-cols-1 gap-3 mb-4">
         <div class="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
           <div class="flex items-center space-x-2">
@@ -346,16 +338,6 @@
           <span class="text-sm font-semibold text-gray-800">
             {{ formatDate(subscription.data_inizio) }} - {{ formatDate(subscription.data_fine) }}
           </span>
-        </div>
-
-        <div class="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg">
-          <div class="flex items-center space-x-2">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-            <span class="text-sm font-medium text-gray-700">Prezzo</span>
-          </div>
-          <span class="text-lg font-bold text-emerald-600">€{{ calculatePrice(subscription.durata_mesi) }}</span>
         </div>
       </div>
 
@@ -398,61 +380,131 @@
         Crea Nuovo Abbonamento
       </button>    </div>
   </div>
-
   <!-- Pagination Controls -->
   <div *ngIf="displayedSubscriptions.length > 0 && totalPages > 1" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mt-6">
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-      <!-- Page Info -->
-      <div class="flex items-center space-x-2">
-        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16l5-5 5 5V4"></path>
-        </svg>
-        <span class="text-sm text-gray-600">
-          Pagina <span class="font-semibold text-blue-600">{{ currentPage }}</span> 
-          di <span class="font-semibold">{{ totalPages }}</span>
-        </span>
-      </div>
-
-      <!-- Pagination Buttons -->
-      <div class="flex items-center space-x-2">
-        <!-- Previous Button -->
+    <div class="flex items-center justify-between">
+      <div class="flex-1 flex justify-between sm:hidden">
         <button
           (click)="goToPreviousPage()"
           [disabled]="currentPage === 1"
-          [class]="currentPage === 1 
-            ? 'px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed' 
-            : 'px-3 py-2 text-sm bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-200'"
+          [class.opacity-50]="currentPage === 1"
+          [class.cursor-not-allowed]="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
+          Precedente
         </button>
-
-        <!-- Page Numbers -->
-        <div class="flex items-center space-x-1">
-          <button
-            *ngFor="let page of pageNumbers"
-            (click)="goToPage(page)"
-            [class]="page === currentPage 
-              ? 'px-3 py-2 text-sm bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold shadow-lg' 
-              : 'px-3 py-2 text-sm bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-200'"
-          >
-            {{ page }}
-          </button>
-        </div>
-
-        <!-- Next Button -->
         <button
           (click)="goToNextPage()"
           [disabled]="currentPage === totalPages"
-          [class]="currentPage === totalPages 
-            ? 'px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed' 
-            : 'px-3 py-2 text-sm bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-200'"
+          [class.opacity-50]="currentPage === totalPages"
+          [class.cursor-not-allowed]="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
+          Successivo
         </button>
+      </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Mostra
+            <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+            -
+            <span class="font-medium">{{ getMinValue(currentPage * itemsPerPage, getFilteredSubscriptionsCount()) }}</span>
+            di
+            <span class="font-medium">{{ getFilteredSubscriptionsCount() }}</span>
+            risultati
+          </p>
+        </div>
+        <div>
+          <nav
+            class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+            aria-label="Pagination"
+          >
+            <!-- Previous Button -->
+            <button
+              (click)="goToPreviousPage()"
+              [disabled]="currentPage === 1"
+              [class.opacity-50]="currentPage === 1"
+              [class.cursor-not-allowed]="currentPage === 1"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+              <span class="sr-only">Precedente</span>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <!-- First Page Button -->
+            <button
+              *ngIf="getPageNumbers()[0] > 1"
+              (click)="goToPage(1)"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              1
+            </button>
+
+            <!-- Left Ellipsis -->
+            <span
+              *ngIf="getPageNumbers()[0] > 2"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+            >
+              ...
+            </span>
+
+            <!-- Page Numbers -->
+            <button
+              *ngFor="let page of getPageNumbers()"
+              (click)="goToPage(page)"
+              [class.bg-blue-50]="page === currentPage"
+              [class.border-blue-500]="page === currentPage"
+              [class.text-blue-600]="page === currentPage"
+              [class.bg-white]="page !== currentPage"
+              [class.text-gray-700]="page !== currentPage"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium hover:bg-gray-50"
+            >
+              {{ page }}
+            </button>
+
+            <!-- Right Ellipsis -->
+            <span
+              *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+            >
+              ...
+            </span>
+
+            <!-- Last Page Button -->
+            <button
+              *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages"
+              (click)="goToPage(totalPages)"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              {{ totalPages }}
+            </button>
+
+            <!-- Next Button -->
+            <button
+              (click)="goToNextPage()"
+              [disabled]="currentPage === totalPages"
+              [class.opacity-50]="currentPage === totalPages"
+              [class.cursor-not-allowed]="currentPage === totalPages"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+              <span class="sr-only">Successivo</span>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </nav>
+        </div>
       </div>
     </div>
   </div>

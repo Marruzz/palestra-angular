@@ -197,7 +197,7 @@ export class SubscriptionsManagementComponent {
 
     // Calculate total pages
     this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
-    
+
     // Apply pagination
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -254,7 +254,7 @@ export class SubscriptionsManagementComponent {
     return `${startIndex}-${endIndex} di ${filteredTotal}`;
   }
 
-  private getFilteredSubscriptionsCount(): number {
+  getFilteredSubscriptionsCount(): number {
     let filtered = this.subscriptions;
 
     if (this.subscriptionSearchTerm.trim() !== '') {
@@ -305,30 +305,39 @@ export class SubscriptionsManagementComponent {
       this.currentPage++;
     }
   }
-
-  get pageNumbers(): number[] {
+  getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxVisiblePages = 5;
-    
+
     if (this.totalPages <= maxVisiblePages) {
+      // If total pages is less than max visible, show all pages
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      const halfVisible = Math.floor(maxVisiblePages / 2);
-      let startPage = Math.max(1, this.currentPage - halfVisible);
-      let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
-      
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      // Show pages around current page
+      let startPage = Math.max(1, this.currentPage - 2);
+      let endPage = Math.min(this.totalPages, this.currentPage + 2);
+
+      // Adjust range if we don't have enough pages
+      if (endPage - startPage < maxVisiblePages - 1) {
+        if (startPage === 1) {
+          endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+        } else {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
       }
-      
+
       for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
+  }
+
+  getMinValue(a: number, b: number): number {
+    return Math.min(a, b);
   }
 
   // Reset pagination when filters change
