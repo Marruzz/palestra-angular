@@ -31,7 +31,7 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
   @Output() corsoDelete = new EventEmitter<Corso>();
   @Output() refreshView = new EventEmitter<void>();
 
-  // Search functionality
+
   corsoSearchTerm: string = '';
   filteredCorsi: Corso[] = [];
 
@@ -60,11 +60,9 @@ export class CorsiManagementComponent implements OnInit, OnChanges {
   }
 
   getProgressPercentage(corso: Corso): number {
-    // Using available properties from Corso interface
-    // If abbonamenti_attivi exists, use it, otherwise return a default value
+
     if (corso.abbonamenti_attivi !== undefined) {
-      // Assuming a max of 30 for visualization purposes - adjust as needed
-      const maxCapacity = 30;
+      const maxCapacity = 50;
       return Math.min(
         Math.round((corso.abbonamenti_attivi / maxCapacity) * 100),
         100
