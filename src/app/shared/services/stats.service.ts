@@ -432,7 +432,7 @@ export class StatsService {
           new Date(b!.ultimo_accesso).getTime() -
           new Date(a!.ultimo_accesso).getTime()
       )
-      .slice(0, 10) as {
+      .slice(0, 5) as {
       nome: string;
       cognome: string;
       ultimo_accesso: string;

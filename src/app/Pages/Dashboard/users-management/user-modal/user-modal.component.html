@@ -28,7 +28,7 @@
       </button>    </div>
     <form (ngSubmit)="onSaveUser()" class="space-y-4">
 
-      <!-- Sezione Dati Anagrafici di sola visualizzazione -->
+
       <div *ngIf="selectedUser" class="bg-blue-50 p-4 rounded-lg mb-4">
         <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <svg
@@ -71,7 +71,7 @@
           </div></div>
       </div>
 
-      <!-- Form per nuovo utente (solo se non è selectedUser) -->
+
       <div *ngIf="!selectedUser" class="bg-gray-50 p-4 rounded-lg">
         <h4 class="text-md font-medium text-gray-900 mb-3">Dati Personali</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
