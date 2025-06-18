@@ -49,6 +49,11 @@ export class SubscriptionsManagementComponent {
   courseFilter: string = 'all'; // 'all' or specific course ID
   showFilters: boolean = false;
 
+  // Pagination functionality
+  currentPage: number = 1;
+  itemsPerPage: number = 7;
+  totalPages: number = 0;
+
   getActiveSubscriptionsByType(
     type: 'monthly' | 'semester' | 'yearly'
   ): number {
@@ -154,7 +159,6 @@ export class SubscriptionsManagementComponent {
       ? 'bg-green-100 text-green-800'
       : 'bg-red-100 text-red-800';
   }
-
   get displayedSubscriptions(): Abbonamento[] {
     let filtered = this.subscriptions;
 
@@ -184,28 +188,39 @@ export class SubscriptionsManagementComponent {
       const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
       const targetMonths = monthsMap[this.typeFilter as keyof typeof monthsMap];
       filtered = filtered.filter(subscription => subscription.durata_mesi === targetMonths);
-    }    // Apply course filter
+    }
+
+    // Apply course filter
     if (this.courseFilter !== 'all') {
       filtered = filtered.filter(subscription => subscription.id_corso?.toString() === this.courseFilter);
     }
 
-    return filtered;
+    // Calculate total pages
+    this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+    
+    // Apply pagination
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    return filtered.slice(startIndex, endIndex);
   }
 
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
   }
-
   onStatusFilterChange(status: string): void {
     this.statusFilter = status;
+    this.resetPagination();
   }
 
   onTypeFilterChange(type: string): void {
     this.typeFilter = type;
+    this.resetPagination();
   }
 
   onCourseFilterChange(courseId: string): void {
     this.courseFilter = courseId;
+    this.resetPagination();
   }
 
   clearAllFilters(): void {
@@ -213,6 +228,7 @@ export class SubscriptionsManagementComponent {
     this.typeFilter = 'all';
     this.courseFilter = 'all';
     this.subscriptionSearchTerm = '';
+    this.resetPagination();
   }
 
   getActiveFiltersCount(): number {
@@ -228,5 +244,99 @@ export class SubscriptionsManagementComponent {
     return this.corsi.filter((corso, index, self) =>
       index === self.findIndex(c => c.id === corso.id)
     );
+  }
+
+  // Pagination methods
+  get paginationInfo(): string {
+    const filteredTotal = this.getFilteredSubscriptionsCount();
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage + 1;
+    const endIndex = Math.min(this.currentPage * this.itemsPerPage, filteredTotal);
+    return `${startIndex}-${endIndex} di ${filteredTotal}`;
+  }
+
+  private getFilteredSubscriptionsCount(): number {
+    let filtered = this.subscriptions;
+
+    if (this.subscriptionSearchTerm.trim() !== '') {
+      filtered = filtered.filter(subscription => {
+        const userName = `${subscription.nome} ${subscription.cognome}`.toLowerCase();
+        const courseName = (subscription.nome_corso || '').toLowerCase();
+        const email = (subscription.email || '').toLowerCase();
+        return userName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+               courseName.includes(this.subscriptionSearchTerm.toLowerCase()) ||
+               email.includes(this.subscriptionSearchTerm.toLowerCase());
+      });
+    }
+
+    if (this.statusFilter !== 'all') {
+      filtered = filtered.filter(subscription => {
+        const isActive = this.isSubscriptionActive(subscription);
+        return this.statusFilter === 'active' ? isActive : !isActive;
+      });
+    }
+
+    if (this.typeFilter !== 'all') {
+      const monthsMap = { 'monthly': 1, 'semester': 6, 'yearly': 12 };
+      const targetMonths = monthsMap[this.typeFilter as keyof typeof monthsMap];
+      filtered = filtered.filter(subscription => subscription.durata_mesi === targetMonths);
+    }
+
+    if (this.courseFilter !== 'all') {
+      filtered = filtered.filter(subscription => subscription.id_corso?.toString() === this.courseFilter);
+    }
+
+    return filtered.length;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    
+    if (this.totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const halfVisible = Math.floor(maxVisiblePages / 2);
+      let startPage = Math.max(1, this.currentPage - halfVisible);
+      let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  }
+
+  // Reset pagination when filters change
+  onSearch(): void {
+    this.currentPage = 1;
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
   }
 }
