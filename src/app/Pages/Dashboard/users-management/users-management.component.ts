@@ -54,19 +54,25 @@ export class UsersManagementComponent implements OnChanges {
   currentPage: number = 1;
   usersPerPage: number = 5;
 
+  // Search functionality
+  userSearchTerm: string = '';
+  filteredUsers: PalestraUser[] = [];
 
   get totalPages(): number {
-    return Math.ceil(this.users.length / this.usersPerPage);
+    const usersToShow = this.userSearchTerm ? this.filteredUsers : this.users;
+    return Math.ceil(usersToShow.length / this.usersPerPage);
   }
 
   get paginatedUsers(): PalestraUser[] {
+    const usersToShow = this.userSearchTerm ? this.filteredUsers : this.users;
     const startIndex = (this.currentPage - 1) * this.usersPerPage;
     const endIndex = startIndex + this.usersPerPage;
-    return this.users.slice(startIndex, endIndex);
+    return usersToShow.slice(startIndex, endIndex);
   }
 
   get totalUsers(): number {
-    return this.users.length;
+    const usersToShow = this.userSearchTerm ? this.filteredUsers : this.users;
+    return usersToShow.length;
   }
 
   get startUserIndex(): number {
@@ -167,6 +173,25 @@ export class UsersManagementComponent implements OnChanges {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT');
+  }
+
+  onUserSearch(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.userSearchTerm = target.value.toLowerCase();
+
+    if (this.userSearchTerm.trim() === '') {
+      this.filteredUsers = [];
+    } else {
+      this.filteredUsers = this.users.filter(user =>
+        user.nome.toLowerCase().includes(this.userSearchTerm) ||
+        user.cognome.toLowerCase().includes(this.userSearchTerm) ||
+        user.email.toLowerCase().includes(this.userSearchTerm) ||
+        `${user.nome} ${user.cognome}`.toLowerCase().includes(this.userSearchTerm)
+      );
+    }
+
+    // Reset to first page when searching
+    this.currentPage = 1;
   }
 
   ngOnChanges(): void {

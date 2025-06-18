@@ -36,6 +36,11 @@ export class SubscriptionsManagementComponent {
   @Output() subscriptionSave = new EventEmitter<void>();
   @Output() subscriptionDelete = new EventEmitter<Abbonamento>();
   @Output() subscriptionFormChange = new EventEmitter<any>();
+
+  // Search functionality
+  subscriptionSearchTerm: string = '';
+  filteredSubscriptions: Abbonamento[] = [];
+
   getActiveSubscriptionsByType(
     type: 'monthly' | 'semester' | 'yearly'
   ): number {
@@ -141,5 +146,28 @@ export class SubscriptionsManagementComponent {
     return this.isSubscriptionActive(subscription)
       ? 'bg-green-100 text-green-800'
       : 'bg-red-100 text-red-800';
+  }
+
+  onSubscriptionSearch(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.subscriptionSearchTerm = target.value.toLowerCase();
+
+    if (this.subscriptionSearchTerm.trim() === '') {
+      this.filteredSubscriptions = [];
+    } else {
+      this.filteredSubscriptions = this.subscriptions.filter(subscription => {
+        const userName = `${subscription.nome} ${subscription.cognome}`.toLowerCase();
+        const courseName = (subscription.nome_corso || '').toLowerCase();
+        const email = (subscription.email || '').toLowerCase();
+
+        return userName.includes(this.subscriptionSearchTerm) ||
+               courseName.includes(this.subscriptionSearchTerm) ||
+               email.includes(this.subscriptionSearchTerm);
+      });
+    }
+  }
+
+  get displayedSubscriptions(): Abbonamento[] {
+    return this.subscriptionSearchTerm ? this.filteredSubscriptions : this.subscriptions;
   }
 }
