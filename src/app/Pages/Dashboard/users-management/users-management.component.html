@@ -1,51 +1,47 @@
-<div class="p-4 sm:p-6 lg:p-8">
-  <div
-    class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4"
-  >
-    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Gestione Utenti</h2>
-    <button
-      (click)="onOpenUserModal()"
-      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center sm:justify-start"
-    >
-      <svg
-        class="w-5 h-5 mr-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
+  <!-- Header Section with Enhanced Styling -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            Gestione Utenti
+          </h2>
+          <p class="text-gray-500 text-sm mt-1">Gestisci e monitora tutti gli utenti della palestra</p>
+        </div>
+      </div>
+      <button
+        (click)="onOpenUserModal()"
+        class="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center sm:justify-start"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-        ></path>
-      </svg>
-      Nuovo Utente
-    </button>
+        <div class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"></div>
+        <svg class="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        <span class="relative z-10">Nuovo Utente</span>
+      </button>
+    </div>
   </div>
 
-  <!-- Search bar for users -->
-  <div class="mb-6">
+  <!-- Enhanced Search Section -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="relative max-w-md">
-      <svg
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        ></path>
-      </svg>
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
       <input
         type="text"
         [(ngModel)]="userSearchTerm"
         (input)="onUserSearch($event)"
         placeholder="Cerca utenti per nome, cognome o email..."
-        class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
+        class="w-full pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
       />
     </div>
   </div>
