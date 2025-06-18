@@ -225,7 +225,6 @@ La documentazione completa delle API è in fase di sviluppo. Ecco alcuni degli e
 
 ## 🔒 Sicurezza
 
-- **Autenticazione JWT** - Token sicuri per l'accesso
 - **Password Hashing** - bcrypt per la protezione delle password
 - **Error Handling** - Gestione centralizzata degli errori
 - **Input Validation** - Validazione lato client e server
