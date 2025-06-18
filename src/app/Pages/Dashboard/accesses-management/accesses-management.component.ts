@@ -129,19 +129,16 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
   }
   onAccessFormChange() {
     this.accessFormChange.emit(this.accessForm);
-  }
-  formatDateTime(dateString: string): string {
+  }  formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
-
 
       if (isNaN(date.getTime())) {
         return 'Data non valida';
       }
 
-
+      // Ora JavaScript controlla completamente la visualizzazione dell'orario
       return date.toLocaleString('it-IT', {
-        timeZone: 'Europe/Rome',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
