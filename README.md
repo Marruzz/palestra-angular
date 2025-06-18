@@ -24,6 +24,12 @@
 - 📱 **Design Responsive** - Ottimizzato per desktop e mobile
 - ⚡ **Performance Ottimizzate** - Caricamento veloce e UX fluida
 
+## 📷 Screenshots
+
+*(Inserisci qui uno screenshot della tua applicazione)*
+
+![Dashboard Screenshot](link/al/tuo/screenshot.png)
+
 ## 🛠️ Stack Tecnologico
 
 ### Frontend
@@ -50,7 +56,7 @@
 
 ### 1. Clona il Repository
 ```bash
-git clone https://github.com/tuousername/palestra-angular.git
+git clone https://github.com/marruzz/palestra-angular.git
 cd palestra-angular
 ```
 
@@ -58,6 +64,11 @@ cd palestra-angular
 ```bash
 cd backend
 npm install
+
+# Crea il tuo file di configurazione .env partendo dall'esempio
+cp .env.example .env
+
+# Apri il file .env e inserisci le tue credenziali per il database e le altre variabili
 
 # Configura il database MySQL
 # Importa il file config/palestra-angular.sql nel tuo database MySQL
@@ -102,12 +113,13 @@ palestra-angular/
 │   │       ├── 📁 models/          # Interfacce TypeScript
 │   │       ├── 📁 components/      # Componenti condivisi
 │   │       └── 📁 interceptors/    # HTTP Interceptors
-├── 📁 backend/
-│   ├── 📄 server.js               # Server Express
-│   ├── 📁 controllers/            # Logic controllers
-│   ├── 📁 routes/                 # API routes
-│   └── 📁 config/                 # Database configuration
-└── 📁 public/                     # Assets statici
+│   ├── 📁 backend/
+│   │   ├── 📄 server.js               # Server Express
+│   │   ├── 📁 controllers/            # Logic controllers
+│   │   ├── 📁 routes/                 # API routes
+│   │   ├── 📁 config/                 # Database configuration
+│   │   └── 📄 .env.example           # File di esempio per le variabili d'ambiente
+│   └── 📁 public/                     # Assets statici
 ```
 
 ## 🔧 Scripts Disponibili
@@ -126,6 +138,19 @@ cd backend
 npm start          # Avvia il server di produzione
 npm run dev        # Avvia con nodemon per development
 ```
+
+## 📡 API Endpoints
+
+La documentazione completa delle API è in fase di sviluppo. Ecco alcuni degli endpoint principali:
+
+| Metodo | Endpoint                  | Descrizione                      |
+|--------|---------------------------|----------------------------------|
+| POST   | `/api/auth/login`         | Esegue il login di un utente.    |
+| GET    | `/api/users`              | Restituisce la lista degli utenti.|
+| POST   | `/api/users`              | Crea un nuovo utente.            |
+| GET    | `/api/users/:id`          | Dettagli di un singolo utente.   |
+| PUT    | `/api/users/:id`          | Aggiorna un utente esistente.    |
+| DELETE | `/api/users/:id`          | Elimina un utente.               |
 
 ## 📊 Funzionalità Dashboard
 
@@ -188,13 +213,3 @@ Per supporto e domande:
 <div align="center">
   Realizzato con ❤️ usando Angular e Node.js
 </div>
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
