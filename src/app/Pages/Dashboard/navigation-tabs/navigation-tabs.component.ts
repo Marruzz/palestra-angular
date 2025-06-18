@@ -19,7 +19,7 @@ export class NavigationTabs {  @Input() currentView:
   onTabClick(view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi') {
     this.viewChange.emit(view);
   }
-  // Getter per le viste
+
   get isUsersView() {
     return this.currentView === 'users';
   }

@@ -38,13 +38,13 @@ import { StatsService, CalculatedStats } from '../../shared/services/stats.servi
 export class DashboardComponent implements OnInit {
   @Output() logout = new EventEmitter<void>();
   private router = inject(Router);
-  // Dati dal database
+
   users: PalestraUser[] = [];
   abbonamenti: Abbonamento[] = [];
   ingressi: Ingresso[] = [];
   corsi: Corso[] = [];
   stats: CalculatedStats | null = null;
-  // Stato del caricamento per ogni sezione
+
   private loadedSections = {
     users: false,
     subscriptions: false,
@@ -53,7 +53,7 @@ export class DashboardComponent implements OnInit {
     stats: false,
     corsi: false,
   };
-  // Stato dell'applicazione
+
   currentView: 'users' | 'subscriptions'  | 'accesses' | 'stats' | 'corsi' =
     'users';
   isLoading = false;
@@ -67,7 +67,6 @@ export class DashboardComponent implements OnInit {
   selectedCorso: Corso | null = null;
   errorMessage = '';
 
-  // Form data per utenti
   userForm = {
     id: 0,
     nome: '',
@@ -77,7 +76,6 @@ export class DashboardComponent implements OnInit {
     codice_fiscale: '',
   };
 
-  // Form data per abbonamenti
   subscriptionForm = {
     id: 0,
     id_utente: 0,
@@ -86,13 +84,11 @@ export class DashboardComponent implements OnInit {
     durata_mesi: 1,
   };
 
-  // Form data per accessi
   accessForm = {
     id_utente: 0,
-    data_ora: new Date().toISOString().slice(0, 16), // Formato datetime-local
+    data_ora: new Date().toISOString().slice(0, 16),
   };
 
-  // Form data per corsi
   corsoForm = {
     id: 0,
     nome_corso: '',
@@ -103,17 +99,22 @@ export class DashboardComponent implements OnInit {
     private dashboardService: DashboardService,
     private statsService: StatsService
   ) {}
-
   ngOnInit() {
-    // Carica solo le statistiche all'avvio per il riepilogo iniziale
+
     this.loadStatsIfNeeded();
+
+
+    const savedView = this.getSavedView();
+    if (savedView) {
+      this.currentView = savedView;
+    }
+
+
+    this.setView(this.currentView);
   }
 
-  private async loadDashboardData() {
-    // Metodo deprecato - ora i dati vengono caricati on-demand
-  }
 
-  // Caricamento lazy dei dati per sezione
+
   private async loadUsersIfNeeded(): Promise<void> {
     if (this.loadedSections.users) return;
 
@@ -200,7 +201,7 @@ export class DashboardComponent implements OnInit {
       this.dashboardService.getUsers().subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            // Transform User[] to PalestraUser[] by adding abbonamenti property and handling optional email
+
             this.users = response.data.map(user => ({
               ...user,
               email: user.email || '', // Provide default empty string for undefined email
@@ -296,19 +297,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Gestione delle viste
   async setView(
     view: 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi'
   ) {
     this.currentView = view;
 
-    // Carica i dati specifici per la vista selezionata
+
+    this.saveViewToLocalStorage(view);
+
+
     switch (view) {
       case 'users':
         await this.loadUsersIfNeeded();
         break;
       case 'subscriptions':
-        // Carica utenti e corsi se necessario per i dropdown
+
         await Promise.all([
           this.loadSubscriptionsIfNeeded(),
           this.loadUsersIfNeeded(),
@@ -316,7 +319,7 @@ export class DashboardComponent implements OnInit {
         ]);
         break;
       case 'accesses':
-        // Carica utenti se necessario per i dropdown
+
         await Promise.all([
           this.loadAccessesIfNeeded(),
           this.loadUsersIfNeeded(),
@@ -330,9 +333,51 @@ export class DashboardComponent implements OnInit {
         break;
     }
   }
-  // Gestione utenti
+
+
+  private saveViewToLocalStorage(view: string): void {
+    const viewData = {
+      view: view,
+      timestamp: Date.now()
+    };
+    try {
+      localStorage.setItem('dashboard_current_view', JSON.stringify(viewData));
+    } catch (error) {
+      console.warn('Impossibile salvare la view nel localStorage:', error);
+    }
+  }
+
+  private getSavedView(): 'users' | 'subscriptions' | 'accesses' | 'stats' | 'corsi' | null {
+    try {
+      const savedData = localStorage.getItem('dashboard_current_view');
+      if (!savedData) return null;
+
+      const parsedData = JSON.parse(savedData);
+      const now = Date.now();
+      const maxAge = 300 * 1000; // 300 secondi in millisecondi
+
+
+      if (now - parsedData.timestamp > maxAge) {
+        localStorage.removeItem('dashboard_current_view');
+        return null;
+      }
+
+
+      const validViews = ['users', 'subscriptions', 'accesses', 'stats', 'corsi'];
+      if (validViews.includes(parsedData.view)) {
+        return parsedData.view;
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('Errore nel leggere la view dal localStorage:', error);
+      localStorage.removeItem('dashboard_current_view');
+      return null;
+    }
+  }
+
   async openUserModal(user?: PalestraUser) {
-    // Assicurati che i corsi siano caricati per il dropdown
+
     await this.loadCorsiIfNeeded();
 
     this.selectedUser = user || null;
@@ -372,20 +417,20 @@ export class DashboardComponent implements OnInit {
       this.isLoading = true;
       this.errorMessage = '';
 
-      // Se abbiamo dati dal form, aggiorna userForm
+
       if (userFormData) {
         this.userForm = { ...userFormData };
       }
 
       if (this.selectedUser) {
-        // Aggiorna utente esistente
+
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateUser(this.selectedUser!.id, this.userForm)
             .subscribe({
               next: (response) => {
                 if (response.success) {
-                  // Se ci sono abbonamenti da aggiornare
+
                   if (userFormData && userFormData.abbonamenti) {
                     this.updateUserAbbonamenti(
                       this.selectedUser!.id,
@@ -406,14 +451,14 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-        // Crea nuovo utente
+
         let newUserId: number;
         await new Promise<void>((resolve, reject) => {
           this.dashboardService.createUser(this.userForm).subscribe({
             next: (response) => {
               if (response.success && response.data) {
                 newUserId = response.data.id;
-                // Se ci sono abbonamenti da creare per il nuovo utente
+
                 if (
                   userFormData &&
                   userFormData.abbonamenti &&
@@ -439,7 +484,7 @@ export class DashboardComponent implements OnInit {
         });
       }
 
-      // Ricarica i dati utenti
+
       this.loadedSections.users = false;
       await this.loadUsersIfNeeded();
       this.closeUserModal();
@@ -473,7 +518,7 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-        // Ricarica i dati utenti
+
         this.loadedSections.users = false;
         await this.loadUsersIfNeeded();
       } catch (error: any) {
@@ -483,9 +528,9 @@ export class DashboardComponent implements OnInit {
       }
     }
   }
-  // Gestione abbonamenti
+
   async openSubscriptionModal(abbonamento?: Abbonamento | null) {
-    // Assicurati che utenti e corsi siano caricati per i dropdown
+
     await Promise.all([this.loadUsersIfNeeded(), this.loadCorsiIfNeeded()]);
 
     this.selectedAbbonamento = abbonamento || null;
@@ -524,7 +569,7 @@ export class DashboardComponent implements OnInit {
       this.errorMessage = '';
 
       if (this.selectedAbbonamento) {
-        // Aggiorna abbonamento esistente
+
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateSubscription(
@@ -543,7 +588,7 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-        // Crea nuovo abbonamento
+
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .createSubscription(this.subscriptionForm)
@@ -560,7 +605,7 @@ export class DashboardComponent implements OnInit {
         });
       }
 
-      // Ricarica i dati abbonamenti
+
       this.loadedSections.subscriptions = false;
       await this.loadSubscriptionsIfNeeded();
       this.closeSubscriptionModal();
@@ -590,7 +635,7 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-        // Ricarica i dati abbonamenti
+
         this.loadedSections.subscriptions = false;
         await this.loadSubscriptionsIfNeeded();
       } catch (error: any) {
@@ -601,9 +646,9 @@ export class DashboardComponent implements OnInit {
       }
     }
   }
-  // Gestione accessi
+
   async openAccessModal() {
-    // Assicurati che gli utenti siano caricati per il dropdown
+
     await this.loadUsersIfNeeded();
 
     this.resetAccessForm();
@@ -617,7 +662,7 @@ export class DashboardComponent implements OnInit {
 
   private resetAccessForm() {
     const now = new Date();
-    // Formatta per input datetime-local (YYYY-MM-DDTHH:MM)
+
     const formattedNow = now.toISOString().slice(0, 16);
 
     this.accessForm = {
@@ -643,7 +688,7 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-      // Ricarica accessi e statistiche usando il nuovo metodo
+
       await this.refreshAccessesAndStats();
       this.closeAccessModal();
     } catch (error: any) {
@@ -653,7 +698,7 @@ export class DashboardComponent implements OnInit {
       this.isLoading = false;
     }
   }
-  // Gestione corsi
+
   openCorsoModal(corso?: Corso | null) {
     this.errorMessage = ''; // Pulisce eventuali errori precedenti
     if (corso) {
@@ -684,7 +729,7 @@ export class DashboardComponent implements OnInit {
     };
   }
   async saveCorso() {
-    // Validazione client-side
+
     if (!this.corsoForm.nome_corso || this.corsoForm.nome_corso.trim() === '') {
       this.errorMessage = 'Il nome del corso è obbligatorio';
       return;
@@ -707,7 +752,7 @@ export class DashboardComponent implements OnInit {
         });
       });
 
-      // Ricarica i corsi
+
       this.loadedSections.corsi = false;
       await this.loadCorsiIfNeeded();
       this.closeCorsoModal();
@@ -719,31 +764,31 @@ export class DashboardComponent implements OnInit {
     }
   }
   async deleteCorso(corso: Corso) {
-    // TODO: Implementare il metodo deleteCorso nel DashboardService
+
     console.warn('Metodo deleteCorso non ancora implementato nel service');
     alert('Funzionalità di eliminazione corso non ancora disponibile');
   }
 
-  // Metodi di utility per il refresh forzato dei dati
+
   async refreshCurrentView(): Promise<void> {
-    // Reset del flag di caricamento per la vista corrente
+
     this.loadedSections[this.currentView] = false;
 
-    // Ricarica i dati per la vista corrente
+
     await this.setView(this.currentView);
   }
 
   async refreshAllData(): Promise<void> {
-    // Reset di tutti i flag di caricamento
+
     Object.keys(this.loadedSections).forEach((key) => {
       this.loadedSections[key as keyof typeof this.loadedSections] = false;
     });
 
-    // Ricarica solo le statistiche iniziali
+
     await this.loadStatsIfNeeded();
   }
 
-  // Refresh specifico per accessi e statistiche dopo registrazione
+
   async refreshAccessesAndStats(): Promise<void> {
     this.loadedSections.accesses = false;
     this.loadedSections.stats = false;
@@ -751,7 +796,7 @@ export class DashboardComponent implements OnInit {
     await Promise.all([this.loadAccessesIfNeeded(), this.loadStatsIfNeeded()]);
   }
 
-  // Utility methods
+
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
 
@@ -773,12 +818,12 @@ export class DashboardComponent implements OnInit {
   formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
-      // Verifica se la data è valida
+
       if (isNaN(date.getTime())) {
         return 'Data non valida';
       }
 
-      // Formatta con il fuso orario italiano
+
       return date.toLocaleString('it-IT', {
         timeZone: 'Europe/Rome',
         year: 'numeric',
@@ -801,7 +846,7 @@ export class DashboardComponent implements OnInit {
     return this.corsi.find((corso) => corso.id === id);
   }
 
-  // Logout (se necessario)
+
   onLogout() {
     this.logout.emit();
     this.router.navigate(['/login']);
@@ -817,7 +862,7 @@ export class DashboardComponent implements OnInit {
 
     for (const abbonamento of abbonamenti) {
       if (abbonamento.id === 0) {
-        // Nuovo abbonamento
+
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .createSubscription({
@@ -839,7 +884,7 @@ export class DashboardComponent implements OnInit {
             });
         });
       } else {
-        // Aggiorna abbonamento esistente
+
         await new Promise<void>((resolve, reject) => {
           this.dashboardService
             .updateSubscription(abbonamento.id, {
@@ -864,7 +909,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Metodi helper per abbonamenti attivi
+
   getActiveSubscriptions(): Abbonamento[] {
     const today = new Date();
     return this.abbonamenti.filter(abbonamento => {
@@ -892,7 +937,7 @@ export class DashboardComponent implements OnInit {
     return Math.ceil((dataFine.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   }
   renewSubscription(abbonamento: Abbonamento) {
-    // Apre il modal per modificare l'abbonamento esistente
+
     this.selectedAbbonamento = abbonamento;
     this.subscriptionForm = {
       id: abbonamento.id,
@@ -956,7 +1001,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Helper per il template
+
   getExpiringSoonCount(): number {
     return this.getActiveSubscriptions().filter(sub => this.isSubscriptionExpiringSoon(sub)).length;
   }

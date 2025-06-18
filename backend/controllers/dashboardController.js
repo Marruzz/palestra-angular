@@ -1016,7 +1016,7 @@ class DashboardController {
     }
   }
 
-  // Metodi per gestire i corsi
+
   static async getCorsi(req, res) {
     try {
       const [corsi] = await pool.execute(`
@@ -1051,7 +1051,7 @@ class DashboardController {
     try {
       const { nome_corso, descrizione, durata_mesi_default } = req.body;
 
-      // Validazione input
+
       if (!nome_corso || nome_corso.trim() === '') {
         return res.status(400).json({
           success: false,
@@ -1059,7 +1059,7 @@ class DashboardController {
         });
       }
 
-      // Verifica che il corso non esista già
+
       const [existingCorso] = await pool.execute(
         'SELECT id FROM Corsi WHERE nome_corso = ?',
         [nome_corso.trim()]

@@ -283,16 +283,16 @@
       </p>    </div>
   </div>
 
-  <!-- Pagination Controls -->
+
   <div *ngIf="accesses.length > itemsPerPage" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">      <!-- Info sulla paginazione -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="text-sm text-gray-700">
         Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ getDisplayedToIndex() }} di {{ accesses.length }} accessi
       </div>
 
-      <!-- Controlli di paginazione -->
+
       <div class="flex items-center space-x-2">
-        <!-- Pulsante precedente -->
+
         <button
           (click)="previousPage()"
           [disabled]="currentPage === 1"
@@ -301,23 +301,30 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
-        </button>
-
-        <!-- Numeri delle pagine -->
-        <div class="flex space-x-1">
-          <button
-            *ngFor="let page of getPageNumbers()"
-            (click)="goToPage(page)"
-            [class]="page === currentPage
-              ? 'px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg'
-              : 'px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700'"
-            class="transition-colors"
-          >
-            {{ page }}
-          </button>
+        </button>        <div class="flex space-x-1">
+          <ng-container *ngFor="let page of getPageNumbers()">
+            <!-- Ellipsis (non-clickable) -->
+            <span
+              *ngIf="page === '...'"
+              class="px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 rounded-lg cursor-default"
+            >
+              ...
+            </span>
+            <!-- Page number (clickable) -->
+            <button
+              *ngIf="page !== '...'"
+              (click)="handlePageClick(page)"
+              [class]="page === currentPage
+                ? 'px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg'
+                : 'px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700'"
+              class="transition-colors"
+            >
+              {{ page }}
+            </button>
+          </ng-container>
         </div>
 
-        <!-- Pulsante successivo -->
+
         <button
           (click)="nextPage()"
           [disabled]="currentPage === totalPages"

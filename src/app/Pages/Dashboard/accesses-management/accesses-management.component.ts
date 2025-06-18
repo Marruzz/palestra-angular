@@ -28,7 +28,7 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
   @Output() accessRegister = new EventEmitter<void>();
   @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
 
-  // Pagination properties
+
   currentPage: number = 1;
   itemsPerPage: number = 7;
   totalPages: number = 0;
@@ -68,48 +68,47 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
       this.currentPage++;
       this.updatePagination();
     }
-  }
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
+  }  getPageNumbers(): (number | string)[] {
+    const pages: (number | string)[] = [];
     const maxVisiblePages = 5; // Maximum number of page buttons to show
-    
+
     if (this.totalPages <= maxVisiblePages) {
-      // If total pages is less than max, show all pages
+
       for (let i = 1; i <= this.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Calculate start and end page numbers
+
       let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
       let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
-      
-      // Adjust start page if we're near the end
+
+
       if (endPage - startPage < maxVisiblePages - 1) {
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
       }
-      
-      // Always show first page
+
+
       if (startPage > 1) {
         pages.push(1);
         if (startPage > 2) {
-          pages.push(-1); // -1 represents ellipsis
+          pages.push('...'); // Use ellipsis instead of -1
         }
       }
-      
-      // Add middle pages
+
+
       for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
-      
-      // Always show last page
+
+
       if (endPage < this.totalPages) {
         if (endPage < this.totalPages - 1) {
-          pages.push(-1); // -1 represents ellipsis
+          pages.push('...'); // Use ellipsis instead of -1
         }
         pages.push(this.totalPages);
       }
     }
-    
+
     return pages;
   }
 
@@ -218,5 +217,11 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
       return this.formatDateTime(userAccesses[0].data_ora);
     }
     return 'Nessun accesso registrato';
+  }
+
+  handlePageClick(page: number | string) {
+    if (typeof page === 'number') {
+      this.goToPage(page);
+    }
   }
 }

@@ -16,7 +16,6 @@ import { Corso } from '../../../shared/services/dashboard.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './corsi-management.component.html',
-  styleUrls: ['./corsi-management.component.css'],
 })
 export class CorsiManagementComponent implements OnInit, OnChanges {
   @Input() corsi: Corso[] = [];

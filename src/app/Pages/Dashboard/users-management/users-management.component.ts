@@ -46,7 +46,7 @@ export class UsersManagementComponent implements OnChanges {
   currentPage: number = 1;
   usersPerPage: number = 5;
 
-  // Search functionality
+
   userSearchTerm: string = '';
   filteredUsers: PalestraUser[] = [];
 
@@ -182,7 +182,7 @@ export class UsersManagementComponent implements OnChanges {
       );
     }
 
-    // Reset to first page when searching
+
     this.currentPage = 1;
   }
 
