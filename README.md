@@ -1,52 +1,194 @@
-# PalestraAngular
+# 🏋️‍♀️ Palestra Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.2.
+<div align="center">
+  <img src="./public/logo.jpg" alt="Palestra Angular Logo" width="200"/>
+  
+  [![Angular](https://img.shields.io/badge/Angular-20.0.0-red?style=for-the-badge&logo=angular)](https://angular.io/)
+  [![Node.js](https://img.shields.io/badge/Node.js-Backend-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+  [![MySQL](https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge&logo=mysql)](https://www.mysql.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-Powered-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+</div>
 
-## Development server
+## 📋 Panoramica
 
-To start a local development server, run:
+**Palestra Angular** è una moderna applicazione web full-stack per la gestione completa di palestre e centri fitness. Sviluppata con Angular 20 e Node.js, offre un'interfaccia intuitiva e funzionalità avanzate per amministratori e gestori di palestre.
 
+### ✨ Caratteristiche Principali
+
+- 🔐 **Sistema di Autenticazione** - Login sicuro con JWT
+- 👥 **Gestione Utenti** - Amministrazione completa degli iscritti
+- 🎫 **Gestione Abbonamenti** - Creazione e monitoraggio delle sottoscrizioni
+- 📊 **Analytics Avanzate** - Dashboard con statistiche dettagliate
+- 🏃‍♂️ **Gestione Corsi** - Organizzazione dei corsi e delle attività
+- 🚪 **Controllo Accessi** - Monitoraggio degli ingressi in palestra
+- 📱 **Design Responsive** - Ottimizzato per desktop e mobile
+- ⚡ **Performance Ottimizzate** - Caricamento veloce e UX fluida
+
+## 🛠️ Stack Tecnologico
+
+### Frontend
+- **Angular 20** - Framework principale
+- **TypeScript** - Linguaggio di programmazione
+- **RxJS** - Gestione reattiva degli stati
+- **Angular Router** - Navigazione SPA
+- **CSS3** - Styling moderno
+
+### Backend
+- **Node.js** - Runtime JavaScript
+- **Express.js** - Framework web
+- **MySQL** - Database relazionale
+- **bcrypt** - Hashing password
+- **Faker.js** - Generazione dati di test
+
+## 🚀 Installazione e Setup
+
+### Prerequisiti
+- Node.js (versione 18 o superiore)
+- npm o yarn
+- MySQL Server
+- Angular CLI
+
+### 1. Clona il Repository
 ```bash
-ng serve
+git clone https://github.com/tuousername/palestra-angular.git
+cd palestra-angular
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### 2. Setup Backend
 ```bash
-ng generate component component-name
+cd backend
+npm install
+
+# Configura il database MySQL
+# Importa il file config/palestra-angular.sql nel tuo database MySQL
+
+# Avvia il server backend
+npm start
+# oppure per development
+npm run dev
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+### 3. Setup Frontend
 ```bash
-ng generate --help
+# Torna alla root del progetto
+cd ..
+
+# Installa le dipendenze
+npm install
+
+# Avvia il server di sviluppo
+npm start
 ```
 
-## Building
+### 4. Accedi all'Applicazione
+Apri il browser e naviga su `http://localhost:4200`
 
-To build the project run:
+## 🗂️ Struttura del Progetto
 
-```bash
-ng build
+```
+palestra-angular/
+├── 📁 src/
+│   ├── 📁 app/
+│   │   ├── 📁 Pages/
+│   │   │   ├── 📁 Dashboard/        # Dashboard principale
+│   │   │   │   ├── 📁 users-management/
+│   │   │   │   ├── 📁 subscriptions-management/
+│   │   │   │   ├── 📁 accesses-management/
+│   │   │   │   ├── 📁 corsi-management/
+│   │   │   │   └── 📁 stats-page/
+│   │   │   └── 📁 login/           # Pagina di login
+│   │   └── 📁 shared/
+│   │       ├── 📁 services/        # Servizi Angular
+│   │       ├── 📁 models/          # Interfacce TypeScript
+│   │       ├── 📁 components/      # Componenti condivisi
+│   │       └── 📁 interceptors/    # HTTP Interceptors
+├── 📁 backend/
+│   ├── 📄 server.js               # Server Express
+│   ├── 📁 controllers/            # Logic controllers
+│   ├── 📁 routes/                 # API routes
+│   └── 📁 config/                 # Database configuration
+└── 📁 public/                     # Assets statici
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🔧 Scripts Disponibili
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+### Frontend
 ```bash
-ng test
+npm start          # Avvia il server di sviluppo
+npm run build      # Build per produzione
+npm test           # Esegue i test
+npm run watch      # Build in modalità watch
 ```
 
-## Running end-to-end tests
+### Backend
+```bash
+cd backend
+npm start          # Avvia il server di produzione
+npm run dev        # Avvia con nodemon per development
+```
 
-For end-to-end (e2e) testing, run:
+## 📊 Funzionalità Dashboard
+
+### 🏠 Panoramica Generale
+- Statistiche in tempo reale degli utenti attivi
+- Grafici delle presenze giornaliere/settimanali
+- Riepilogo abbonamenti attivi/scaduti
+- Indicatori di performance della palestra
+
+### 👤 Gestione Utenti
+- ➕ Creazione nuovo utente
+- ✏️ Modifica dati utente esistente
+- 🗑️ Eliminazione utente
+- 🔍 Ricerca e filtri avanzati
+- 📋 Visualizzazione dettagliata profili
+
+### 🎫 Gestione Abbonamenti
+- 📝 Creazione nuovi abbonamenti
+- 📅 Monitoraggio scadenze
+- 💰 Gestione pagamenti
+- 📊 Report abbonamenti
+
+### 🚪 Controllo Accessi
+- ⏰ Log degli ingressi/uscite
+- 📈 Statistiche di frequentazione
+- 🔔 Notifiche accessi non autorizzati
+
+### 🏃‍♂️ Gestione Corsi
+- 📋 Programmazione corsi
+- 👨‍🏫 Assegnazione istruttori
+- 👥 Gestione prenotazioni
+- 📊 Analytics partecipazione
+
+## 🔒 Sicurezza
+
+- **Autenticazione JWT** - Token sicuri per l'accesso
+- **Password Hashing** - bcrypt per la protezione delle password
+- **Error Handling** - Gestione centralizzata degli errori
+- **Input Validation** - Validazione lato client e server
+
+## 🤝 Contribuire
+
+1. Fai fork del progetto
+2. Crea un branch per la tua feature (`git checkout -b feature/AmazingFeature`)
+3. Committa le tue modifiche (`git commit -m 'Add some AmazingFeature'`)
+4. Push al branch (`git push origin feature/AmazingFeature`)
+5. Apri una Pull Request
+
+## 📝 License
+
+Questo progetto è distribuito sotto licenza MIT. Vedi il file `LICENSE` per maggiori dettagli.
+
+## 📞 Supporto
+
+Per supporto e domande:
+- 📧 Email: [tua-email@esempio.com](mailto:tua-email@esempio.com)
+- 🐛 Issues: [GitHub Issues](https://github.com/tuousername/palestra-angular/issues)
+
+---
+
+<div align="center">
+  Realizzato con ❤️ usando Angular e Node.js
+</div>
 
 ```bash
 ng e2e
