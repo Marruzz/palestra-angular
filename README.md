@@ -9,6 +9,22 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-Powered-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 </div>
 
+## 📚 Indice
+
+- [📋 Panoramica](#-panoramica)
+- [✨ Caratteristiche Principali](#-caratteristiche-principali)
+- [📷 Screenshots](#-screenshots)
+- [🛠️ Stack Tecnologico](#️-stack-tecnologico)
+- [🚀 Installazione e Setup](#-installazione-e-setup)
+- [🗂️ Struttura del Progetto](#️-struttura-del-progetto)
+- [🔧 Scripts Disponibili](#-scripts-disponibili)
+- [📡 API Endpoints](#-api-endpoints)
+- [📊 Funzionalità Dashboard](#-funzionalità-dashboard)
+- [🔒 Sicurezza](#-sicurezza)
+- [🤝 Contribuire](#-contribuire)
+- [📝 License](#-license)
+- [📞 Supporto](#-supporto)
+
 ## 📋 Panoramica
 
 **Palestra Angular** è una moderna applicazione web full-stack per la gestione completa di palestre e centri fitness. Sviluppata con Angular 20 e Node.js, offre un'interfaccia intuitiva e funzionalità avanzate per amministratori e gestori di palestre.
