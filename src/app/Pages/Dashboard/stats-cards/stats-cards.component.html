@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -15,17 +15,16 @@
             {{ stats?.totale_utenti || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-blue-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full" style="width: 75%"></div>
+          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full" [style.width.%]="getUsersPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Membri registrati</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -41,17 +40,16 @@
             {{ stats?.abbonamenti_attivi || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-emerald-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-emerald-500 to-green-600 h-2 rounded-full" style="width: 85%"></div>
+          <div class="bg-gradient-to-r from-emerald-500 to-green-600 h-2 rounded-full" [style.width.%]="getActiveSubscriptionsPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Iscrizioni valide</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -68,17 +66,16 @@
             {{ stats?.accessi_oggi || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-purple-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full" style="width: 60%"></div>
+          <div class="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full" [style.width.%]="getTodayAccessesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Accessi di oggi</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-400 to-red-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -94,17 +91,16 @@
             {{ stats?.accessi_settimana || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-orange-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full" style="width: 90%"></div>
+          <div class="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full" [style.width.%]="getWeekAccessesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Accessi questa settimana</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -119,17 +115,16 @@
             {{ stats?.accessi_sempre || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-teal-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-teal-500 to-cyan-600 h-2 rounded-full" style="width: 100%"></div>
+          <div class="bg-gradient-to-r from-teal-500 to-cyan-600 h-2 rounded-full" [style.width.%]="getAllTimeAccessesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Tutti gli accessi storici</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -145,17 +140,16 @@
             {{ stats?.utenti_entrati_oggi || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-indigo-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-2 rounded-full" style="width: 70%"></div>
+          <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-2 rounded-full" [style.width.%]="getTodayUsersPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Persone entrate oggi</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-400 to-pink-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -171,17 +165,16 @@
             {{ stats?.accessi_mese || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-red-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-red-500 to-pink-600 h-2 rounded-full" style="width: 80%"></div>
+          <div class="bg-gradient-to-r from-red-500 to-pink-600 h-2 rounded-full" [style.width.%]="getMonthAccessesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Accessi questo mese</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-rose-400 to-red-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -197,17 +190,16 @@
             {{ stats?.accessi_anno || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-rose-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-rose-500 to-red-600 h-2 rounded-full" style="width: 95%"></div>
+          <div class="bg-gradient-to-r from-rose-500 to-red-600 h-2 rounded-full" [style.width.%]="getYearAccessesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Accessi quest'anno</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -223,17 +215,16 @@
             {{ stats?.corsi_attivi || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-cyan-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 rounded-full" style="width: 65%"></div>
+          <div class="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 rounded-full" [style.width.%]="getActiveCoursesPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Corsi in programma</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-sky-400 to-indigo-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -249,17 +240,16 @@
             {{ stats?.totale_abbonamenti || 0 }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-sky-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-sky-500 to-indigo-600 h-2 rounded-full" style="width: 88%"></div>
+          <div class="bg-gradient-to-r from-sky-500 to-indigo-600 h-2 rounded-full" [style.width.%]="getTotalSubscriptionsPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Tutti gli abbonamenti</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -275,17 +265,16 @@
             {{ stats?.eta_media_utenti || 0 }} <span class="text-lg">anni</span>
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-violet-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-violet-500 to-purple-600 h-2 rounded-full" style="width: 45%"></div>
+          <div class="bg-gradient-to-r from-violet-500 to-purple-600 h-2 rounded-full" [style.width.%]="getAverageAgePercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Età media utenti</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-fuchsia-400 to-pink-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -301,17 +290,16 @@
             {{ stats?.corso_top || 'N/A' }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-fuchsia-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-fuchsia-500 to-pink-600 h-2 rounded-full" style="width: 95%"></div>
+          <div class="bg-gradient-to-r from-fuchsia-500 to-pink-600 h-2 rounded-full" [style.width.%]="getTopCoursePercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">{{ (stats?.durata_corso_top ? (stats!.durata_corso_top > 1 ? stats!.durata_corso_top + ' mesi' : stats!.durata_corso_top + ' mese') : 'Corso più popolare') }}</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -327,17 +315,16 @@
             {{ stats?.corso_bottom || 'N/A' }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-pink-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-pink-500 to-rose-600 h-2 rounded-full" style="width: 25%"></div>
+          <div class="bg-gradient-to-r from-pink-500 to-rose-600 h-2 rounded-full" [style.width.%]="getBottomCoursePercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">{{ (stats?.durata_corso_bottom ? (stats!.durata_corso_bottom > 1 ? stats!.durata_corso_bottom + ' mesi' : stats!.durata_corso_bottom + ' mese') : 'Meno iscrizioni') }}</p>
     </div>
   </div>
 
-  
+
   <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
     <div class="relative z-10">
@@ -353,10 +340,9 @@
             {{ stats?.tempo_medio_entrata || 'N/A' }}
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-amber-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full" style="width: 78%"></div>
+          <div class="bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full" [style.width.%]="getPeakTimePercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Orario più frequentato</p>
@@ -378,10 +364,9 @@
             {{ stats?.durata_media_corso || 0 }} <span class="text-lg">gg</span>
           </p>
         </div>
-      </div>
-      <div class="mt-4 flex items-center">
+      </div>      <div class="mt-4 flex items-center">
         <div class="flex-1 bg-slate-100 rounded-full h-2">
-          <div class="bg-gradient-to-r from-slate-500 to-gray-600 h-2 rounded-full" style="width: 55%"></div>
+          <div class="bg-gradient-to-r from-slate-500 to-gray-600 h-2 rounded-full" [style.width.%]="getAverageCourseDurationPercentage()"></div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-2">Durata media di un corso</p>

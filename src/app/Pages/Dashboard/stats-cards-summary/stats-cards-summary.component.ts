@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CalculatedStats } from '../../../shared/services/stats.service';
+import { StatsCalculatorService } from '../../../shared/services/stats-calculator.service';
 
 @Component({
   selector: 'app-stats-cards-summary',
@@ -13,28 +14,25 @@ export class StatsCardsSummaryComponent {
   @Input() isLoading: boolean = false;
   Math = Math;
 
+  constructor(private statsCalculator: StatsCalculatorService) {}
+
   getAccessiOggiPercentage(): number {
-    if (!this.stats || this.stats.accessi_oggi === 0) {
-      return 0;
-    }
-    return (this.stats.accessi_oggi / this.stats.totale_utenti) * 100;
+    return this.statsCalculator.getTodayAccessesPercentage(this.stats);
   }
 
   getProgressPercentage(value: number, total: number): number {
-    return Math.min((value || 0) / Math.max(total || 1, 1) * 100, 100);
+    return this.statsCalculator.getProgressPercentage(value, total);
   }
 
   getUserProgressPercentage(value: number): number {
-    return this.getProgressPercentage(value, this.stats?.totale_utenti || 1);
+    return this.statsCalculator.getUserProgressPercentage(value, this.stats);
   }
 
   getWeeklyProgressPercentage(): number {
-    const weeklyMax = (this.stats?.totale_utenti || 1) * 7;
-    return this.getProgressPercentage(this.stats?.accessi_settimana || 0, weeklyMax);
+    return this.statsCalculator.getWeekAccessesPercentage(this.stats);
   }
 
   getYearlyProgressPercentage(): number {
-    const yearlyMax = (this.stats?.totale_utenti || 1) * 365;
-    return this.getProgressPercentage(this.stats?.accessi_anno || 0, yearlyMax);
+    return this.statsCalculator.getYearAccessesPercentage(this.stats);
   }
 }
