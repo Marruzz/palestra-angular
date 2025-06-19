@@ -2,8 +2,7 @@ const { pool } = require("../config/database");
 const path = require("path");
 const fs = require("fs");
 
-class DashboardController {
-  static async getUsers(req, res) {
+class DashboardController {  static async getUsers(req, res) {
     try {
       const [users] = await pool.execute(`
         SELECT
@@ -13,6 +12,8 @@ class DashboardController {
           u.email,
           u.data_nascita,
           u.codice_fiscale,
+          u.certificato_medico,
+          DATE_FORMAT(u.certificato_scadenza, '%Y-%m-%d') as certificato_scadenza,
           a.id as abbonamento_id,
           a.id_corso,
           DATE_FORMAT(a.data_inizio, '%Y-%m-%d') as abbonamento_inizio,
@@ -26,9 +27,7 @@ class DashboardController {
         ORDER BY u.id DESC
       `);
 
-      const usersMap = new Map();
-
-      users.forEach((row) => {
+      const usersMap = new Map();      users.forEach((row) => {
         if (!usersMap.has(row.id)) {
           usersMap.set(row.id, {
             id: row.id,
@@ -37,6 +36,8 @@ class DashboardController {
             email: row.email,
             data_nascita: row.data_nascita,
             codice_fiscale: row.codice_fiscale,
+            certificato_medico: row.certificato_medico,
+            certificato_scadenza: row.certificato_scadenza,
             abbonamenti: [],
           });
         }
