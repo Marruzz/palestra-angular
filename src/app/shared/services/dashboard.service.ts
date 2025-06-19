@@ -118,27 +118,57 @@ export class DashboardService {
           return throwError(() => error);
         })
       );
-  }
-  createUser(
-    user: Partial<PalestraUser>
+  }  createUser(
+    user: any
   ): Observable<{ success: boolean; data?: PalestraUser; message: string }> {
-    return this.http
-      .post<{ success: boolean; data?: PalestraUser; message: string }>(
-        `${this.apiUrl}/dashboard/users`,
-        user,
-        { headers: this.getHeaders() }
-      )
-      .pipe(
-        tap(response => {
-          if (response.success) {
-
-            this.stateService.triggerUsersRefresh();
-          }
-        }),
-        catchError((error) => {
-          return throwError(() => new Error('Backend non disponibile'));
-        })
-      );
+    // Se c'è un certificato, utilizziamo FormData
+    if (user.certificato) {
+      const formData = new FormData();
+      
+      // Aggiungiamo tutti i dati dell'utente
+      Object.keys(user).forEach(key => {
+        if (key !== 'certificato') {
+          formData.append(key, user[key]);
+        }
+      });
+      
+      // Aggiungiamo il file del certificato
+      formData.append('certificato', user.certificato);
+      
+      return this.http
+        .post<{ success: boolean; data?: PalestraUser; message: string }>(
+          `${this.apiUrl}/dashboard/users`,
+          formData
+        )
+        .pipe(
+          tap(response => {
+            if (response.success) {
+              this.stateService.triggerUsersRefresh();
+            }
+          }),
+          catchError((error) => {
+            return throwError(() => new Error('Backend non disponibile'));
+          })
+        );
+    } else {
+      // Utilizziamo la richiesta JSON normale
+      return this.http
+        .post<{ success: boolean; data?: PalestraUser; message: string }>(
+          `${this.apiUrl}/dashboard/users`,
+          user,
+          { headers: this.getHeaders() }
+        )
+        .pipe(
+          tap(response => {
+            if (response.success) {
+              this.stateService.triggerUsersRefresh();
+            }
+          }),
+          catchError((error) => {
+            return throwError(() => new Error('Backend non disponibile'));
+          })
+        );
+    }
   }
 
   updateUser(

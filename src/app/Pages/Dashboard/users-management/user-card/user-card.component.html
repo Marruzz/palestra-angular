@@ -117,10 +117,89 @@
               >Codice Fiscale</label
             >
             <p class="text-gray-900 font-mono">{{ user.codice_fiscale }}</p>
-          </div>
-        </div>
+          </div>        </div>
       </div>
 
+      <!-- Sezione Certificato Medico -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <svg
+            class="w-5 h-5 mr-2 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
+          </svg>
+          Certificato Medico
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Stato Certificato</label>
+            <div *ngIf="user.certificato_medico" class="flex items-center">
+              <svg 
+                [class]="isExpired() ? 'w-4 h-4 mr-2 text-red-500' : 'w-4 h-4 mr-2 text-green-500'"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  *ngIf="!isExpired()"
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+                <path 
+                  *ngIf="isExpired()"
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                ></path>
+              </svg>
+              <span [class]="isExpired() ? 'text-red-600 font-medium' : 'text-green-600 font-medium'">
+                {{ isExpired() ? 'Scaduto' : 'Valido' }}
+              </span>
+            </div>
+            <div *ngIf="!user.certificato_medico" class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <span class="text-yellow-600 font-medium">Non caricato</span>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Data Scadenza</label>
+            <p *ngIf="user.certificato_scadenza" [class]="isExpired() ? 'text-red-600 font-medium' : 'text-gray-900'">
+              {{ formatDate(user.certificato_scadenza) }}
+              <span *ngIf="isExpired()" class="text-xs">(Scaduto)</span>
+            </p>
+            <p *ngIf="!user.certificato_scadenza" class="text-gray-400 italic">
+              Non specificata
+            </p>
+          </div>
+        </div>
+        
+        <div *ngIf="user.certificato_medico" class="mt-4">
+          <button
+            (click)="downloadCertificato()"
+            class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Visualizza Certificato
+          </button>
+        </div>
+      </div>
 
       <div class="mb-8">
         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">

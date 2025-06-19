@@ -96,6 +96,9 @@ export class UserModalComponent implements OnInit {
         codice_fiscale: this.user.codice_fiscale,
       };
       this.userAbbonamenti = [...this.user.abbonamenti];
+    } else {
+      // Reset per nuovo utente
+      this.resetCertificateForm();
     }
     this.loadCorsi();
 
@@ -105,6 +108,15 @@ export class UserModalComponent implements OnInit {
         this.selectedUser.certificato_scadenza
       );
     }
+  }
+
+  /**
+   * Reset dei campi del certificato per nuovo utente
+   */
+  resetCertificateForm() {
+    this.selectedCertificato = null;
+    this.certificatoFileName = '';
+    this.isUploading = false;
   }
 
   loadCorsi() {
@@ -215,7 +227,6 @@ export class UserModalComponent implements OnInit {
 
     return age;
   }
-
   onSaveUser() {
     const userData = {
       ...this.userForm,
@@ -226,6 +237,13 @@ export class UserModalComponent implements OnInit {
         data_fine: this.formatDateForBackend(abbonamento.data_fine),
       })),
     };
+    
+    // Per i nuovi utenti, aggiungiamo il certificato se presente
+    if (!this.selectedUser && this.selectedCertificato && this.userForm.certificato_scadenza) {
+      userData.certificato = this.selectedCertificato;
+      userData.certificato_scadenza = this.formatDateForBackend(this.userForm.certificato_scadenza);
+    }
+    
     this.save.emit(userData);
   }
 

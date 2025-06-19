@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Routes per gli utenti
 router.get('/users', DashboardController.getUsers);
-router.post('/users', DashboardController.createUser);
+router.post('/users', upload.single('certificato'), DashboardController.createUser);
 router.put('/users/:id', DashboardController.updateUser);
 router.delete('/users/:id', DashboardController.deleteUser);
 

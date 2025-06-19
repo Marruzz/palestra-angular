@@ -69,10 +69,9 @@ class DashboardController {  static async getUsers(req, res) {
       });
     }
   }
-
   static async createUser(req, res) {
     try {
-      const { nome, cognome, email, data_nascita, codice_fiscale } = req.body;
+      const { nome, cognome, email, data_nascita, codice_fiscale, certificato_scadenza } = req.body;
 
       if (!nome || !cognome || !data_nascita || !codice_fiscale) {
         return res.status(400).json({
@@ -108,20 +107,36 @@ class DashboardController {  static async getUsers(req, res) {
         });
       }
 
+      // Gestione del certificato medico
+      let certificatoFileName = null;
+      if (req.file && certificato_scadenza) {
+        certificatoFileName = req.file.filename;
+      }
+
       const [result] = await pool.execute(
-        "INSERT INTO Utenti (nome, cognome, email, data_nascita, codice_fiscale) VALUES (?, ?, ?, ?, ?)",
-        [nome, cognome, email || null, data_nascita, codice_fiscale]
+        "INSERT INTO Utenti (nome, cognome, email, data_nascita, codice_fiscale, certificato_medico, certificato_scadenza) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [nome, cognome, email || null, data_nascita, codice_fiscale, certificatoFileName, certificato_scadenza || null]
       );
 
       const [newUser] = await pool.execute(
-        "SELECT * FROM Utenti WHERE id = ?",
+        `SELECT
+          id,
+          nome,
+          cognome,
+          email,
+          data_nascita,
+          codice_fiscale,
+          certificato_medico,
+          DATE_FORMAT(certificato_scadenza, '%Y-%m-%d') as certificato_scadenza,
+          created_at
+        FROM Utenti WHERE id = ?`,
         [result.insertId]
       );
 
       res.status(201).json({
         success: true,
         data: newUser[0],
-        message: "Utente creato con successo",
+        message: "Utente creato con successo" + (certificatoFileName ? " con certificato medico" : ""),
       });
     } catch (error) {
       console.error("Errore nella creazione utente:", error);

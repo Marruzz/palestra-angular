@@ -6,6 +6,8 @@ import {
   Corso,
   Abbonamento,
 } from '../../../../shared/services/dashboard.service';
+import { FileUploadService } from '../../../../shared/services/file-upload.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-user-card',
@@ -19,6 +21,11 @@ export class UserCardComponent {
   @Input() isVisible: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() edit = new EventEmitter<PalestraUser>();
+
+  constructor(
+    private fileUploadService: FileUploadService,
+    private notificationService: NotificationService
+  ) {}
 
   onClose() {
     this.close.emit();
@@ -139,5 +146,42 @@ export class UserCardComponent {
     return this.user.abbonamenti.filter(
       (a) => this.getAbbonamentoStatus(a) === 'expired'
     ).length;
+  }
+  /**
+   * Verifica se il certificato medico è scaduto
+   */
+  isExpired(): boolean {
+    if (!this.user?.certificato_scadenza) return false;
+    
+    const today = new Date();
+    const scadenza = new Date(this.user.certificato_scadenza);
+    return scadenza < today;
+  }
+
+  /**
+   * Scarica il certificato medico dell'utente
+   */
+  downloadCertificato(): void {
+    if (!this.user?.certificato_medico || !this.user?.id) {
+      this.notificationService.showError('Nessun certificato disponibile per il download');
+      return;
+    }
+
+    this.fileUploadService.downloadCertificatoMedico(this.user.id, this.user.certificato_medico).subscribe({
+      next: (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificato_${this.user?.nome}_${this.user?.cognome}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      },
+      error: (error: any) => {
+        console.error('Errore nel download del certificato:', error);
+        this.notificationService.showError('Errore nel download del certificato');
+      }
+    });
   }
 }
