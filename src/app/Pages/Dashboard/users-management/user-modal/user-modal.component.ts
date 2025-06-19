@@ -8,6 +8,8 @@ import {
   Abbonamento,
   DashboardService,
 } from '../../../../shared/services/dashboard.service';
+import { FileUploadService } from '../../../../shared/services/file-upload.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-user-modal',
@@ -28,6 +30,7 @@ export class UserModalComponent implements OnInit {
     email: '',
     data_nascita: '',
     codice_fiscale: '',
+    certificato_scadenza: '',
   };
   selectedUser: PalestraUser | null = null;
   availableCorsi: Corso[] = [];
@@ -40,9 +43,24 @@ export class UserModalComponent implements OnInit {
   };
   showAddAbbonamento = false;
 
-  constructor(private dashboardService: DashboardService) {}
+  // Nuovo campo per gestire il file del certificato
+  selectedCertificato: File | null = null;
+  certificatoFileName: string = '';
+  uploadProgress: number = 0;
+  isUploading: boolean = false;
 
+  constructor(
+    private dashboardService: DashboardService,
+    private fileUploadService: FileUploadService,
+    private notificationService: NotificationService
+  ) {}
   formatDateForBackend(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  }
+  
+  formatDateForUI(dateString: string): string {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
@@ -80,6 +98,13 @@ export class UserModalComponent implements OnInit {
       this.userAbbonamenti = [...this.user.abbonamenti];
     }
     this.loadCorsi();
+
+    // Se l'utente ha un certificato medico, impostare la data di scadenza
+    if (this.selectedUser?.certificato_scadenza) {
+      this.userForm.certificato_scadenza = this.formatDateForUI(
+        this.selectedUser.certificato_scadenza
+      );
+    }
   }
 
   loadCorsi() {
@@ -202,5 +227,100 @@ export class UserModalComponent implements OnInit {
       })),
     };
     this.save.emit(userData);
+  }
+
+  onCertificatoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedCertificato = input.files[0];
+      this.certificatoFileName = this.selectedCertificato.name;
+    }
+  }
+
+  async uploadCertificato(): Promise<void> {
+    if (
+      !this.selectedCertificato ||
+      !this.selectedUser ||
+      !this.userForm.certificato_scadenza
+    ) {
+      this.notificationService.showError(
+        'Seleziona un certificato e imposta la data di scadenza'
+      );
+      return;
+    }
+
+    this.isUploading = true;
+
+    try {
+      await this.fileUploadService
+        .uploadCertificatoMedico(
+          this.selectedUser.id,
+          this.selectedCertificato,
+          this.userForm.certificato_scadenza
+        )        .subscribe(
+          (response) => {
+            this.notificationService.showSuccess(
+              'Certificato medico caricato con successo'
+            );
+            this.isUploading = false;
+            if (this.selectedUser) {
+              this.selectedUser.certificato_medico = response.fileName;
+              this.selectedUser.certificato_scadenza = response.scadenza;
+            }
+          },
+          (error) => {
+            this.notificationService.showError(
+              'Errore nel caricamento del certificato'
+            );
+            this.isUploading = false;
+          }
+        );
+    } catch (error) {
+      this.isUploading = false;
+      this.notificationService.showError(
+        'Errore nel caricamento del certificato'
+      );
+    }
+  }
+
+  downloadCertificato(): void {
+    if (!this.selectedUser?.certificato_medico) {
+      return;
+    }
+
+    this.fileUploadService
+      .downloadCertificatoMedico(
+        this.selectedUser.id,
+        this.selectedUser.certificato_medico
+      )
+      .subscribe(
+        (response: Blob) => {
+          // Crea un URL per il blob e avvia il download
+          const url = window.URL.createObjectURL(response);
+          const a = document.createElement('a');
+          a.href = url;          a.download =
+            this.selectedUser?.certificato_medico || 'certificato_medico.pdf';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        },
+        (error) => {
+          this.notificationService.showError('Errore nel download del certificato');
+        }
+      );
+  }
+
+  isExpired(dateString: string): boolean {
+    if (!dateString) return false;
+    
+    const today = new Date();
+    const expirationDate = new Date(dateString);
+    
+    // Resetta l'ora per confrontare solo le date
+    today.setHours(0, 0, 0, 0);
+    expirationDate.setHours(0, 0, 0, 0);
+    
+    return expirationDate < today;
   }
 }

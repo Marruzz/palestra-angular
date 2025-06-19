@@ -1,17 +1,22 @@
 const express = require('express');
 const DashboardController = require('../controllers/dashboardController');
+const { upload } = require('../config/fileUpload');
 
 const router = express.Router();
 
 
 
-
+// Routes per gli utenti
 router.get('/users', DashboardController.getUsers);
 router.post('/users', DashboardController.createUser);
 router.put('/users/:id', DashboardController.updateUser);
 router.delete('/users/:id', DashboardController.deleteUser);
 
+// Routes per i certificati medici
+router.post('/users/:id/certificato', upload.single('certificato'), DashboardController.uploadCertificatoMedico);
+router.get('/users/:id/certificato/:filename', DashboardController.downloadCertificatoMedico);
 
+// Routes per i corsi
 router.get('/corsi', DashboardController.getCorsi);
 router.post('/corsi', DashboardController.createCorso);
 
@@ -25,6 +30,7 @@ router.get('/subscriptions/integrity-check', DashboardController.checkSubscripti
 
 router.get('/accesses', DashboardController.getAccesses);
 router.post('/accesses', DashboardController.createAccess);
+router.post('/accesses/multiple', DashboardController.createMultipleAccesses);
 router.delete('/accesses/:id', DashboardController.deleteAccess);
 
 

@@ -20,6 +20,8 @@ export interface PalestraUser {
   data_nascita: string;
   codice_fiscale: string;
   abbonamenti: Abbonamento[];
+  certificato_medico?: string; // Nome del file del certificato medico
+  certificato_scadenza?: string; // Data di scadenza del certificato
 }
 
 export interface Corso {
@@ -328,6 +330,25 @@ export class DashboardService {
         catchError((error) => {
           return throwError(() => new Error('Backend non disponibile'));
         })      );
+  }
+  
+  // Nuovo metodo per registrare accessi multipli
+  createMultipleAccesses(userIds: number[]): Observable<{ 
+    success: boolean; 
+    data?: { count: number }; 
+    message: string 
+  }> {
+    return this.http
+      .post<{ success: boolean; data?: { count: number }; message: string }>(
+        `${this.apiUrl}/dashboard/accesses/multiple`,
+        { userIds },
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        catchError((error) => {
+          return throwError(() => new Error('Backend non disponibile'));
+        })
+      );
   }
 
   deleteAccess(accessId: number): Observable<{ success: boolean; message: string }> {

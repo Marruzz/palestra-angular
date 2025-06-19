@@ -24,6 +24,7 @@ import {
   StatsService,
   CalculatedStats,
 } from '../../shared/services/stats.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -105,7 +106,8 @@ export class DashboardComponent implements OnInit {
   };
   constructor(
     private dashboardService: DashboardService,
-    private statsService: StatsService
+    private statsService: StatsService,
+    private notificationService: NotificationService
   ) {}
   ngOnInit() {
     this.loadStatsIfNeeded();
@@ -682,6 +684,44 @@ export class DashboardComponent implements OnInit {
       this.closeAccessModal();
     } catch (error: any) {
       this.errorMessage = error.message || 'Errore nella registrazione accesso';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // Nuovo metodo per salvare accessi multipli
+  async saveMultipleAccesses(userIds: number[]) {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      if (!userIds || userIds.length === 0) {
+        this.errorMessage = 'Nessun utente selezionato';
+        return;
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        this.dashboardService.createMultipleAccesses(userIds).subscribe({
+          next: (response) => {
+            if (response.success) {
+              resolve();
+            } else {
+              reject(new Error(response.message));
+            }
+          },
+          error: reject,
+        });
+      });
+
+      await this.refreshAccessesAndStats();
+
+      // Mostra messaggio di successo
+      this.notificationService.showSuccess(
+        `${userIds.length} accessi registrati con successo`
+      );
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Errore nella registrazione degli accessi';
+      this.notificationService.showError(this.errorMessage);
     } finally {
       this.isLoading = false;
     }

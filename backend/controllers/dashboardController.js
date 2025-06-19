@@ -1,4 +1,6 @@
 const { pool } = require("../config/database");
+const path = require("path");
+const fs = require("fs");
 
 class DashboardController {
   static async getUsers(req, res) {
@@ -1083,6 +1085,113 @@ class DashboardController {
       res.status(500).json({
         success: false,
         message: 'Errore interno del server'
+      });
+    }
+  }
+
+  // Gestione dei certificati medici
+  static async uploadCertificatoMedico(req, res) {
+    try {
+      const userId = req.params.id;
+      const { scadenza } = req.body;
+      
+      // Verifica che l'utente esista
+      const [user] = await pool.execute(
+        'SELECT * FROM Utenti WHERE id = ?',
+        [userId]
+      );
+
+      if (user.length === 0) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+      }
+
+      // Nome del file salvato
+      const fileName = req.file.filename;
+
+      // Aggiorna l'utente con il nuovo certificato
+      await pool.execute(
+        'UPDATE Utenti SET certificato_medico = ?, certificato_scadenza = ? WHERE id = ?',
+        [fileName, scadenza, userId]
+      );
+
+      res.status(200).json({ 
+        message: 'Certificato medico caricato con successo',
+        fileName,
+        scadenza
+      });
+    } catch (error) {
+      console.error('Errore nel caricamento del certificato medico:', error);
+      res.status(500).json({ message: 'Errore nel caricamento del certificato medico' });
+    }
+  }
+
+  static async downloadCertificatoMedico(req, res) {
+    try {
+      const userId = req.params.id;
+      const fileName = req.params.filename;
+      
+      // Verifica che l'utente abbia il certificato richiesto
+      const [user] = await pool.execute(
+        'SELECT certificato_medico FROM Utenti WHERE id = ? AND certificato_medico = ?',
+        [userId, fileName]
+      );
+
+      if (user.length === 0) {
+        return res.status(404).json({ message: 'Certificato non trovato' });
+      }
+
+      // Percorso del file
+      const filePath = path.join(__dirname, '..', 'uploads', 'certificati', fileName);
+      
+      // Verifica che il file esista
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'File non trovato' });
+      }
+
+      res.download(filePath);
+    } catch (error) {
+      console.error('Errore nel download del certificato medico:', error);
+      res.status(500).json({ message: 'Errore nel download del certificato medico' });
+    }
+  }
+
+  // Registra accessi multipli contemporaneamente
+  static async createMultipleAccesses(req, res) {
+    try {
+      const { userIds } = req.body;
+      
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Nessun utente specificato per la registrazione degli accessi'
+        });
+      }
+      
+      // Data e ora corrente per tutti gli accessi
+      const now = new Date();
+      const formattedDate = now.toISOString().slice(0, 19).replace('T', ' ');
+      
+      // Creiamo un array di promesse per tutti gli inserimenti
+      const insertPromises = userIds.map(userId => 
+        pool.execute(
+          'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
+          [userId, formattedDate]
+        )
+      );
+      
+      // Eseguiamo tutte le promesse in parallelo
+      await Promise.all(insertPromises);
+      
+      res.status(201).json({ 
+        success: true,
+        data: { count: userIds.length },
+        message: `${userIds.length} accessi registrati con successo`
+      });
+    } catch (error) {
+      console.error('Errore nella creazione di accessi multipli:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Errore nella registrazione degli accessi multipli' 
       });
     }
   }

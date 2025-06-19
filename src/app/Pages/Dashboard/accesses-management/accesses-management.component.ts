@@ -13,10 +13,11 @@ import {
   Ingresso,
   PalestraUser,
 } from '../../../shared/services/dashboard.service';
+import { ClassRegisterComponent } from './class-register/class-register.component';
 
 @Component({
   selector: 'app-accesses-management',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ClassRegisterComponent],
   templateUrl: './accesses-management.component.html',
   styleUrl: './accesses-management.component.css',
 })
@@ -33,6 +34,8 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
   @Output() accessRegister = new EventEmitter<void>();
   @Output() accessFormChange = new EventEmitter<{ id_utente: number }>();
   @Output() accessDelete = new EventEmitter<number>();
+  @Output() registerMultipleAccesses = new EventEmitter<number[]>();  // Nuova proprietà per gli ingressi multipli
+  showMultipleAccessesModal: boolean = false;
 
   currentPage: number = 1;
   itemsPerPage: number = 7;
@@ -227,5 +230,17 @@ export class AccessesManagementComponent implements OnInit, OnChanges {
     if (typeof page === 'number') {
       this.goToPage(page);
     }
+  }
+  onOpenMultipleAccessesModal(): void {
+    this.showMultipleAccessesModal = true;
+  }
+  
+  onCloseMultipleAccessesModal(): void {
+    this.showMultipleAccessesModal = false;
+  }
+  
+  onSaveMultipleAccesses(userIds: number[]): void {
+    this.registerMultipleAccesses.emit(userIds);
+    this.showMultipleAccessesModal = false;
   }
 }

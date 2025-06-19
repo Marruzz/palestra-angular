@@ -1,0 +1,136 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-hidden flex flex-col">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-900">
+        Registra Più Ingressi
+        <span class="ml-2 text-sm font-medium text-gray-500">{{ filteredUsers.length }} utenti</span>
+      </h3>
+      <button (click)="onCancel()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Barra di ricerca e controlli -->
+    <div class="mb-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+      <div class="relative flex-grow">
+        <div class="search-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          placeholder="Cerca utente..."
+          class="search-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+      <div class="flex gap-2">
+        <button 
+          (click)="toggleAllUsers(true)" 
+          class="px-3 py-2 text-sm font-medium bg-green-50 text-green-700 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+        >
+          Seleziona tutti
+        </button>
+        <button 
+          (click)="toggleAllUsers(false)" 
+          class="px-3 py-2 text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          Deseleziona tutti
+        </button>
+      </div>
+    </div>
+
+    <!-- Intestazioni tabella -->
+    <div class="hidden md:grid grid-cols-12 gap-3 py-2 px-4 bg-gray-50 rounded-t-lg font-medium text-sm text-gray-600">
+      <div class="col-span-1">Presenza</div>
+      <div class="col-span-3">Nome</div>
+      <div class="col-span-3">Cognome</div>
+      <div class="col-span-3">Codice Fiscale</div>
+      <div class="col-span-2">Abbonamento</div>
+    </div>
+
+    <!-- Lista utenti scorrevole -->
+    <div class="flex-grow scrollable-container">
+      <div *ngIf="filteredUsers.length === 0" class="py-8 text-center text-gray-500">
+        Nessun utente trovato con i criteri di ricerca
+      </div>
+      
+      <!-- Lista desktop -->
+      <div class="hidden md:block">
+        <div *ngFor="let user of filteredUsers; let i = index" 
+             class="grid grid-cols-12 gap-3 py-3 px-4 items-center" 
+             [class.bg-gray-50]="i % 2 === 0">
+          <div class="col-span-1 flex justify-center">            <input 
+              type="checkbox" 
+              class="user-checkbox" 
+              [id]="'user-' + user.id"
+              [checked]="isUserSelected(user.id)"
+              (change)="toggleUserPresence(user.id)"
+            >
+          </div>
+          <div class="col-span-3">{{ user.nome }}</div>
+          <div class="col-span-3">{{ user.cognome }}</div>
+          <div class="col-span-3">{{ user.codice_fiscale }}</div>
+          <div class="col-span-2">
+            <span 
+              *ngIf="user.abbonamenti && user.abbonamenti.length > 0" 
+              class="badge badge-green">Attivo</span>
+            <span 
+              *ngIf="!user.abbonamenti || user.abbonamenti.length === 0" 
+              class="badge badge-red">Nessuno</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Lista mobile -->
+      <div class="md:hidden space-y-3">
+        <div *ngFor="let user of filteredUsers" 
+             class="border border-gray-200 rounded-lg p-3">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-medium">{{ user.nome }} {{ user.cognome }}</div>            <input 
+              type="checkbox" 
+              class="user-checkbox" 
+              [id]="'user-mobile-' + user.id"
+              [checked]="isUserSelected(user.id)"
+              (change)="toggleUserPresence(user.id)"
+            >
+          </div>
+          <div class="text-sm text-gray-500">{{ user.codice_fiscale }}</div>
+          <div class="mt-1">
+            <span 
+              *ngIf="user.abbonamenti && user.abbonamenti.length > 0" 
+              class="badge badge-green">Abbonamento attivo</span>
+            <span 
+              *ngIf="!user.abbonamenti || user.abbonamenti.length === 0" 
+              class="badge badge-red">Nessun abbonamento</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contatore e pulsanti -->
+    <div class="pt-4 mt-4 border-t border-gray-200 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">      <div class="text-sm font-medium">
+        {{ getSelectedUsersCount() }} utenti selezionati
+      </div>
+      <div class="flex gap-3">
+        <button 
+          (click)="onCancel()" 
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+        >
+          Annulla
+        </button>        <button 
+          (click)="onSave()" 
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+          [disabled]="hasNoSelectedUsers()"
+          [class.opacity-50]="hasNoSelectedUsers()"
+        >
+          Registra Più Ingressi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

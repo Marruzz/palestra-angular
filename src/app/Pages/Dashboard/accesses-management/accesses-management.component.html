@@ -34,28 +34,54 @@
           </p>
         </div>
       </div>
-      <button
-        (click)="onOpenAccessModal()"
-        class="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center sm:justify-start"
-      >
-        <div
-          class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"
-        ></div>
-        <svg
-          class="w-5 h-5 mr-2 relative z-10"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div class="flex space-x-2">        <!-- Nuovo pulsante Ingressi Multipli -->
+        <button
+          (click)="onOpenMultipleAccessesModal()"
+          class="group relative bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          ></path>
-        </svg>
-        <span class="relative z-10">Registra Accesso</span>
-      </button>
+          <div
+            class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"
+          ></div>
+          <svg
+            class="w-5 h-5 mr-2 relative z-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            ></path>
+          </svg>
+          <span class="relative z-10">Ingressi Multipli</span>
+        </button>
+        
+        <!-- Pulsante singolo accesso esistente -->
+        <button
+          (click)="onOpenAccessModal()"
+          class="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center sm:justify-start"
+        >
+          <div
+            class="absolute inset-0 bg-white opacity-20 rounded-xl blur transition-opacity group-hover:opacity-30"
+          ></div>
+          <svg
+            class="w-5 h-5 mr-2 relative z-10"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+          <span class="relative z-10">Nuovo Accesso</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -501,3 +527,12 @@
     </form>
   </div>
 </div>
+
+<!-- Componente Ingressi Multipli -->
+<app-class-register
+  *ngIf="showMultipleAccessesModal"
+  [users]="users"
+  [showModal]="showMultipleAccessesModal"
+  (close)="onCloseMultipleAccessesModal()"
+  (saveAccesses)="onSaveMultipleAccesses($event)"
+></app-class-register>

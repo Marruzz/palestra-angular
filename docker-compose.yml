@@ -1,0 +1,56 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=portalealternanza
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: on-failure
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: >
+      sh -c "
+        echo 'Waiting for MySQL to start...' &&
+        sleep 20 &&
+        node index.js
+      "
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:      
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=portalealternanza
+      - MYSQL_ROOT_HOST=%
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+    name: portalealternanza_db_data

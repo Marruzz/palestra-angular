@@ -70,7 +70,9 @@ CREATE TABLE `Utenti` (
   `cognome` varchar(50) NOT NULL,
   `data_nascita` date NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `codice_fiscale` varchar(16) NOT NULL
+  `codice_fiscale` varchar(16) NOT NULL,
+  `certificato_medico` varchar(255) DEFAULT NULL,
+  `certificato_scadenza` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
