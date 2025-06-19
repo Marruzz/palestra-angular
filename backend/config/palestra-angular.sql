@@ -4,7 +4,7 @@ SET
 START TRANSACTION;
 
 SET
-  time_zone = "+00:00";
+  time_zone = "+02:00";
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 

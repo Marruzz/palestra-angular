@@ -48,7 +48,7 @@ async function startServer() {
     await initializeTables();
     app.listen(PORT, () => {
       console.log('admin@palestra.com \n password');
-
+      
     });
 
   } catch (error) {

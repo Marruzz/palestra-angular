@@ -43,7 +43,7 @@
         <div class="flex-1 bg-blue-100 rounded-full h-2">
           <div
             class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full"
-            style="width: 75%"
+            [style.width.%]="getProgressPercentage(stats?.totale_utenti || 0, Math.max(stats?.totale_utenti || 1, 100))"
           ></div>
         </div>
       </div>
@@ -93,7 +93,7 @@
         <div class="flex-1 bg-emerald-100 rounded-full h-2">
           <div
             class="bg-gradient-to-r from-emerald-500 to-green-600 h-2 rounded-full"
-            style="width: 85%"
+            [style.width.%]="getUserProgressPercentage(stats?.abbonamenti_attivi || 0)"
           ></div>
         </div>
       </div>
@@ -143,10 +143,10 @@
         <div class="flex-1 bg-purple-100 rounded-full h-2">
           <div
             class="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full"
-            style="width: 60%"
+            [style.width.%]="getUserProgressPercentage(stats?.accessi_oggi || 0)"
           ></div>
         </div>
-      </div>
+      </div> 
       <p class="text-xs text-gray-500 mt-2">Visite di oggi</p>
     </div>
   </div>
@@ -193,7 +193,7 @@
         <div class="flex-1 bg-orange-100 rounded-full h-2">
           <div
             class="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full"
-            style="width: 90%"
+            [style.width.%]="getWeeklyProgressPercentage()"
           ></div>
         </div>
       </div>
@@ -243,7 +243,7 @@
         <div class="flex-1 bg-teal-100 rounded-full h-2">
           <div
             class="bg-gradient-to-r from-teal-500 to-cyan-600 h-2 rounded-full"
-            style="width: 70%"
+            [style.width.%]="getYearlyProgressPercentage()"
           ></div>
         </div>
       </div>

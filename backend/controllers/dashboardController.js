@@ -564,14 +564,14 @@ class DashboardController {
       if (data_ora) {
 
         const date = new Date(data_ora);
-        date.setHours(date.getHours() + 4);
+        date.setHours(date.getHours() + 2);
         console.log("Data/ora ricevuta:", data_ora);
         timestampAccesso = date.toISOString().slice(0, 19).replace('T', ' ');
         console.log("Timestamp accesso ricevuto:", data_ora, "-> Aggiustato:", timestampAccesso);
       } else {
 
         const now = new Date();
-        now.setHours(now.getHours() + 4);
+        now.setHours(now.getHours() + 2);
         timestampAccesso = now.toISOString().slice(0, 19).replace("T", " ");
         console.log("Timestamp accesso generato:", timestampAccesso);
       }

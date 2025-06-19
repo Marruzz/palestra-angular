@@ -46,7 +46,8 @@ async function initializeTables() {
     `;
 
     await connection.execute(createUtentiTable);
-
+    const setOra = 'SET time_zone = "+02:00"';
+    await connection.execute(setOra);
 
     const createCorsiTable = `
       CREATE TABLE IF NOT EXISTS Corsi (
