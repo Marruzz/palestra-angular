@@ -2,10 +2,10 @@ export interface Subscription {
   id: number;
   id_utente: number;
   id_corso: number;
-  data_inizio: string; // ISO date string
+  data_inizio: string;
   durata_mesi: number;
-  data_fine?: string; // ISO date string (generated column)
-  // Populated fields from joins
+  data_fine?: string; 
+
   utente_nome?: string;
   utente_cognome?: string;
   corso_nome?: string;

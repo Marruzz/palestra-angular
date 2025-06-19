@@ -1,4 +1,4 @@
-// Re-export all interfaces for convenience
+
 export * from './user.interface';
 export * from './corso.interface';
 export * from './subscription.interface';

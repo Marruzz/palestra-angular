@@ -332,7 +332,7 @@ async function seedDatabase() {
   try {
     console.log("🌱 Avvio seed del database...\n");
 
-    // await clearAllTables(conn);
+    await clearAllTables(conn);
 
     const corsi = await createCorsi(conn);
     const utenti = await createUtenti(

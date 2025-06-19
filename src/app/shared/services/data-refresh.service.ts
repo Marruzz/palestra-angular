@@ -15,15 +15,12 @@ export class DataRefreshService {
     private dashboardService: DashboardService,
     private notificationService: NotificationService
   ) {
-    // Sottoscrivi ai trigger di refresh
+
     this.stateService.refreshTrigger.subscribe(type => {
       this.handleRefresh(type);
     });
   }
 
-  /**
-   * Gestisce i refresh in base al tipo richiesto
-   */
   private handleRefresh(type: 'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'): void {
     switch (type) {
       case 'users':
@@ -44,9 +41,6 @@ export class DataRefreshService {
     }
   }
 
-  /**
-   * Ricarica solo gli utenti
-   */
   private refreshUsers(): void {
     this.dashboardService.getUsers().subscribe({
       next: (response) => {
@@ -59,14 +53,11 @@ export class DataRefreshService {
       }
     });
   }
-  /**
-   * Ricarica solo gli abbonamenti
-   */
   private refreshSubscriptions(): void {
     this.dashboardService.getSubscriptions().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          // Converti Abbonamento[] in Subscription[]
+
           const subscriptions = response.data.map(abb => ({
             id: abb.id,
             id_utente: abb.id_utente,
@@ -87,14 +78,11 @@ export class DataRefreshService {
       }
     });
   }
-  /**
-   * Ricarica solo gli accessi
-   */
   private refreshAccesses(): void {
     this.dashboardService.getAccesses().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          // Converti Ingresso[] in Access[]
+
           const accesses = response.data.map(ing => ({
             id: ing.id,
             id_utente: ing.id_utente,
@@ -112,14 +100,11 @@ export class DataRefreshService {
     });
   }
 
-  /**
-   * Ricarica solo i corsi
-   */
   private refreshCorsi(): void {
     this.dashboardService.getCorsi().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          // Converti DashboardCorso[] in Corso[]
+
           const corsi = response.data.map(corso => ({
             id: corso.id,
             nome_corso: corso.nome_corso,
@@ -135,23 +120,18 @@ export class DataRefreshService {
       }
     });
   }
-  /**
-   * Ricarica tutti i dati in parallelo
-   */
+
   private refreshAll(): void {
-    // Invece di usare forkJoin, chiamiamo i metodi singoli
-    // che già gestiscono la conversione dei dati
+
+
     this.refreshUsers();
     this.refreshSubscriptions();
     this.refreshAccesses();
     this.refreshCorsi();
-    
+
     console.log('✅ Avviato ricaricamento completo di tutti i dati');
   }
 
-  /**
-   * Metodi pubblici per trigger manuali
-   */
   public triggerUsersRefresh(): void {
     this.refreshUsers();
   }

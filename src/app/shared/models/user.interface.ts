@@ -2,7 +2,7 @@ export interface User {
   id: number;
   nome: string;
   cognome: string;
-  data_nascita: string; // ISO date string
+  data_nascita: string; 
   email?: string;
   codice_fiscale: string;
   created_at?: string;

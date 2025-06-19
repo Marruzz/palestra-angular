@@ -5,7 +5,7 @@ export interface Notification {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   message: string;
-  duration?: number; // in milliseconds, default 5000
+  duration?: number;
 }
 
 @Injectable({
@@ -50,7 +50,7 @@ export class NotificationService {
     const current = this.notifications$.value;
     this.notifications$.next([...current, notification]);
 
-    // Auto-remove after duration
+
     if (duration > 0) {
       setTimeout(() => {
         this.remove(id);

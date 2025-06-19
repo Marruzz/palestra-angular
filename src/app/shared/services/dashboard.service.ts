@@ -11,7 +11,7 @@ import {
   ApiResponse,
 } from '../models';
 
-// Interfacce aggiornate per il nuovo database schema
+
 export interface PalestraUser {
   id: number;
   nome: string;
@@ -129,7 +129,7 @@ export class DashboardService {
       .pipe(
         tap(response => {
           if (response.success) {
-            // Trigger refresh automatico degli utenti
+
             this.stateService.triggerUsersRefresh();
           }
         }),
@@ -152,7 +152,7 @@ export class DashboardService {
       .pipe(
         tap(response => {
           if (response.success) {
-            // Trigger refresh automatico degli utenti
+
             this.stateService.triggerUsersRefresh();
           }
         }),
@@ -175,7 +175,7 @@ export class DashboardService {
         })
       );
   }
-  // Metodi per gestire i corsi
+
   getCorsi(): Observable<{
     success: boolean;
     data: Corso[];
@@ -230,7 +230,7 @@ export class DashboardService {
       );
   }
 
-  // Metodi per gestire gli abbonamenti
+
   getSubscriptions(): Observable<{
     success: boolean;
     data: Abbonamento[];
@@ -296,7 +296,7 @@ export class DashboardService {
       );
   }
 
-  // Metodi per gestire gli accessi/ingressi
+
   getAccesses(): Observable<{
     success: boolean;
     data: Ingresso[];
@@ -343,7 +343,7 @@ export class DashboardService {
       );
   }
 
-  // Metodi per le statistiche - ora utilizza StatsService
+
   getDashboardStats(): Observable<{
     success: boolean;
     data: DashboardStats;

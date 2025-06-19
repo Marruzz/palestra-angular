@@ -1,6 +1,5 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
-  <!-- Header Section with Enhanced Styling -->
-  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">      <div class="flex items-center space-x-4">        <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -25,8 +24,7 @@
     </div>
   </div>
 
-  <!-- Enhanced Search and Filters Section -->
-  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="relative flex-1 max-w-md">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -42,8 +40,7 @@
         />
       </div>
 
-      <!-- Enhanced Filter Controls -->
-      <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3">
         <button
           (click)="toggleFilters()"
           class="group relative flex items-center px-4 py-3 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all duration-200 hover:shadow-md"
@@ -70,8 +67,7 @@
       </div>
     </div>
   </div>
-  <!-- Enhanced Advanced Filters Panel -->
-  <div *ngIf="showFilters" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div *ngIf="showFilters" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
     <div class="flex items-center mb-4">
       <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
@@ -79,8 +75,7 @@
       <h3 class="text-lg font-semibold text-gray-800">Filtri Avanzati</h3>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Status Filter -->
-      <div class="space-y-2">
+            <div class="space-y-2">
         <label class="block text-sm font-medium text-gray-700">Stato Abbonamento</label>
         <select
           [(ngModel)]="statusFilter"
@@ -93,8 +88,7 @@
         </select>
       </div>
 
-      <!-- Type Filter -->
-      <div class="space-y-2">
+            <div class="space-y-2">
         <label class="block text-sm font-medium text-gray-700">Tipo Abbonamento</label>
         <select
           [(ngModel)]="typeFilter"
@@ -108,8 +102,7 @@
         </select>
       </div>
 
-      <!-- Course Filter -->
-      <div class="space-y-2">
+            <div class="space-y-2">
         <label class="block text-sm font-medium text-gray-700">Corso</label>
         <select
           [(ngModel)]="courseFilter"
@@ -124,8 +117,7 @@
       </div>
     </div>
   </div>
-  <!-- Enhanced Results Counter -->
-  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mb-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mb-8">
     <div class="flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,10 +138,8 @@
       </div>
     </div>
   </div>
-  <!-- Enhanced Statistics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Monthly Subscriptions Card -->
-    <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
       <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
       <div class="relative z-10">
         <div class="flex items-center justify-between">
@@ -168,8 +158,7 @@
       </div>
     </div>
 
-    <!-- Semester Subscriptions Card -->
-    <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+        <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
       <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
       <div class="relative z-10">
         <div class="flex items-center justify-between">
@@ -188,8 +177,7 @@
       </div>
     </div>
 
-    <!-- Yearly Subscriptions Card -->
-    <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+        <div class="group relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
       <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full -translate-y-8 translate-x-8 opacity-10"></div>
       <div class="relative z-10">
         <div class="flex items-center justify-between">
@@ -208,8 +196,7 @@
       </div>
     </div>
   </div>
-  <!-- Enhanced Desktop Table -->
-  <div class="hidden md:block bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+    <div class="hidden md:block bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
     <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-200">
       <h3 class="text-lg font-semibold text-gray-800 flex items-center">
         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,11 +273,9 @@
       </table>
     </div>
   </div>
-  <!-- Enhanced Mobile Cards -->
-  <div class="md:hidden space-y-4">
+    <div class="md:hidden space-y-4">
     <div *ngFor="let subscription of displayedSubscriptions" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 subscription-card hover:shadow-xl transition-all duration-300">
-      <!-- Card Header -->
-      <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start justify-between mb-4">
         <div class="flex items-center space-x-3">
           <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg">
             {{ (subscription.nome?.charAt(0) || '') + (subscription.cognome?.charAt(0) || '') }}
@@ -305,8 +290,7 @@
         </span>
       </div>
 
-      <!-- Card Content -->
-      <div class="bg-gray-50 rounded-xl p-3 mb-4">
+            <div class="bg-gray-50 rounded-xl p-3 mb-4">
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col">
             <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Corso</span>
@@ -319,8 +303,7 @@
             </span>
           </div>
         </div>
-      </div>      <!-- Date Info -->
-      <div class="grid grid-cols-1 gap-3 mb-4">
+      </div>            <div class="grid grid-cols-1 gap-3 mb-4">
         <div class="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
           <div class="flex items-center space-x-2">
             <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,8 +317,7 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex space-x-3">
+            <div class="flex space-x-3">
         <button
           (click)="onOpenSubscriptionModal(subscription)"
           class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
@@ -357,8 +339,7 @@
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div *ngIf="displayedSubscriptions.length === 0" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
+        <div *ngIf="displayedSubscriptions.length === 0" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
       <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
         <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -373,8 +354,7 @@
         Crea Nuovo Abbonamento
       </button>    </div>
   </div>
-  <!-- Pagination Controls -->
-  <div *ngIf="displayedSubscriptions.length > 0 && totalPages > 1" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mt-6">
+    <div *ngIf="displayedSubscriptions.length > 0 && totalPages > 1" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mt-6">
     <div class="flex items-center justify-between">
       <div class="flex-1 flex justify-between sm:hidden">
         <button
@@ -412,8 +392,7 @@
             class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
             aria-label="Pagination"
           >
-            <!-- Previous Button -->
-            <button
+                        <button
               (click)="goToPreviousPage()"
               [disabled]="currentPage === 1"
               [class.opacity-50]="currentPage === 1"
@@ -430,8 +409,7 @@
               </svg>
             </button>
 
-            <!-- First Page Button -->
-            <button
+                        <button
               *ngIf="getPageNumbers()[0] > 1"
               (click)="goToPage(1)"
               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -439,16 +417,14 @@
               1
             </button>
 
-            <!-- Left Ellipsis -->
-            <span
+                        <span
               *ngIf="getPageNumbers()[0] > 2"
               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
             >
               ...
             </span>
 
-            <!-- Page Numbers -->
-            <button
+                        <button
               *ngFor="let page of getPageNumbers()"
               (click)="goToPage(page)"
               [class.bg-blue-50]="page === currentPage"
@@ -461,16 +437,14 @@
               {{ page }}
             </button>
 
-            <!-- Right Ellipsis -->
-            <span
+                        <span
               *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1"
               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
             >
               ...
             </span>
 
-            <!-- Last Page Button -->
-            <button
+                        <button
               *ngIf="getPageNumbers()[getPageNumbers().length - 1] < totalPages"
               (click)="goToPage(totalPages)"
               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -478,8 +452,7 @@
               {{ totalPages }}
             </button>
 
-            <!-- Next Button -->
-            <button
+                        <button
               (click)="goToNextPage()"
               [disabled]="currentPage === totalPages"
               [class.opacity-50]="currentPage === totalPages"
@@ -502,7 +475,6 @@
   </div>
 </div>
 
-<!-- Subscription Modal -->
 <app-subscription-modal
   *ngIf="showSubscriptionModal"
   [selectedAbbonamento]="selectedAbbonamento"

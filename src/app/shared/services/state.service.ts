@@ -27,14 +27,14 @@ const initialState: AppState = {
 })
 export class StateService {
   private state$ = new BehaviorSubject<AppState>(initialState);
-  
-  // Subject per notificare quando servono refresh automatici
+
+
   private refreshTrigger$ = new Subject<'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'>();
-  
-  // Observable pubblico per i refresh
+
+
   public readonly refreshTrigger: Observable<'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'> = this.refreshTrigger$.asObservable();
 
-  // Public state observables
+
   public readonly selectedUser$: Observable<User | null> = this.state$.pipe(
     map(state => state.selectedUser)
   );
@@ -63,7 +63,7 @@ export class StateService {
     map(state => state.error)
   );
 
-  // State getters
+
   get currentState(): AppState {
     return this.state$.value;
   }
@@ -72,7 +72,7 @@ export class StateService {
     return this.currentState.selectedUser;
   }
 
-  // State setters
+
   setSelectedUser(user: User | null): void {
     this.updateState({ selectedUser: user });
   }
@@ -143,12 +143,12 @@ export class StateService {
     this.updateState({ error: null });
   }
 
-  // Metodi per il refresh automatico
+
   triggerRefresh(type: 'users' | 'subscriptions' | 'accesses' | 'corsi' | 'all'): void {
     this.refreshTrigger$.next(type);
   }
 
-  // Trigger specifici per ogni entità
+
   triggerUsersRefresh(): void {
     this.triggerRefresh('users');
   }
@@ -169,7 +169,7 @@ export class StateService {
     this.triggerRefresh('all');
   }
 
-  // Reset state
+
   reset(): void {
     this.state$.next(initialState);
   }
@@ -182,5 +182,5 @@ export class StateService {
   }
 }
 
-// Helper function to import map operator
+
 import { map } from 'rxjs/operators';

@@ -16,10 +16,10 @@ export class ErrorInterceptor implements HttpInterceptor {
         let errorMessage = 'Si è verificato un errore imprevisto';
 
         if (error.error instanceof ErrorEvent) {
-          // Client-side error
+
           errorMessage = `Errore: ${error.error.message}`;
         } else {
-          // Server-side error
+
           switch (error.status) {
             case 400:
               errorMessage = error.error?.message || 'Richiesta non valida';
@@ -47,10 +47,10 @@ export class ErrorInterceptor implements HttpInterceptor {
           }
         }
 
-        // Show notification to user
+
         this.notificationService.showError(errorMessage);
 
-        // Re-throw the error for component handling if needed
+
         return throwError(() => error);
       })
     );

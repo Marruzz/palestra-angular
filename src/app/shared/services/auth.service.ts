@@ -33,7 +33,7 @@ export class AuthService {
   private currentUser: User | null = null;
 
   constructor(private http: HttpClient) {
-    // Carica i dati utente dal localStorage se presente
+
     this.loadUserFromStorage();
   }
 
@@ -56,36 +56,36 @@ export class AuthService {
       );
   }
 
-  // Metodo per salvare il token di autenticazione
+
   setToken(token: string): void {
     localStorage.setItem('auth_token', token);
   }
 
-  // Metodo per ottenere il token
+
   getToken(): string | null {
     return localStorage.getItem('auth_token');
   }
 
-  // Metodo per ottenere l'utente corrente
+
   getCurrentUser(): User | null {
     return this.currentUser;
   }
-  // Metodo per verificare se l'utente è autenticato
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     const user = this.getCurrentUser();
-    // Accetta anche token demo per la modalità offline
+
     return token !== null && (user !== null || token.startsWith('demo_token_'));
   }
 
-  // Metodo per logout
+
   logout(): void {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');
     this.currentUser = null;
   }
 
-  // Metodi privati per gestire il localStorage
+
   private saveUserToStorage(user: User): void {
     localStorage.setItem('current_user', JSON.stringify(user));
   }
