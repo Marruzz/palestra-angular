@@ -1,8 +1,10 @@
 const { pool } = require("../config/database");
 const path = require("path");
 const fs = require("fs");
+const { connect } = require("http2");
 
-class DashboardController {  static async getUsers(req, res) {
+class DashboardController {
+  static async getUsers(req, res) {
     try {
       const [users] = await pool.execute(`
         SELECT
@@ -27,7 +29,8 @@ class DashboardController {  static async getUsers(req, res) {
         ORDER BY u.id DESC
       `);
 
-      const usersMap = new Map();      users.forEach((row) => {
+      const usersMap = new Map();
+      users.forEach((row) => {
         if (!usersMap.has(row.id)) {
           usersMap.set(row.id, {
             id: row.id,
@@ -71,7 +74,14 @@ class DashboardController {  static async getUsers(req, res) {
   }
   static async createUser(req, res) {
     try {
-      const { nome, cognome, email, data_nascita, codice_fiscale, certificato_scadenza } = req.body;
+      const {
+        nome,
+        cognome,
+        email,
+        data_nascita,
+        codice_fiscale,
+        certificato_scadenza,
+      } = req.body;
 
       if (!nome || !cognome || !data_nascita || !codice_fiscale) {
         return res.status(400).json({
@@ -115,7 +125,15 @@ class DashboardController {  static async getUsers(req, res) {
 
       const [result] = await pool.execute(
         "INSERT INTO Utenti (nome, cognome, email, data_nascita, codice_fiscale, certificato_medico, certificato_scadenza) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [nome, cognome, email || null, data_nascita, codice_fiscale, certificatoFileName, certificato_scadenza || null]
+        [
+          nome,
+          cognome,
+          email || null,
+          data_nascita,
+          codice_fiscale,
+          certificatoFileName,
+          certificato_scadenza || null,
+        ]
       );
 
       const [newUser] = await pool.execute(
@@ -136,7 +154,9 @@ class DashboardController {  static async getUsers(req, res) {
       res.status(201).json({
         success: true,
         data: newUser[0],
-        message: "Utente creato con successo" + (certificatoFileName ? " con certificato medico" : ""),
+        message:
+          "Utente creato con successo" +
+          (certificatoFileName ? " con certificato medico" : ""),
       });
     } catch (error) {
       console.error("Errore nella creazione utente:", error);
@@ -559,7 +579,7 @@ class DashboardController {  static async getUsers(req, res) {
   }
   static async createAccess(req, res) {
     try {
-      const { id_utente, data_ora } = req.body;
+      const { id_utente } = req.body;
 
       if (!id_utente) {
         return res.status(400).json({
@@ -578,25 +598,12 @@ class DashboardController {  static async getUsers(req, res) {
           success: false,
           message: "Utente non trovato",
         });
-      }      let timestampAccesso;
-      if (data_ora) {
-
-        const date = new Date(data_ora);
-        date.setHours(date.getHours() + 2);
-        console.log("Data/ora ricevuta:", data_ora);
-        timestampAccesso = date.toISOString().slice(0, 19).replace('T', ' ');
-        console.log("Timestamp accesso ricevuto:", data_ora, "-> Aggiustato:", timestampAccesso);
-      } else {
-
-        const now = new Date();
-        now.setHours(now.getHours() + 2);
-        timestampAccesso = now.toISOString().slice(0, 19).replace("T", " ");
-        console.log("Timestamp accesso generato:", timestampAccesso);
-      }
+      } // Usa sempre l'orario corrente del database
+      console.log("Usando orario corrente del database");
 
       const [result] = await pool.execute(
-        "INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)",
-        [id_utente, timestampAccesso]
+        "INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, NOW())",
+        [id_utente]
       );
       const [newAccess] = await pool.execute(
         `
@@ -641,19 +648,45 @@ class DashboardController {  static async getUsers(req, res) {
       const { id } = req.params;
       const { id_utente, data_ora } = req.body;
 
-      if (!id_utente || !data_ora) {
+      if (!id_utente) {
         return res.status(400).json({
           success: false,
-          message: "ID utente e data/ora sono richiesti",
+          message: "ID utente è richiesto",
         });
       }
 
-      const timestampAccesso = new Date(data_ora);
-      if (isNaN(timestampAccesso.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Formato data/ora non valido",
-        });
+      // Se data_ora è "NOW" o non fornita, usa l'orario del database
+      let updateQuery, updateParams;
+
+      if (!data_ora || data_ora === "NOW") {
+        console.log(
+          "Aggiornamento accesso - usando orario corrente del database"
+        );
+        updateQuery =
+          "UPDATE Ingressi SET id_utente = ?, data_ora = NOW() WHERE id = ?";
+        updateParams = [id_utente, id];
+      } else {
+        // Valida il formato della data fornita
+        const timestampAccesso = new Date(data_ora);
+        if (isNaN(timestampAccesso.getTime())) {
+          return res.status(400).json({
+            success: false,
+            message: "Formato data/ora non valido",
+          });
+        }
+
+        const mysqlTimestamp = timestampAccesso
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+
+        console.log(
+          "Aggiornamento accesso - usando data specificata:",
+          mysqlTimestamp
+        );
+        updateQuery =
+          "UPDATE Ingressi SET id_utente = ?, data_ora = ? WHERE id = ?";
+        updateParams = [id_utente, mysqlTimestamp, id];
       }
 
       const [accessExists] = await pool.execute(
@@ -680,15 +713,7 @@ class DashboardController {  static async getUsers(req, res) {
         });
       }
 
-      const mysqlTimestamp = timestampAccesso
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
-
-      await pool.execute(
-        "UPDATE Ingressi SET id_utente = ?, data_ora = ? WHERE id = ?",
-        [id_utente, mysqlTimestamp, id]
-      );
+      await pool.execute(updateQuery, updateParams);
       const [updatedAccess] = await pool.execute(
         `
         SELECT
@@ -1064,7 +1089,8 @@ class DashboardController {  static async getUsers(req, res) {
       console.error("Errore nella creazione corso:", error);
       res.status(500).json({
         success: false,
-        message: "Errore interno del server",      });
+        message: "Errore interno del server",
+      });
     }
   }
 
@@ -1072,35 +1098,29 @@ class DashboardController {  static async getUsers(req, res) {
     try {
       const { id } = req.params;
 
-
       const [existingAccess] = await pool.execute(
-        'SELECT id FROM Ingressi WHERE id = ?',
+        "SELECT id FROM Ingressi WHERE id = ?",
         [id]
       );
 
       if (existingAccess.length === 0) {
         return res.status(404).json({
           success: false,
-          message: 'Accesso non trovato'
+          message: "Accesso non trovato",
         });
       }
 
-
-      await pool.execute(
-        'DELETE FROM Ingressi WHERE id = ?',
-        [id]
-      );
+      await pool.execute("DELETE FROM Ingressi WHERE id = ?", [id]);
 
       res.json({
         success: true,
-        message: 'Accesso eliminato con successo'
+        message: "Accesso eliminato con successo",
       });
-
     } catch (error) {
-      console.error('Errore nell\'eliminazione accesso:', error);
+      console.error("Errore nell'eliminazione accesso:", error);
       res.status(500).json({
         success: false,
-        message: 'Errore interno del server'
+        message: "Errore interno del server",
       });
     }
   }
@@ -1110,15 +1130,14 @@ class DashboardController {  static async getUsers(req, res) {
     try {
       const userId = req.params.id;
       const { scadenza } = req.body;
-      
+
       // Verifica che l'utente esista
-      const [user] = await pool.execute(
-        'SELECT * FROM Utenti WHERE id = ?',
-        [userId]
-      );
+      const [user] = await pool.execute("SELECT * FROM Utenti WHERE id = ?", [
+        userId,
+      ]);
 
       if (user.length === 0) {
-        return res.status(404).json({ message: 'Utente non trovato' });
+        return res.status(404).json({ message: "Utente non trovato" });
       }
 
       // Nome del file salvato
@@ -1126,18 +1145,20 @@ class DashboardController {  static async getUsers(req, res) {
 
       // Aggiorna l'utente con il nuovo certificato
       await pool.execute(
-        'UPDATE Utenti SET certificato_medico = ?, certificato_scadenza = ? WHERE id = ?',
+        "UPDATE Utenti SET certificato_medico = ?, certificato_scadenza = ? WHERE id = ?",
         [fileName, scadenza, userId]
       );
 
-      res.status(200).json({ 
-        message: 'Certificato medico caricato con successo',
+      res.status(200).json({
+        message: "Certificato medico caricato con successo",
         fileName,
-        scadenza
+        scadenza,
       });
     } catch (error) {
-      console.error('Errore nel caricamento del certificato medico:', error);
-      res.status(500).json({ message: 'Errore nel caricamento del certificato medico' });
+      console.error("Errore nel caricamento del certificato medico:", error);
+      res
+        .status(500)
+        .json({ message: "Errore nel caricamento del certificato medico" });
     }
   }
 
@@ -1145,29 +1166,37 @@ class DashboardController {  static async getUsers(req, res) {
     try {
       const userId = req.params.id;
       const fileName = req.params.filename;
-      
+
       // Verifica che l'utente abbia il certificato richiesto
       const [user] = await pool.execute(
-        'SELECT certificato_medico FROM Utenti WHERE id = ? AND certificato_medico = ?',
+        "SELECT certificato_medico FROM Utenti WHERE id = ? AND certificato_medico = ?",
         [userId, fileName]
       );
 
       if (user.length === 0) {
-        return res.status(404).json({ message: 'Certificato non trovato' });
+        return res.status(404).json({ message: "Certificato non trovato" });
       }
 
       // Percorso del file
-      const filePath = path.join(__dirname, '..', 'uploads', 'certificati', fileName);
-      
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        "certificati",
+        fileName
+      );
+
       // Verifica che il file esista
       if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: 'File non trovato' });
+        return res.status(404).json({ message: "File non trovato" });
       }
 
       res.download(filePath);
     } catch (error) {
-      console.error('Errore nel download del certificato medico:', error);
-      res.status(500).json({ message: 'Errore nel download del certificato medico' });
+      console.error("Errore nel download del certificato medico:", error);
+      res
+        .status(500)
+        .json({ message: "Errore nel download del certificato medico" });
     }
   }
 
@@ -1175,39 +1204,39 @@ class DashboardController {  static async getUsers(req, res) {
   static async createMultipleAccesses(req, res) {
     try {
       const { userIds } = req.body;
-      
+
       if (!Array.isArray(userIds) || userIds.length === 0) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           success: false,
-          message: 'Nessun utente specificato per la registrazione degli accessi'
+          message:
+            "Nessun utente specificato per la registrazione degli accessi",
         });
       }
-      
-      // Data e ora corrente per tutti gli accessi
-      const now = new Date();
-      const formattedDate = now.toISOString().slice(0, 19).replace('T', ' ');
-      
-      // Creiamo un array di promesse per tutti gli inserimenti
-      const insertPromises = userIds.map(userId => 
+
+      // Usa l'orario corrente del database per tutti gli accessi
+      console.log("Creazione accessi multipli - usando orario del database");
+
+      // Creiamo un array di promesse per tutti gli inserimenti usando NOW() del database
+      const insertPromises = userIds.map((userId) =>
         pool.execute(
-          'INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, ?)',
-          [userId, formattedDate]
+          "INSERT INTO Ingressi (id_utente, data_ora) VALUES (?, NOW())",
+          [userId]
         )
       );
-      
+
       // Eseguiamo tutte le promesse in parallelo
       await Promise.all(insertPromises);
-      
-      res.status(201).json({ 
+
+      res.status(201).json({
         success: true,
         data: { count: userIds.length },
-        message: `${userIds.length} accessi registrati con successo`
+        message: `${userIds.length} accessi registrati con successo`,
       });
     } catch (error) {
-      console.error('Errore nella creazione di accessi multipli:', error);
-      res.status(500).json({ 
+      console.error("Errore nella creazione di accessi multipli:", error);
+      res.status(500).json({
         success: false,
-        message: 'Errore nella registrazione degli accessi multipli' 
+        message: "Errore nella registrazione degli accessi multipli",
       });
     }
   }

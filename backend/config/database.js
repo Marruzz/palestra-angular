@@ -12,14 +12,18 @@ const dbConfig = {
   queueLimit: 0,
 };
 
-
 const pool = mysql.createPool(dbConfig);
-
 
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
     console.log("Siamo connessi al database MySQL!");
+    await connection.execute("SET time_zone = '+02:00'");
+    const [rows] = await connection.execute(
+      "SELECT CURTIME() AS `current_time`"
+    );
+    console.log("Ora corrente:", rows[0].current_time);
+
     connection.release();
     return true;
   } catch (error) {
@@ -28,11 +32,9 @@ async function testConnection() {
   }
 }
 
-
 async function initializeTables() {
   try {
     const connection = await pool.getConnection();
-
 
     const createUtentiTable = `
       CREATE TABLE IF NOT EXISTS Utenti (
@@ -60,7 +62,6 @@ async function initializeTables() {
 
     await connection.execute(createCorsiTable);
 
-
     const createAbbonamentiTable = `
       CREATE TABLE IF NOT EXISTS Abbonamenti (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -76,7 +77,6 @@ async function initializeTables() {
 
     await connection.execute(createAbbonamentiTable);
 
-
     const createIngressiTable = `
       CREATE TABLE IF NOT EXISTS Ingressi (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -87,7 +87,6 @@ async function initializeTables() {
     `;
 
     await connection.execute(createIngressiTable);
-
 
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
@@ -101,22 +100,23 @@ async function initializeTables() {
 
     await connection.execute(createUsersTable);
 
-
-    const [existingCorsi] = await connection.execute("SELECT COUNT(*) as count FROM Corsi");
+    const [existingCorsi] = await connection.execute(
+      "SELECT COUNT(*) as count FROM Corsi"
+    );
     if (existingCorsi[0].count !== 12) {
       const corsiDefault = [
-        ['Arti marziali', 'Corso base - durata 1 mese', 1],
-        ['MMA', 'Mixed Martial Arts - durata 1 mese', 1],
-        ['Sala pesi', 'Allenamento pesi - durata 1 mese', 1],
-        ['Cross-training', 'Funzionale - durata 1 mese', 1],
-        ['Arti Marziali', 'Corso base - durata 6 mesi', 6],
-        ['MMA', 'Mixed Martial Arts - durata 6 mesi', 6],
-        ['Sala Pesi', 'Allenamento Pesi - durata 6 mesi', 6],
-        ['Cross-training', 'Funzionale - durata 6 mesi', 6],
-        ['Arti Marziali', 'Corso base - durata 12 mesi', 12],
-        ['MMA', 'Mixed Martial Arts - durata 12 mesi', 12],
-        ['Sala Pesi', 'Allenamento Pesi - durata 12 mesi', 12],
-        ['Cross-training', 'Funzionale - durata 12 mesi', 12]
+        ["Arti marziali", "Corso base - durata 1 mese", 1],
+        ["MMA", "Mixed Martial Arts - durata 1 mese", 1],
+        ["Sala pesi", "Allenamento pesi - durata 1 mese", 1],
+        ["Cross-training", "Funzionale - durata 1 mese", 1],
+        ["Arti Marziali", "Corso base - durata 6 mesi", 6],
+        ["MMA", "Mixed Martial Arts - durata 6 mesi", 6],
+        ["Sala Pesi", "Allenamento Pesi - durata 6 mesi", 6],
+        ["Cross-training", "Funzionale - durata 6 mesi", 6],
+        ["Arti Marziali", "Corso base - durata 12 mesi", 12],
+        ["MMA", "Mixed Martial Arts - durata 12 mesi", 12],
+        ["Sala Pesi", "Allenamento Pesi - durata 12 mesi", 12],
+        ["Cross-training", "Funzionale - durata 12 mesi", 12],
       ];
       await connection.execute("DELETE FROM Corsi");
       for (const corso of corsiDefault) {
@@ -126,7 +126,6 @@ async function initializeTables() {
         );
       }
     }
-
 
     const [existingUsers] = await connection.execute(
       "SELECT COUNT(*) as count FROM users"
@@ -145,7 +144,6 @@ async function initializeTables() {
         "Usare admin@palestra.com e password come credenziali di accesso iniziali."
       );
     }
-
 
     connection.release();
   } catch (error) {
